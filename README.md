@@ -4,6 +4,8 @@
 이름 후보를 추려 주는 작명 웹앱입니다. `index.html`을 더블클릭하면 서버 없이 바로 열리고,
 입력한 정보는 **이 기기의 브라우저에만 저장**됩니다.
 
+**바로 열기:** https://singnii526.github.io/ireum-gyeol/ (GitHub Pages, `main` 브랜치에 push하면 1분 안에 반영)
+
 ## 흐름
 
 | 단계 | 하는 일 |
