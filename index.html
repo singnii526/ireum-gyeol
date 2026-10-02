@@ -1,0 +1,1394 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>이름결</title>
+<meta name="description" content="성씨와 생년월일시로 사주·오행을 분석하고, 대화하며 이름을 추천받는 작명 도우미">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+/* 한지 바탕 위 인장(낙관) 붉은색 하나로 포인트, 명조 제목 + 고딕 본문 */
+:root{
+  --bg:#f5efe3; --paper:#fffdf8; --field:#fff; --sunk:#f1e9da; --soft:#faf5ec; --track:#efe5d4; --bubble:#f5eee2; --tagbg:#f3ecdf;
+  --ink:#2a2421; --ink2:#4a413b; --muted:#857869; --line:#e5d9c5; --on-ink:#fff;
+  --accent:#b5442f; --accent-ink:#fff; --accent-soft:#f6e4dc;
+  --good:#2f7d55; --good-soft:#e8f4ec; --good-line:#cfe6d7; --bad:#b5442f; --bad-soft:#fbefea; --bad-line:#f0d3c8; --final:#fbeee8;
+  --star:#d9a43a; --star-off:#ddd0b8; --overlay:rgba(30,20,10,.45); --shadow-c:rgba(60,40,20,.07);
+  --e0:#3f8a59; --e1:#cf5a3e; --e2:#a8822a; --e3:#737983; --e4:#2f5f9e;
+  --e0s:#e3f1e7; --e1s:#f9e5df; --e2s:#f6edd4; --e3s:#eceef1; --e4s:#e1eaf6;
+  --radius:16px; --shadow:0 1px 2px var(--shadow-c),0 6px 24px var(--shadow-c);
+  --serif:'Noto Serif KR','Nanum Myeongjo','Batang',serif; --sans:'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#191512; --paper:#231e1a; --field:#2c2621; --sunk:#2f2823; --soft:#2a241f; --track:#3a322b; --bubble:#2f2823; --tagbg:#332b25;
+  --ink:#efe6d8; --ink2:#d3c7b6; --muted:#a39584; --line:#3d342d; --on-ink:#1c1815;
+  --accent:#d4644c; --accent-soft:#3e231c;
+  --good:#6cc195; --good-soft:#1f3329; --good-line:#2c4a3a; --bad:#e07a62; --bad-soft:#3a221c; --bad-line:#5a3127; --final:#35231d;
+  --star:#e2b04c; --star-off:#4a4038; --overlay:rgba(0,0,0,.6); --shadow-c:rgba(0,0,0,.35);
+  --e0:#6cc195; --e1:#ec7f63; --e2:#d9b04e; --e3:#a9b0ba; --e4:#79a4e0;
+  --e0s:#1f3329; --e1s:#3e231c; --e2s:#3a2f17; --e3s:#2b2e33; --e4s:#1d2a3d;
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#191512; --paper:#231e1a; --field:#2c2621; --sunk:#2f2823; --soft:#2a241f; --track:#3a322b; --bubble:#2f2823; --tagbg:#332b25;
+  --ink:#efe6d8; --ink2:#d3c7b6; --muted:#a39584; --line:#3d342d; --on-ink:#1c1815;
+  --accent:#d4644c; --accent-soft:#3e231c;
+  --good:#6cc195; --good-soft:#1f3329; --good-line:#2c4a3a; --bad:#e07a62; --bad-soft:#3a221c; --bad-line:#5a3127; --final:#35231d;
+  --star:#e2b04c; --star-off:#4a4038; --overlay:rgba(0,0,0,.6); --shadow-c:rgba(0,0,0,.35);
+  --e0:#6cc195; --e1:#ec7f63; --e2:#d9b04e; --e3:#a9b0ba; --e4:#79a4e0;
+  --e0s:#1f3329; --e1s:#3e231c; --e2s:#3a2f17; --e3s:#2b2e33; --e4s:#1d2a3d;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+a{color:var(--accent)}
+.wrap{max-width:1120px;margin:0 auto;padding-inline:16px}
+
+/* header */
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.hbar{display:flex;align-items:center;gap:16px;height:60px}
+.logo{display:flex;align-items:center;gap:10px;font-family:var(--serif);font-weight:900;font-size:20px;letter-spacing:-.02em;cursor:pointer}
+.seal{width:32px;height:32px;border-radius:7px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-size:17px;font-weight:900;font-family:var(--serif)}
+.tabs{display:flex;gap:4px;margin-left:auto;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{border:0;background:none;padding:8px 12px;border-radius:999px;white-space:nowrap;color:var(--muted);font-weight:500;font-size:14px}
+.tab b{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--line);color:var(--ink2);font-size:11px;margin-right:6px}
+.tab.on{background:var(--ink);color:var(--on-ink)}
+.tab.on b{background:var(--accent);color:var(--accent-ink)}
+.badge-n{display:inline-block;min-width:18px;padding:0 5px;border-radius:9px;background:var(--accent);color:var(--accent-ink);font-size:11px;margin-left:4px;text-align:center}
+
+main{padding-block:28px 80px}
+.step{display:none}
+.step.on{display:block;animation:fade .3s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+h1,h2,h3{font-family:var(--serif);letter-spacing:-.02em;margin:0;text-wrap:balance}
+h2{font-size:24px}
+h3{font-size:17px}
+.lead{color:var(--muted);margin:6px 0 0}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px}
+.card+.card{margin-top:16px}
+.sec-h{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin:0 0 16px;flex-wrap:wrap}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.1fr 1fr;gap:28px;align-items:start}
+.hero>*{min-width:0}
+.hero-copy h1{font-size:clamp(28px,4.4vw,44px);line-height:1.25;font-weight:900}
+.hero-copy h1 em{font-style:normal;color:var(--accent)}
+.hero-copy p{color:var(--ink2);font-size:16px}
+.flow{list-style:none;padding:0;margin:22px 0 0;display:grid;gap:10px}
+.flow li{display:flex;gap:12px;align-items:flex-start}
+.flow .num{flex:none;width:28px;height:28px;border-radius:50%;border:1.5px solid var(--accent);color:var(--accent);display:grid;place-items:center;font-weight:700;font-size:13px}
+.flow small{display:block;color:var(--muted)}
+.plus{margin-top:22px;padding:16px;border-radius:14px;background:var(--accent-soft);border:1px dashed color-mix(in srgb,var(--accent) 40%,transparent)}
+.plus h4{margin:0 0 8px;font-size:14px;color:var(--accent)}
+.plus ul{margin:0;padding-left:18px;color:var(--ink2);font-size:14px}
+
+/* form */
+.field{display:grid;gap:6px;margin-bottom:14px}
+.field>label,.lbl{font-weight:700;font-size:13.5px;color:var(--ink2)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.row>*{min-width:0}
+.inp,select.inp,textarea.inp{width:100%;border:1px solid var(--line);background:var(--field);border-radius:10px;padding:10px 12px;outline:none;transition:border .15s}
+.inp:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.seg{display:flex;background:var(--sunk);border-radius:10px;padding:3px;gap:3px}
+.seg button{flex:1;border:0;background:none;padding:8px;border-radius:8px;font-weight:500;color:var(--muted)}
+.seg button.on{background:var(--field);color:var(--ink);box-shadow:0 1px 3px var(--shadow-c)}
+.hint{font-size:12.5px;color:var(--muted)}
+.check{display:flex;gap:8px;align-items:center;font-size:13.5px;color:var(--ink2)}
+.btn{border:1px solid var(--line);background:var(--field);border-radius:10px;padding:10px 16px;font-weight:700;display:inline-flex;align-items:center;gap:6px;justify-content:center;transition:transform .1s,background .15s;text-decoration:none;color:var(--ink)}
+.btn:active{transform:scale(.98)}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.dark{background:var(--ink);border-color:var(--ink);color:var(--on-ink)}
+.btn.ghost{background:transparent}
+.btn.sm{padding:6px 10px;font-size:13px;border-radius:8px}
+.btn.block{width:100%}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* saju */
+.pillars{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0}
+.pillar{text-align:center}
+.pillar .pl{font-size:12px;color:var(--muted);margin-bottom:4px}
+.gz{border-radius:12px;padding:10px 4px;margin-bottom:6px;font-family:var(--serif);font-size:28px;font-weight:700;line-height:1.1}
+.gz small{display:block;font-family:var(--sans);font-size:11.5px;font-weight:500;margin-top:4px}
+.gz.unk{background:var(--sunk);color:var(--muted)}
+.e0{background:var(--e0s);color:var(--e0)} .e1{background:var(--e1s);color:var(--e1)} .e2{background:var(--e2s);color:var(--e2)} .e3{background:var(--e3s);color:var(--e3)} .e4{background:var(--e4s);color:var(--e4)}
+.tc0{color:var(--e0)} .tc1{color:var(--e1)} .tc2{color:var(--e2)} .tc3{color:var(--e3)} .tc4{color:var(--e4)}
+.bars{display:grid;gap:8px;margin:12px 0}
+.bar{display:grid;grid-template-columns:54px 1fr 28px;align-items:center;gap:10px;font-size:13px;font-variant-numeric:tabular-nums}
+.bar .trk{height:10px;background:var(--track);border-radius:6px;overflow:hidden}
+.bar .fil{height:100%;border-radius:6px}
+.keyfacts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.kf{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:12px}
+.kf .k{font-size:12px;color:var(--muted)}
+.kf .v{font-family:var(--serif);font-weight:700;font-size:18px}
+.kf p{margin:4px 0 0;font-size:12.5px;color:var(--ink2)}
+.pill{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:2px 9px;font-size:12px;font-weight:700}
+
+/* taste */
+.taste{text-align:center;padding:10px 0}
+.tcard{margin:12px auto;max-width:340px;border-radius:20px;background:linear-gradient(160deg,var(--field),var(--soft));border:1px solid var(--line);padding:34px 16px;box-shadow:var(--shadow)}
+.tname{font-family:var(--serif);font-size:42px;font-weight:900;letter-spacing:.06em}
+.tsub{color:var(--muted);font-size:13px;margin-top:6px}
+.tbtns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.tbtns .btn{min-width:92px}
+.prog{height:6px;background:var(--track);border-radius:4px;max-width:340px;margin:14px auto 0;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--accent);transition:width .25s}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--line);background:var(--field);border-radius:999px;padding:7px 13px;font-size:13.5px;font-weight:500}
+.chip.on{background:var(--ink);border-color:var(--ink);color:var(--on-ink)}
+.chip.x::after{content:' ×';opacity:.6}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.two>*{min-width:0}
+
+/* step3 */
+.s3{display:grid;grid-template-columns:360px 1fr;gap:18px;align-items:start}
+.s3>*{min-width:0}
+.chat{position:sticky;top:calc(env(safe-area-inset-top,0px) + 76px);display:flex;flex-direction:column;height:calc(100vh - 100px);min-height:460px;padding:0;overflow:hidden}
+.chat-h{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
+.chat-h .seal{width:28px;height:28px;font-size:14px}
+.msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
+.msg{max-width:88%;padding:10px 13px;border-radius:14px;font-size:14px;line-height:1.55}
+.msg.bot{background:var(--bubble);border-top-left-radius:4px}
+.msg.me{background:var(--ink);color:var(--on-ink);margin-left:auto;border-top-right-radius:4px}
+.msg .mini{display:inline-flex;margin:4px 4px 0 0}
+.sugg{display:flex;gap:6px;overflow-x:auto;padding:8px 12px;border-top:1px solid var(--line);scrollbar-width:thin}
+.sugg .chip{white-space:nowrap;padding:5px 10px;font-size:12.5px}
+.chat form{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--line)}
+.chat form .inp{flex:1;min-width:0}
+.flt{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:12px}
+.flt .lbl{margin-right:4px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.ncard{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:16px;cursor:pointer;transition:transform .15s,box-shadow .15s;position:relative}
+.ncard:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.ntop{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.nk{font-family:var(--serif);font-weight:900;font-size:26px;letter-spacing:.04em;line-height:1.2}
+.nh{font-family:var(--serif);color:var(--muted);font-size:16px;letter-spacing:.12em}
+.score{flex:none;width:54px;height:54px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:18px;background:conic-gradient(var(--accent) calc(var(--p)*1%),var(--track) 0);position:relative;font-variant-numeric:tabular-nums}
+.score::before{content:'';position:absolute;inset:5px;border-radius:50%;background:var(--paper)}
+.score span{position:relative;font-family:var(--serif)}
+.nm{font-size:13px;color:var(--ink2);margin:8px 0}
+.tags{display:flex;flex-wrap:wrap;gap:4px}
+.tag{font-size:11.5px;border-radius:6px;padding:1px 7px;background:var(--tagbg);color:var(--ink2)}
+.tag.g{background:var(--good-soft);color:var(--good)}
+.tag.r{background:var(--accent-soft);color:var(--accent)}
+.nact{display:flex;gap:6px;margin-top:12px}
+.nact .btn{flex:1}
+.heart{color:var(--accent)}
+.empty{text-align:center;color:var(--muted);padding:40px 16px}
+
+/* modal */
+.ov{position:fixed;inset:0;background:var(--overlay);z-index:50;display:none;align-items:flex-start;justify-content:center;padding:calc(env(safe-area-inset-top,0px) + 24px) 12px 24px;overflow-y:auto}
+.ov.on{display:flex}
+.modal{background:var(--paper);border-radius:20px;max-width:760px;width:100%;padding:24px;position:relative;animation:fade .25s}
+.xbtn{position:absolute;top:14px;right:14px;border:0;background:var(--sunk);width:34px;height:34px;border-radius:50%;font-size:18px}
+.mhead{display:flex;gap:18px;align-items:center;flex-wrap:wrap;padding-right:30px}
+.mhead .big{font-family:var(--serif);font-size:44px;font-weight:900;letter-spacing:.08em;line-height:1.1}
+.mhead .bigk{font-size:18px;color:var(--ink2);letter-spacing:.2em}
+.verdict{margin:14px 0;padding:12px 14px;border-radius:12px;background:var(--soft);border-left:4px solid var(--accent);font-size:14px}
+.msec{margin-top:20px}
+.msec h3{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.msec h3 .pts{margin-left:auto;font-family:var(--sans);font-size:13px;color:var(--muted);font-weight:500}
+.msec .ex{font-size:12.5px;color:var(--muted);margin:0 0 10px}
+.hj3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.hj{border:1px solid var(--line);border-radius:12px;padding:12px;text-align:center}
+.hj .c{font-family:var(--serif);font-size:34px;font-weight:700;line-height:1.2}
+.hj .m{font-size:13px;color:var(--ink2)}
+.hj .s{font-size:12px;color:var(--muted);margin-top:4px}
+.gy4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.gy{border-radius:12px;padding:10px;text-align:center;border:1px solid var(--line)}
+.gy .n{font-family:var(--serif);font-size:22px;font-weight:700}
+.gy .k{font-size:12px;color:var(--muted)}
+.gy.ok{background:var(--good-soft);border-color:var(--good-line)}
+.gy.no{background:var(--bad-soft);border-color:var(--bad-line)}
+.flowx{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.flowx .arr{font-size:12px;color:var(--muted);text-align:center;line-height:1.2}
+.yy{display:flex;gap:10px;align-items:center}
+.yy i{width:26px;height:26px;border-radius:50%;border:2px solid var(--ink);display:inline-block}
+.yy i.y{background:var(--ink)}
+.xtra{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.xb{border:1px solid var(--line);border-radius:12px;padding:12px;font-size:13.5px;min-width:0;overflow-wrap:anywhere}
+.xb .t{font-weight:700;font-size:13px;color:var(--accent);margin-bottom:4px}
+.alts{display:flex;gap:8px;flex-wrap:wrap}
+.certimg{width:100%;border-radius:12px;border:1px solid var(--line);display:block;margin:12px 0}
+
+/* compare */
+.cmpwrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--paper)}
+table.cmp{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px;font-variant-numeric:tabular-nums}
+.cmp th,.cmp td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:center;vertical-align:middle}
+.cmp th:first-child,.cmp td:first-child{text-align:left;color:var(--muted);font-weight:500;white-space:nowrap;position:sticky;left:0;background:var(--paper)}
+.cmp thead th{font-family:var(--serif);font-size:20px}
+.cmp .best{background:var(--good-soft);font-weight:700}
+.cmp .final{background:var(--final)}
+.cmp thead th.final{color:var(--accent);box-shadow:inset 0 3px 0 var(--accent)}
+.share{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+/* reviews */
+.rvsum{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.stars{color:var(--star);letter-spacing:1px}
+.rvgrid{columns:3 280px;column-gap:12px;margin-top:16px}
+.rv{break-inside:avoid;margin-bottom:12px;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:16px}
+.rv .who{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin-bottom:6px;flex-wrap:wrap}
+.rv .av{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:14px;font-weight:700;color:#fff}
+.rv p{margin:6px 0 0;font-size:14px;white-space:pre-wrap}
+.sample{font-size:11px;border:1px solid var(--line);color:var(--muted);border-radius:6px;padding:0 6px}
+.mine{font-size:11px;background:var(--good-soft);color:var(--good);border-radius:6px;padding:0 6px}
+.notice{font-size:12.5px;color:var(--muted);background:var(--sunk);border-radius:10px;padding:10px 12px;margin-top:12px}
+.starpick button{border:0;background:none;font-size:24px;color:var(--star-off);padding:0 2px}
+.starpick button.on{color:var(--star)}
+
+.disclaimer{font-size:12px;color:var(--muted);text-align:center;margin-top:30px}
+.toast{position:fixed;bottom:calc(env(safe-area-inset-bottom,0px) + 24px);left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--on-ink);padding:10px 18px;border-radius:999px;font-size:14px;opacity:0;transition:all .25s;z-index:60;pointer-events:none;max-width:calc(100% - 32px);text-align:center}
+.toast.on{opacity:1;transform:translateX(-50%)}
+
+@media (max-width:900px){
+  .hero,.s3,.two{grid-template-columns:1fr}
+  .chat{position:static;height:520px}
+}
+@media (max-width:560px){
+  .hbar{gap:8px}
+  .logo span.t{display:none}
+  .tab{padding:7px 9px;font-size:13px}
+  .tab span.l{display:none}
+  .tab b{margin-right:0}
+  .row,.keyfacts,.xtra{grid-template-columns:1fr}
+  .gy4{grid-template-columns:repeat(2,1fr)}
+  .card{padding:18px}
+  .mhead .big{font-size:36px}
+  .tname{font-size:36px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap hbar">
+    <div class="logo" data-go="1"><div class="seal">結</div><span class="t">이름결</span></div>
+    <nav class="tabs" id="tabs">
+      <button class="tab" data-go="1"><b>1</b><span class="l">기본 정보</span></button>
+      <button class="tab" data-go="2"><b>2</b><span class="l">작명 방향</span></button>
+      <button class="tab" data-go="3"><b>3</b><span class="l">이름 추천</span></button>
+      <button class="tab" data-go="4"><b>4</b><span class="l">보관함·비교</span><span class="badge-n" id="savedN" hidden>0</span></button>
+      <button class="tab" data-go="5"><b>★</b><span class="l">후기</span></button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- STEP 1 -->
+  <section class="step" id="step1">
+    <div class="hero">
+      <div class="hero-copy">
+        <h1>사주에 필요한 기운을 담아<br><em>부르기 좋은 이름</em>을 함께 지어요</h1>
+        <p>성씨와 태어난 날짜만 넣으면 사주팔자와 오행을 풀어드리고, 대화하듯 조건을 말하면 이름 후보를 바로 추려드려요.</p>
+        <ol class="flow">
+          <li><span class="num">1</span><div>기본 정보 입력<small>사주팔자·오행·용신을 자동 분석해요</small></div></li>
+          <li><span class="num">2</span><div>작명 방향 설정<small>이름 몇 개에 좋아요/별로예요를 눌러 취향을 알려주세요</small></div></li>
+          <li><span class="num">3</span><div>대화하며 추천받기<small>"받침 없는 이름", "준 자 들어간 이름"처럼 말하면 돼요</small></div></li>
+          <li><span class="num">4</span><div>보관하고 비교하기<small>마음에 든 이름을 표로 비교하고 최종 선택해요</small></div></li>
+        </ol>
+        <div class="plus">
+          <h4>이름결에만 있는 기능</h4>
+          <ul>
+            <li>이름 소리 듣기 · 실제 발음과 부를 때 발음 확인 · 놀림 단어 체크</li>
+            <li>영문 표기 자동 변환과 해외에서 읽기 쉬운지 체크</li>
+            <li>형제·자매 이름과 어울리는지 확인</li>
+            <li>이름 증서 이미지 저장<span class="local-only"> · 가족에게 후보 링크 공유</span></li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <form class="card" id="infoForm" autocomplete="off">
+          <h3 style="margin-bottom:14px">아이 정보 입력</h3>
+          <div class="row">
+            <div class="field">
+              <label for="fSur">성씨 (한글)</label>
+              <input class="inp" id="fSur" maxlength="1" placeholder="예: 김" required>
+            </div>
+            <div class="field">
+              <label for="fSurH">성씨 한자</label>
+              <select class="inp" id="fSurH"><option value="">성씨를 먼저 입력</option></select>
+            </div>
+          </div>
+          <div class="row" id="manualSur" hidden>
+            <div class="field"><label for="fSurS">성씨 한자 획수</label><input class="inp" id="fSurS" type="number" min="1" max="40" placeholder="원획 기준"></div>
+            <div class="field"><label for="fSurO">성씨 자원오행</label>
+              <select class="inp" id="fSurO"><option value="0">목(木)</option><option value="1">화(火)</option><option value="2">토(土)</option><option value="3">금(金)</option><option value="4">수(水)</option></select></div>
+          </div>
+          <div class="field">
+            <span class="lbl">성별</span>
+            <div class="seg" id="fGender">
+              <button type="button" data-v="m">남자아이</button>
+              <button type="button" data-v="f">여자아이</button>
+              <button type="button" data-v="n">아직 몰라요</button>
+            </div>
+          </div>
+          <div class="row">
+            <div class="field"><label for="fDate">생년월일 (양력)</label><input class="inp" id="fDate" type="date" min="1900-01-01" max="2100-12-31" required></div>
+            <div class="field"><label for="fTime">태어난 시각</label><input class="inp" id="fTime" type="time"></div>
+          </div>
+          <label class="check"><input type="checkbox" id="fNoTime"> 태어난 시각을 몰라요 (출산 예정이라면 예정일만 넣어도 돼요)</label>
+          <label class="check" style="margin-top:6px"><input type="checkbox" id="fKst" checked> 한국 표준시 보정 (−30분, 일반적인 사주 계산 방식)</label>
+          <p class="hint">음력 생일은 <a href="https://astro.kasi.re.kr/life/pageView/8" target="_blank" rel="noopener">한국천문연구원 음양력 변환</a>에서 양력으로 바꿔 입력해 주세요. 두 글자 성(남궁·제갈 등)은 아직 지원하지 않아요.</p>
+          <button class="btn pri block" type="submit" style="margin-top:8px">사주 분석하기</button>
+        </form>
+        <div id="sajuBox"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="step" id="step2">
+    <div class="sec-h"><div><h2>작명 방향 정하기</h2><p class="lead">취향을 알려주실수록 추천이 정확해져요. 건너뛰어도 괜찮아요.</p></div></div>
+    <div class="two">
+      <div class="card"><h3>① 이름 취향 테스트</h3><div id="tasteBox"></div></div>
+      <div class="card">
+        <h3 style="margin-bottom:12px">② 원하는 느낌과 조건</h3>
+        <div class="field"><span class="lbl">이름에 담고 싶은 뜻 (여러 개 선택)</span><div class="chips" id="moodChips"></div></div>
+        <div class="row">
+          <div class="field"><label for="pDolPos">돌림자</label>
+            <select class="inp" id="pDolPos"><option value="">없음</option><option value="first">이름 첫 글자</option><option value="last">이름 끝 글자</option></select></div>
+          <div class="field"><label for="pDol">돌림자 글자</label><input class="inp" id="pDol" maxlength="1" placeholder="예: 준"></div>
+        </div>
+        <div class="field"><label for="pEx">피하고 싶은 글자</label><input class="inp" id="pEx" placeholder="예: 민, 서 (쉼표로 구분)"></div>
+        <div class="field"><label for="pFinal">받침</label>
+          <select class="inp" id="pFinal"><option value="">상관없음</option><option value="soft">부드러운 받침만 (ㄴ·ㄹ·ㅁ·ㅇ)</option><option value="none">받침 없는 이름</option></select></div>
+        <div class="field"><label for="pSib">형제·자매 이름 <span class="hint">(선택, 어울림 체크용)</span></label><input class="inp" id="pSib" placeholder="예: 김서준, 김하은"></div>
+        <button class="btn pri block" id="goRecommend">이름 추천 받기</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 3 -->
+  <section class="step" id="step3">
+    <div class="s3">
+      <div class="card chat">
+        <div class="chat-h"><div class="seal">結</div><div><b>작명 도우미</b><div class="hint">조건을 말하면 바로 다시 골라드려요</div></div></div>
+        <div class="msgs" id="msgs"></div>
+        <div class="sugg" id="sugg"></div>
+        <form id="chatForm"><input class="inp" id="chatIn" placeholder="예: 밝고 부드러운 느낌으로" autocomplete="off"><button class="btn dark">보내기</button></form>
+      </div>
+      <div>
+        <div class="sec-h"><div><h2>추천 이름</h2><p class="lead" id="resLead"></p></div></div>
+        <div class="flt" id="fltBox"></div>
+        <div class="grid" id="resGrid"></div>
+        <div style="text-align:center;margin-top:16px"><button class="btn" id="moreBtn">더 보기</button></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 4 -->
+  <section class="step" id="step4">
+    <div class="sec-h">
+      <div><h2>보관함 · 비교</h2><p class="lead">담아둔 이름을 한눈에 비교하고, ☆를 눌러 최종 이름을 골라 보세요.</p></div>
+    </div>
+    <div id="cmpBox"></div>
+    <div class="card local-only" style="margin-top:16px">
+      <h3>가족에게 후보 공유하기</h3>
+      <p class="hint" style="margin:4px 0 12px">링크를 받은 가족은 같은 비교표를 보고 의견을 줄 수 있어요. 서버에 저장되지 않고 링크 안에만 담겨요.</p>
+      <div class="share">
+        <label class="check"><input type="checkbox" id="shBirth"> 생년월일 포함 (용신 점수까지 같이 보이게)</label>
+        <button class="btn dark sm" id="shareBtn">공유 링크 복사</button>
+      </div>
+    </div>
+    <div id="sharedBox"></div>
+  </section>
+
+  <!-- REVIEWS -->
+  <section class="step" id="step5">
+    <div class="sec-h"><div><h2>사용 후기</h2><p class="lead">이름결로 이름을 지은 분들의 이야기</p></div></div>
+    <div class="card">
+      <div class="rvsum" id="rvSum"></div>
+      <div class="notice">‘예시’ 표시가 붙은 후기는 화면 구성을 보여주기 위한 샘플이에요. 실제 사용자의 후기가 아니며, 서비스 공개 전에 실제 후기로 바꾸거나 지워야 합니다. 평균 별점은 실제로 작성된 후기로만 계산해요.</div>
+    </div>
+    <div class="rvgrid" id="rvGrid"></div>
+    <form class="card" id="rvForm" style="margin-top:8px">
+      <h3 style="margin-bottom:12px">후기 남기기</h3>
+      <div class="row">
+        <div class="field"><label for="rvNick">닉네임</label><input class="inp" id="rvNick" maxlength="12" placeholder="예: 봄이맘" required></div>
+        <div class="field"><span class="lbl">별점</span><div class="starpick" id="rvStars"></div></div>
+      </div>
+      <div class="row">
+        <div class="field"><label for="rvAge">연령대</label><select class="inp" id="rvAge"><option>20대</option><option selected>30대</option><option>40대</option><option>50대</option><option>60대 이상</option></select></div>
+        <div class="field"><label for="rvRole">누구의 이름을 지었나요?</label><select class="inp" id="rvRole"><option>우리 아이</option><option>손주</option><option>조카</option><option>나 (개명)</option><option>기타</option></select></div>
+      </div>
+      <div class="field"><label for="rvText">후기</label><textarea class="inp" id="rvText" rows="4" maxlength="500" placeholder="좋았던 점, 아쉬웠던 점을 자유롭게 적어주세요" required></textarea></div>
+      <button class="btn pri">후기 등록</button>
+      <p class="hint" style="margin:8px 0 0">지금은 이 기기에만 저장돼요. 다른 사람과 후기를 공유하려면 서버(DB) 연결이 필요해요.</p>
+    </form>
+  </section>
+
+  <p class="disclaimer">이름결의 분석은 전통 성명학 이론(사주·오행·수리)을 단순화한 참고용 정보입니다. 한자 획수는 원획법 기준이며, 출생신고 전 대법원 인명용 한자 여부를 꼭 확인하세요.</p>
+</main>
+
+<div class="ov" id="ov"><div class="modal" id="modal"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================= 데이터 ================= */
+const EL = ['목','화','토','금','수'];
+const ELH = ['木','火','土','金','水'];
+const ELN = ['나무','불','흙','쇠','물'];
+const ELK = {목:0,화:1,토:2,금:3,수:4};
+const STEMS='甲乙丙丁戊己庚辛壬癸', STEMS_K='갑을병정무기경신임계';
+const BR='子丑寅卯辰巳午未申酉戌亥', BR_K='자축인묘진사오미신유술해';
+const BR_EL=[4,2,0,0,2,1,1,2,3,3,2,4];
+const ANIMAL=['쥐','소','호랑이','토끼','용','뱀','말','양','원숭이','닭','개','돼지'];
+const DAY_DESC=['곧게 자라는 큰 나무','부드럽게 뻗는 꽃과 풀','세상을 비추는 태양','은은히 밝히는 촛불','듬직한 큰 산','곡식을 키우는 논밭','단단한 바위와 쇠','반짝이는 보석','넓은 바다','촉촉한 빗물'];
+const MOODS=[['밝','밝음·빛'],['지','지혜·총명'],['덕','어짊·따뜻함'],['큼','큰 뜻·리더'],['미','아름다움·고움'],['자','자연·맑음'],['강','굳셈·씩씩함'],['복','복·풍요']];
+const MOOD_L=Object.fromEntries(MOODS);
+
+// 음|한자|뜻|원획|자원오행|성별(m/f/n)|느낌태그
+const HJ_RAW=`가|佳|아름다울|8|화|f|미
+가|嘉|아름다울|14|수|n|미,복
+건|建|세울|9|목|m|강,큼
+건|健|굳셀|11|화|m|강
+경|京|서울|8|토|n|큼
+경|慶|경사|15|목|n|복
+경|敬|공경|13|금|n|덕
+경|景|볕|12|화|n|밝
+규|奎|별|9|토|m|밝,지
+규|圭|홀|6|토|m|덕
+나|娜|아리따울|10|토|f|미
+다|多|많을|6|수|n|복
+담|潭|깊을|16|수|n|자
+도|道|길|16|토|m|덕,지
+도|度|법도|9|목|n|덕
+동|東|동녘|8|목|m|밝
+동|桐|오동나무|10|목|n|자
+람|嵐|남기|12|토|n|자
+린|潾|맑을|16|수|f|자
+린|璘|옥빛|17|금|n|미
+민|敏|민첩할|11|금|n|지
+민|旻|하늘|8|화|n|큼
+민|玟|옥돌|9|금|n|미
+민|珉|옥돌|10|금|n|미
+민|民|백성|5|화|n|덕
+빈|彬|빛날|11|화|n|밝,미
+서|瑞|상서로울|14|금|n|복
+서|序|차례|7|목|n|덕
+서|舒|펼|12|화|n|큼
+선|善|착할|12|수|n|덕
+선|宣|베풀|9|화|n|덕
+성|成|이룰|7|화|m|강
+성|星|별|9|화|n|밝
+성|晟|밝을|11|화|m|밝
+성|聖|성인|13|화|n|덕
+세|世|인간|5|화|n|큼
+소|昭|밝을|9|화|n|밝
+소|素|흴|10|목|f|미
+수|秀|빼어날|7|목|n|지,미
+수|洙|물가|10|수|n|자
+수|守|지킬|6|목|m|강
+승|承|이을|8|수|m|덕
+승|昇|오를|8|화|m|큼
+승|勝|이길|12|토|m|강
+시|時|때|10|화|n|지
+시|是|옳을|9|화|n|덕
+아|雅|맑을|12|목|f|미
+아|娥|예쁠|10|토|f|미
+안|安|편안할|6|목|n|복
+연|延|끌|7|토|n|복
+연|然|그러할|12|화|n|자
+연|娟|예쁠|10|토|f|미
+연|涓|시내|11|수|f|자
+연|硏|갈|11|금|n|지
+영|英|꽃부리|11|목|n|미,지
+영|映|비칠|9|화|n|밝
+영|榮|영화|14|목|n|복
+예|睿|슬기|14|목|n|지
+예|藝|재주|21|목|f|지,미
+온|溫|따뜻할|14|수|n|덕
+우|祐|도울|10|금|m|복
+우|宇|집|6|목|m|큼
+우|佑|도울|7|화|m|덕
+우|雨|비|8|수|n|자
+원|元|으뜸|4|목|m|큼
+원|源|근원|14|수|n|자
+원|媛|미인|12|토|f|미
+원|瑗|구슬|14|금|f|미
+유|裕|넉넉할|13|목|n|복
+유|侑|도울|8|화|n|덕
+유|柔|부드러울|9|목|f|미
+윤|允|진실로|4|토|n|덕
+윤|潤|윤택할|16|수|n|복
+윤|玧|귀막이옥|9|금|n|미
+율|律|법칙|9|화|n|지
+은|恩|은혜|10|화|n|덕
+은|銀|은|14|금|n|미
+은|垠|지경|9|토|n|큼
+이|利|이로울|7|금|n|복
+이|怡|기쁠|9|화|f|복
+이|伊|저|6|화|n|미
+인|仁|어질|4|화|n|덕
+인|寅|범|11|목|m|강
+재|在|있을|6|토|m|강
+재|載|실을|13|화|m|큼
+재|哉|어조사|9|수|n|덕
+정|正|바를|5|토|n|덕
+정|貞|곧을|9|금|f|덕
+정|晶|맑을|12|화|n|밝
+정|廷|조정|7|목|m|큼
+주|周|두루|8|수|n|큼
+주|柱|기둥|9|목|m|강
+주|珠|구슬|11|금|f|미
+준|俊|준걸|9|화|m|지,강
+준|峻|높을|10|토|m|큼
+준|晙|밝을|11|화|m|밝
+준|濬|깊을|18|수|m|지
+지|智|지혜|12|화|n|지
+지|志|뜻|7|화|n|강
+지|知|알|8|금|n|지
+지|祉|복|9|목|n|복
+지|池|못|7|수|n|자
+진|珍|보배|10|금|f|미,복
+진|眞|참|10|목|n|덕
+진|振|떨칠|11|목|m|강
+찬|燦|빛날|17|화|m|밝
+찬|贊|도울|19|금|m|덕
+채|采|캘|8|목|f|자
+채|彩|채색|11|화|f|미
+태|泰|클|10|수|m|큼
+태|太|클|4|목|m|큼
+하|夏|여름|10|화|n|자
+하|河|물|9|수|n|자
+하|昰|여름|9|화|n|밝
+한|翰|날개|16|화|m|지
+한|漢|한수|15|수|m|큼
+현|賢|어질|15|금|n|덕,지
+현|炫|밝을|9|화|n|밝
+현|玄|검을|5|화|n|지
+현|鉉|솥귀|13|금|m|강
+혁|赫|빛날|14|화|m|밝,강
+혜|惠|은혜|12|화|f|덕
+혜|慧|슬기|15|화|f|지
+호|浩|넓을|11|수|m|큼
+호|昊|하늘|8|화|m|큼
+호|皓|흴|12|금|m|밝
+환|煥|빛날|13|화|m|밝
+후|厚|두터울|9|토|m|덕
+훈|訓|가르칠|10|금|m|지
+훈|薰|향풀|20|목|m|미
+희|熙|빛날|13|화|n|밝
+희|喜|기쁠|12|수|n|복
+희|希|바랄|7|목|n|복
+희|姬|아가씨|9|토|f|미
+결|潔|깨끗할|16|수|n|덕`;
+
+// 성|한자|원획|자원오행
+const SUR_RAW=`김|金|8|금
+이|李|7|목
+박|朴|6|목
+최|崔|11|토
+정|鄭|19|토
+정|丁|2|화
+강|姜|9|토
+강|康|11|목
+조|趙|14|화
+조|曺|11|토
+윤|尹|4|토
+장|張|11|금
+임|林|8|목
+한|韓|17|금
+오|吳|7|수
+서|徐|10|화
+신|申|5|금
+신|辛|7|금
+권|權|22|목
+황|黃|12|토
+안|安|6|목
+송|宋|7|목
+류|柳|9|목
+유|劉|15|금
+유|柳|9|목
+전|全|6|토
+전|田|5|토
+홍|洪|10|수
+고|高|10|화
+문|文|4|목
+양|梁|11|목
+양|楊|13|목
+손|孫|10|수
+배|裵|14|목
+백|白|5|금
+허|許|11|금
+남|南|9|화
+심|沈|8|수
+노|盧|16|수
+하|河|9|수
+곽|郭|15|토
+성|成|7|화
+차|車|7|화
+주|朱|6|목
+우|禹|9|토
+구|具|8|금
+민|閔|12|목
+진|陳|16|토
+나|羅|20|목
+지|池|7|수
+엄|嚴|20|수
+원|元|4|목
+채|蔡|17|목
+천|千|3|수
+방|方|4|토
+공|孔|4|수
+현|玄|5|화
+함|咸|9|수
+변|卞|4|토
+염|廉|13|목
+여|呂|7|수
+추|秋|9|목
+도|都|16|화
+소|蘇|22|목
+석|石|5|금
+선|宣|9|화
+설|薛|19|목
+마|馬|10|화
+길|吉|6|수
+연|延|7|토
+위|魏|18|화
+표|表|9|목
+명|明|8|화
+기|奇|8|토
+반|潘|16|수
+왕|王|5|금
+금|琴|13|목
+옥|玉|5|금
+육|陸|16|토
+인|印|6|목
+맹|孟|8|수
+제|諸|16|금
+모|牟|6|토
+탁|卓|8|목
+국|鞠|17|목
+어|魚|11|수
+은|殷|10|금
+편|片|4|목
+용|龍|16|토
+예|芮|10|목`;
+
+// 인기 순서 대략 반영 (앞쪽일수록 흔함)
+const MALE='민준 서준 도윤 예준 시우 하준 주원 지호 지후 준우 준서 건우 도현 현우 지훈 우진 선우 서진 민재 현준 연우 유준 정우 승우 승현 시윤 준혁 은우 지환 승민 지우 유찬 윤우 민성 준영 시후 진우 지원 수현 재윤 시현 동현 태윤 민우 재원 윤호 은찬 성민 태현 민규 정민 준호 우현 성현 경민 태민 승준 재현 건호 현호 동건 성준 태준 한결 도훈 승원 우재 주안 이안 지한 하율 태호 규민 정훈 영호 세준 동원'.split(' ');
+const FEMALE='서연 서윤 지우 서현 민서 하은 하윤 윤서 지유 지민 채원 지윤 은서 수아 다은 예은 수빈 지아 소율 예린 하린 지원 예원 시은 유나 서아 채은 윤아 소윤 가은 서영 민지 수연 예서 다인 하연 아인 지안 유진 소연 은채 연우 혜원 주아 세아 나연 시아 아린 혜인 수민 은지 예지 가윤 서하 하영 채윤 담희 이현 소희 유정 희원 정원 서희 다온 연희 아영 세린 주하 가희 소담'.split(' ');
+const NEUTRAL='지우 지원 연우 서윤 하율 시온 이현 한결 은우 다온 이안 서진 윤서 하진 주원 유진 서우 도은 지안 하람 시우 은결 하온 이준 도하'.split(' ');
+
+const GOOD81=new Set([1,3,5,6,7,8,11,13,15,16,17,18,21,23,24,25,29,31,32,33,35,37,38,39,41,45,47,48,52,57,61,63,65,67,68,81]);
+const SUR_ROMA={김:'Kim',이:'Lee',박:'Park',최:'Choi',정:'Jung',강:'Kang',조:'Cho',윤:'Yoon',장:'Jang',임:'Lim',한:'Han',오:'Oh',서:'Seo',신:'Shin',권:'Kwon',황:'Hwang',안:'Ahn',송:'Song',류:'Ryu',유:'Yoo',전:'Jeon',홍:'Hong',고:'Ko',문:'Moon',양:'Yang',손:'Son',배:'Bae',백:'Baek',허:'Heo',남:'Nam',심:'Shim',노:'Noh',하:'Ha',곽:'Kwak',성:'Sung',차:'Cha',주:'Joo',우:'Woo',구:'Koo',민:'Min',진:'Jin',나:'Na',지:'Ji',엄:'Eom',원:'Won',채:'Chae',천:'Cheon',방:'Bang',공:'Kong',현:'Hyun',함:'Ham',변:'Byun',염:'Yeom',여:'Yeo',추:'Choo',도:'Do',소:'So',석:'Seok',선:'Sun',설:'Seol',마:'Ma',길:'Gil',연:'Yeon',위:'Wi',표:'Pyo',명:'Myung',기:'Ki',반:'Ban',왕:'Wang',금:'Keum',옥:'Ok',육:'Yook',인:'In',맹:'Maeng',제:'Je',모:'Mo',탁:'Tak',국:'Kook',어:'Eo',은:'Eun',편:'Pyeon',용:'Yong',예:'Ye'};
+const TEASE=['바보','방구','방귀','고자','멍청','돼지','찌질','오줌','변기','똥','시체','사망','지랄','미친','병신','구라','호구','꼰대','진상','노답','주정','도둑','거지','망해','망함'];
+const EN_BAD=['dong','bum','dung','poo','pee','kill','die','dumb','fat','sin','suck','butt','gay','porn','fuk','shit','damn','hell'];
+
+/* ================= 파싱 ================= */
+const HJ={}, HJ_ALL=[];
+HJ_RAW.trim().split('\n').forEach(l=>{const [r,h,m,s,o,g,t]=l.trim().split('|');const e={r,h,m,s:+s,o:ELK[o],g,t:t.split(',')};(HJ[r]=HJ[r]||[]).push(e);HJ_ALL.push(e)});
+const SYLS=Object.keys(HJ);
+const SURS=SUR_RAW.trim().split('\n').map(l=>{const [r,h,s,o]=l.trim().split('|');return {r,h,s:+s,o:ELK[o]}});
+const findHJ=(r,h)=>(HJ[r]||[]).find(x=>x.h===h);
+
+/* ================= 한글 유틸 ================= */
+const dec=ch=>{const c=ch.charCodeAt(0)-0xAC00;return c<0||c>11171?null:{cho:Math.floor(c/588),jung:Math.floor(c%588/28),jong:c%28}};
+const comp=(a,b,c)=>String.fromCharCode(0xAC00+a*588+b*28+c);
+const jong=ch=>(dec(ch)||{jong:0}).jong;
+const CHO_EL=[0,0,1,1,1,1,4,4,4,3,3,2,3,3,3,0,1,4,2];
+const soundEl=ch=>{const d=dec(ch);return d?CHO_EL[d.cho]:2};
+const SOFT_JONG=new Set([0,4,8,16,21]);
+function rel(a,b){if(a===b)return '같음';if((a+1)%5===b)return '생';if((b+1)%5===a)return '역생';return '극'}
+const relTxt={'같음':'같은 기운','생':'상생 (살려줌)','역생':'상생 (받쳐줌)','극':'상극 (부딪힘)'};
+const r81=v=>{while(v>81)v-=80;return v};
+const josa=(w,a,b)=>jong(w[w.length-1])?a:b;
+
+// 실제 발음 (연음·비음화·유음화·격음화 기본 규칙)
+const JONG2CHO={1:0,2:1,4:2,7:3,8:5,16:6,17:7,19:9,20:10,22:12,23:14,24:15,25:16,26:17};
+function pronounce(word){
+  const s=[...word].map(dec);
+  if(s.some(x=>!x))return word;
+  for(let i=0;i<s.length-1;i++){
+    const a=s[i],b=s[i+1];
+    if(b.cho===11&&a.jong){ // 연음
+      if(a.jong===21)continue;
+      if(a.jong===27){a.jong=0;continue}
+      if(JONG2CHO[a.jong]!=null){b.cho=JONG2CHO[a.jong];a.jong=0}
+      continue;
+    }
+    if(b.cho===18&&(a.jong===1||a.jong===17||a.jong===7||a.jong===22)){b.cho={1:15,17:17,7:16,22:14}[a.jong];a.jong=0;continue} // 격음화
+    if(b.cho===5){ // ㄹ 앞
+      if(a.jong===4){a.jong=8;continue}            // 유음화 ㄴ+ㄹ
+      if(a.jong===8)continue;
+      if(a.jong===1){a.jong=21;b.cho=2;continue}   // ㄱ+ㄹ → ㅇ+ㄴ
+      if(a.jong===17){a.jong=16;b.cho=2;continue}  // ㅂ+ㄹ → ㅁ+ㄴ
+      if(a.jong===16||a.jong===21){b.cho=2;continue}
+    }
+    if(a.jong===8&&b.cho===2){b.cho=5;continue}    // ㄹ+ㄴ
+    if(b.cho===2||b.cho===6){ // 비음화
+      if(a.jong===1||a.jong===24)a.jong=21;
+      else if(a.jong===17||a.jong===26)a.jong=16;
+      else if([7,19,20,22,23,25].includes(a.jong))a.jong=4;
+    }
+  }
+  return s.map(x=>comp(x.cho,x.jung,x.jong)).join('');
+}
+// 로마자 표기 (국어의 로마자 표기법, 이름은 음절 단위)
+const R_CHO=['g','kk','n','d','tt','r','m','b','pp','s','ss','','j','jj','ch','k','t','p','h'];
+const R_JUNG=['a','ae','ya','yae','eo','e','yeo','ye','o','wa','wae','oe','yo','u','wo','we','wi','yu','eu','ui','i'];
+const R_JONG=['','k','k','k','n','n','n','t','l','k','m','l','l','l','p','l','m','p','p','t','t','ng','t','t','k','t','p','t'];
+const romSyl=ch=>{const d=dec(ch);return d?R_CHO[d.cho]+R_JUNG[d.jung]+R_JONG[d.jong]:ch};
+const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+function romanize(sur,name){
+  const given=[...name].map(romSyl);
+  const sr=SUR_ROMA[sur]||cap(romSyl(sur));
+  return {full:`${cap(given.join(''))} ${sr}`,hyphen:`${cap(given[0])}-${given.slice(1).join('')}`,given:given.join(''),parts:given,sur:sr};
+}
+function englishCheck(rom){
+  const g=rom.given.toLowerCase(), notes=[];
+  const hard=['eo','eu','ae','oe','ui'].filter(v=>g.includes(v));
+  if(hard.length)notes.push(`‘${hard.join(', ')}’ 철자는 영어권에서 발음이 헷갈릴 수 있어요`);
+  const bad=EN_BAD.filter(w=>g===w||rom.parts.includes(w));
+  if(bad.length)notes.push(`영어 단어 ‘${bad.join(', ')}’와 비슷하게 읽힐 수 있어요`);
+  return {ok:!notes.length,notes};
+}
+
+/* ================= 사주 ================= */
+function jdn(y,m,d){const a=Math.floor((14-m)/12),Y=y+4800-a,M=m+12*a-3;return d+Math.floor((153*M+2)/5)+365*Y+Math.floor(Y/4)-Math.floor(Y/100)+Math.floor(Y/400)-32045}
+const TERMS=[[1,6,1],[2,4,2],[3,6,3],[4,5,4],[5,6,5],[6,6,6],[7,7,7],[8,8,8],[9,8,9],[10,8,10],[11,7,11],[12,7,0]];
+function calcSaju(dateStr,timeStr,kst){
+  const [y,m,d]=dateStr.split('-').map(Number);
+  // 연주 (입춘 기준)
+  const sy=(m<2||(m===2&&d<4))?y-1:y;
+  const yS=((sy-4)%10+10)%10, yB=((sy-4)%12+12)%12;
+  // 월주 (절기 기준, 근사)
+  let mB=0;for(const [tm,td,b] of TERMS)if(m>tm||(m===tm&&d>=td))mB=b;
+  const mS=([2,4,6,8,0][yS%5]+(mB-2+12)%12)%10;
+  // 일주 + 시주
+  let shift=0,hS=null,hB=null;
+  if(timeStr){
+    let [hh,mi]=timeStr.split(':').map(Number);let t=hh*60+mi-(kst?30:0);
+    if(t<0){t+=1440;shift=-1}
+    if(t>=1380)shift+=1; // 23시 이후는 다음 날 자시
+    hB=Math.floor(((t+60)%1440)/120);
+  }
+  const dt=new Date(Date.UTC(y,m-1,d+shift));
+  const di=((jdn(dt.getUTCFullYear(),dt.getUTCMonth()+1,dt.getUTCDate())+49)%60+60)%60;
+  const dS=di%10,dB=di%12;
+  if(hB!=null)hS=([0,2,4,6,8][dS%5]+hB)%10;
+  const P=[
+    {k:'시주',s:hS,b:hB},{k:'일주',s:dS,b:dB},{k:'월주',s:mS,b:mB},{k:'연주',s:yS,b:yB}
+  ];
+  const cnt=[0,0,0,0,0];
+  P.forEach(p=>{if(p.s!=null){cnt[Math.floor(p.s/2)]++;cnt[BR_EL[p.b]]++}});
+  const dEl=Math.floor(dS/2), parent=(dEl+4)%5;
+  // 신강/신약 (월지 가중치 2)
+  let sup=0,tot=0;
+  const others=[[yS,1,'s'],[yB,1,'b'],[mS,1,'s'],[mB,2,'b'],[dB,1,'b']];
+  if(hB!=null)others.push([hS,1,'s'],[hB,1,'b']);
+  others.forEach(([v,w,t])=>{const e=t==='s'?Math.floor(v/2):BR_EL[v];tot+=w;if(e===dEl||e===parent)sup+=w});
+  const ratio=sup/tot;
+  const strength=ratio>0.5?'강':ratio<0.5?'약':'중';
+  const pickMin=arr=>arr.reduce((a,b)=>cnt[b]<cnt[a]?b:a);
+  let yong;
+  if(strength==='약')yong=pickMin([parent,dEl]);
+  else if(strength==='강')yong=pickMin([(dEl+1)%5,(dEl+2)%5,(dEl+3)%5]);
+  else yong=pickMin([0,1,2,3,4]);
+  const hee=(yong+4)%5, gi=(yong+3)%5;
+  const lack=cnt.map((c,i)=>c===0?i:-1).filter(i=>i>=0);
+  return {P,cnt,dS,dEl,strength,ratio,yong,hee,gi,lack,yB,hasTime:hB!=null};
+}
+function elPoint(o,sj){if(o===sj.yong)return 10;if(o===sj.hee)return 7;if(sj.lack.includes(o))return 6;if(o===sj.gi)return 0;return 4}
+
+/* ================= 상태 ================= */
+const LS='ireumgyeol.v1';
+const S={
+  info:null,saju:null,
+  taste:{deck:[],idx:0,liked:{},disliked:{},done:false},
+  prefs:{moods:[],dolPos:'',dol:'',ex:'',fin:'',sib:''},
+  filters:null,results:[],page:1,
+  saved:[],final:null,chat:[],reviews:[],shared:null
+};
+const CACHE=new Map();
+function save(){try{localStorage.setItem(LS,JSON.stringify({info:S.info,taste:S.taste,prefs:S.prefs,saved:S.saved,final:S.final,reviews:S.reviews}))}catch(e){}}
+function load(){try{const d=JSON.parse(localStorage.getItem(LS)||'null');if(d)Object.assign(S,{info:d.info||null,taste:d.taste||S.taste,prefs:d.prefs||S.prefs,saved:d.saved||[],final:d.final||null,reviews:d.reviews||[]})}catch(e){}}
+
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function toast(t){const el=$('#toast');el.textContent=t;el.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove('on'),1800)}
+
+/* ================= 평가 ================= */
+function mainCtx(){return {id:'',sur:S.info.surname,saju:S.saju,gender:S.info.gender,liked:S.taste.liked,disliked:S.taste.disliked,moods:(S.filters||{moods:S.prefs.moods}).moods,sib:parseSib(S.prefs.sib)}}
+function tastePoint(chars,ctx){
+  let t=5;
+  chars.forEach(c=>{t+=(ctx.liked[c.r]||0)*1.5-(ctx.disliked[c.r]||0)*1.5;if(c.t.some(x=>ctx.moods.includes(x)))t+=2});
+  return Math.max(0,Math.min(10,Math.round(t)));
+}
+function evalCombo(chars,ctx=mainCtx()){
+  const [x,y]=chars,sur=ctx.sur,name=x.r+y.r,s=sur.s,a=x.s,b=y.s;
+  const gy=[['원격','초년운 · 0~20세',a+b],['형격','청년운 · 20~40세',s+a],['이격','중년운 · 40세~',s+b],['정격','총운 · 평생',s+a+b]]
+    .map(([k,sub,v])=>{v=r81(v);return {k,sub,v,good:GOOD81.has(v)}});
+  const pe=[soundEl(sur.r),soundEl(x.r),soundEl(y.r)];
+  const pr=[rel(pe[0],pe[1]),rel(pe[1],pe[2])];
+  const yy=[s,a,b].map(n=>n%2===1);
+  const yyGood=!(yy[0]===yy[1]&&yy[1]===yy[2]);
+  const sc={
+    suri:gy.filter(g=>g.good).length*10,
+    sound:pr.reduce((t,r)=>t+(r==='생'||r==='역생'?10:r==='같음'?6:0),0),
+    yy:yyGood?10:0,
+    el:ctx.saju?elPoint(x.o,ctx.saju)+elPoint(y.o,ctx.saju):12,
+    taste:tastePoint(chars,ctx)
+  };
+  const total=sc.suri+sc.sound+sc.yy+sc.el+sc.taste;
+  const key=(ctx.id||'')+name+'|'+x.h+y.h;
+  const e={key,name,chars,sur,gy,pe,pr,yy,yyGood,sc,total,ctx};
+  CACHE.set(key,e);return e;
+}
+function pool(neutral){
+  const g=S.info.gender;
+  if(neutral||g==='n')return NEUTRAL;
+  return g==='m'?MALE:FEMALE;
+}
+function hjOk(h,neutral){const g=S.info.gender;if(neutral||g==='n')return h.g==='n';return g==='m'?h.g!=='f':h.g!=='m'}
+function candidates(){
+  const f=S.filters,P=pool(f.neutral);
+  const names=new Set(P);
+  const synth=syl=>SYLS.forEach(x=>{if(x!==syl){names.add(syl+x);names.add(x+syl)}});
+  if(f.first)SYLS.forEach(x=>names.add(f.first+x));
+  if(f.last)SYLS.forEach(x=>names.add(x+f.last));
+  if(f.include.length===1&&[...P].filter(n=>n.includes(f.include[0])).length<4)synth(f.include[0]);
+  const out=[];
+  for(const nm of names){
+    if(nm.length!==2)continue;
+    const [a,b]=nm;
+    if(a===b)continue;
+    if(f.first&&a!==f.first)continue;
+    if(f.last&&b!==f.last)continue;
+    if(!f.include.every(x=>nm.includes(x)))continue;
+    if(f.exclude.some(x=>nm.includes(x)))continue;
+    if(f.fin==='none'&&(jong(a)||jong(b)))continue;
+    if(f.fin==='soft'&&!(SOFT_JONG.has(jong(a))&&SOFT_JONG.has(jong(b))))continue;
+    if(f.tease&&teaseCheck(S.info.surname.r+nm).length)continue;
+    const A=(HJ[a]||[]).filter(h=>hjOk(h,f.neutral)),B=(HJ[b]||[]).filter(h=>hjOk(h,f.neutral));
+    const combos=[];
+    for(const x of A)for(const y of B){
+      if(x.h===y.h)continue;
+      if(f.low&&(x.s>12||y.s>12))continue;
+      if(f.el!=null&&x.o!==f.el&&y.o!==f.el)continue;
+      const e=evalCombo([x,y]);
+      if(f.allGood&&e.gy.some(g=>!g.good))continue;
+      combos.push(e);
+    }
+    if(!combos.length)continue;
+    combos.sort((p,q)=>q.total-p.total);
+    const best=combos[0];best.alts=combos.slice(1,5);best.synth=!P.includes(nm);
+    out.push(best);
+  }
+  out.sort((p,q)=>q.total-p.total||(p.synth-q.synth));
+  return out;
+}
+function verdict(e){
+  const t=e.total,good=[],weak=[];
+  const gc=e.gy.filter(g=>g.good).length;
+  gc===4?good.push('수리 4격이 모두 길해요'):gc<=2&&weak.push(`수리 4격 중 ${4-gc}개가 흉수예요`);
+  e.sc.sound>=16?good.push('성부터 이름까지 소리 기운이 자연스럽게 이어져요'):e.sc.sound<10&&weak.push('발음오행에 부딪히는 구간이 있어요');
+  if(!e.yyGood)weak.push('획수의 음양이 한쪽으로 쏠려 있어요');
+  if(e.ctx.saju){const ys=e.chars.filter(c=>c.o===e.ctx.saju.yong).length;ys?good.push(`사주에 필요한 ${EL[e.ctx.saju.yong]}(${ELH[e.ctx.saju.yong]}) 기운을 ${ys===2?'두 글자 모두':'한 글자가'} 채워줘요`):e.chars.some(c=>c.o===e.ctx.saju.gi)&&weak.push(`사주에 부담이 되는 ${EL[e.ctx.saju.gi]} 기운 한자가 들어 있어요`)}
+  const head=t>=85?'아주 좋은 이름이에요.':t>=72?'좋은 이름이에요.':t>=58?'무난한 이름이에요.':'아쉬운 부분이 있는 이름이에요.';
+  return `<b>${head}</b> ${good.join(', ')}${good.length?'.':''}${weak.length?` 다만 ${weak.join(', ')}.`:''}`;
+}
+
+/* ================= 차별화 기능 ================= */
+function teaseCheck(full){const p=pronounce(full),raw=full;return TEASE.filter(w=>p.includes(w)||raw.includes(w))}
+function commonness(name){
+  const lists=[MALE,FEMALE,NEUTRAL];let best=999;
+  lists.forEach(l=>{const i=l.indexOf(name);if(i>=0)best=Math.min(best,i)});
+  if(best<15)return ['매우 흔한 편','인기 상위권 이름이라 같은 반에 동명이인이 있을 수 있어요'];
+  if(best<40)return ['흔한 편','익숙하고 부르기 편한 인기 이름이에요'];
+  if(best<999)return ['적당히 드문 편','익숙하면서도 흔하지 않아요'];
+  return ['드문 이름','주변에서 거의 겹치지 않는 이름이에요'];
+}
+function parseSib(s){return (s||'').split(/[,\s]+/).map(x=>x.trim()).filter(x=>/^[가-힣]{2,4}$/.test(x)).map(x=>x.length>=3?x.slice(1):x)}
+function sibCheck(name,sib){
+  return sib.map(sb=>{
+    const pts=[];let score=0;
+    const shared=[...name].filter(c=>sb.includes(c));
+    if(shared.length===2){pts.push('이름이 형제와 같아요');score-=3}
+    else if(shared.length===1){const pos=name.indexOf(shared[0])===sb.indexOf(shared[0]);pts.push(pos?`‘${shared[0]}’ 자가 같은 자리에 있어 돌림자처럼 보여요`:`‘${shared[0]}’ 자를 함께 써요`);score+=pos?2:1}
+    const c1=[...name].map(c=>dec(c).cho).join(),c2=[...sb].map(c=>dec(c).cho).join();
+    if(c1===c2&&shared.length<2){pts.push('초성이 똑같아 부를 때 헷갈릴 수 있어요');score-=2}
+    const j1=[...name].map(c=>jong(c)?1:0).join(),j2=[...sb].map(c=>jong(c)?1:0).join();
+    if(j1===j2){pts.push('받침 리듬이 같아 형제처럼 들려요');score+=1}
+    const r=rel(soundEl(name[0]),soundEl(sb[0]));
+    if(r==='생'||r==='역생'){pts.push('첫소리 기운이 서로 살려줘요');score+=1}else if(r==='극'){pts.push('첫소리 기운이 부딪혀요');score-=1}
+    return {sb,pts,label:score>=2?'잘 어울려요':score>=0?'무난해요':'다시 생각해 볼 만해요'};
+  });
+}
+let koVoice=null;
+function speak(text){
+  if(!('speechSynthesis' in window)){toast('이 브라우저는 음성 듣기를 지원하지 않아요');return}
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);u.lang='ko-KR';u.rate=.85;
+  koVoice=koVoice||speechSynthesis.getVoices().find(v=>v.lang&&v.lang.startsWith('ko'));
+  if(koVoice)u.voice=koVoice;
+  speechSynthesis.speak(u);
+}
+function speakName(e){const full=e.sur.r+e.name,call=e.name+josa(e.name,'아','야');speak(`${full}. ${call}!`)}
+
+/* ================= 렌더: 공통 ================= */
+let step=1;
+function go(n){
+  if((n===2||n===3)&&!S.saju){toast('먼저 기본 정보를 입력해 주세요');n=1}
+  if(n===3&&!S.filters)applyPrefs();
+  step=n;
+  document.querySelectorAll('.step').forEach((s,i)=>s.classList.toggle('on',i+1===n));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',+t.dataset.go===n));
+  if(n===2)renderStep2();
+  if(n===3)renderStep3();
+  if(n===4)renderStep4();
+  if(n===5)renderReviews();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function renderSavedN(){const n=S.saved.length,el=$('#savedN');el.hidden=!n;el.textContent=n}
+const isSaved=e=>S.saved.some(s=>s.n===e.name&&s.h===e.chars[0].h+e.chars[1].h);
+function toggleSave(e){
+  const h=e.chars[0].h+e.chars[1].h,i=S.saved.findIndex(s=>s.n===e.name&&s.h===h);
+  if(i>=0){S.saved.splice(i,1);toast('보관함에서 뺐어요')}else{S.saved.push({n:e.name,h});toast(`${e.sur.r}${e.name}을(를) 보관함에 담았어요`)}
+  save();renderSavedN();
+  document.querySelectorAll(`[data-save="${CSS.escape(e.key)}"]`).forEach(b=>b.innerHTML=heart(e));
+  if(step===4)renderStep4();
+}
+const heart=e=>isSaved(e)?'<span class="heart">♥</span> 담김':'♡ 담기';
+function savedEval(s,ctx){const x=findHJ(s.n[0],s.h[0]),y=findHJ(s.n[1],s.h[1]);return x&&y?evalCombo([x,y],ctx):null}
+
+/* ================= STEP 1 ================= */
+let gender='m';
+function fillSurSelect(){
+  const r=$('#fSur').value.trim(),sel=$('#fSurH'),opts=SURS.filter(s=>s.r===r);
+  sel.innerHTML=opts.length?opts.map((s,i)=>`<option value="${i}">${s.h} (${s.s}획 · ${EL[s.o]})</option>`).join('')+'<option value="manual">목록에 없음 (직접 입력)</option>':r?'<option value="manual">목록에 없음 (직접 입력)</option>':'<option value="">성씨를 먼저 입력</option>';
+  $('#manualSur').hidden=sel.value!=='manual';
+}
+function renderSaju(){
+  const sj=S.saju,box=$('#sajuBox');if(!sj){box.innerHTML='';return}
+  const max=Math.max(...sj.cnt,1);
+  const col=p=>p.s==null?`<div class="pillar"><div class="pl">${p.k}</div><div class="gz unk">?<small>모름</small></div><div class="gz unk">?<small>모름</small></div></div>`
+    :`<div class="pillar"><div class="pl">${p.k}</div><div class="gz e${Math.floor(p.s/2)}">${STEMS[p.s]}<small>${STEMS_K[p.s]} · ${EL[Math.floor(p.s/2)]}</small></div><div class="gz e${BR_EL[p.b]}">${BR[p.b]}<small>${BR_K[p.b]} · ${EL[BR_EL[p.b]]}</small></div></div>`;
+  const st={강:'신강 (기운이 강한 편)',약:'신약 (기운이 약한 편)',중:'중화 (균형 잡힌 편)'}[sj.strength];
+  box.innerHTML=`<div class="card" style="margin-top:16px">
+    <div class="sec-h" style="margin:0"><h3>${esc(S.info.surname.r)}씨 아이의 사주팔자</h3><span class="pill e${BR_EL[sj.yB]}">${ANIMAL[sj.yB]}띠</span></div>
+    <div class="pillars">${sj.P.map(col).join('')}</div>
+    <div class="bars">${sj.cnt.map((c,i)=>`<div class="bar"><span class="tc${i}"><b>${EL[i]}</b> ${ELH[i]}</span><div class="trk"><div class="fil" style="width:${c/max*100}%;background:var(--e${i})"></div></div><b>${c}</b></div>`).join('')}</div>
+    <div class="keyfacts">
+      <div class="kf"><div class="k">나를 뜻하는 글자 (일간)</div><div class="v tc${sj.dEl}">${STEMS[sj.dS]} ${EL[sj.dEl]}</div><p>${DAY_DESC[sj.dS]} 같은 성품이에요. ${st}.</p></div>
+      <div class="kf"><div class="k">이름에 담으면 좋은 기운 (용신)</div><div class="v tc${sj.yong}">${EL[sj.yong]} ${ELH[sj.yong]}</div><p>${ELN[sj.yong]}의 기운이 균형을 잡아줘요. 함께 좋은 기운: <b class="tc${sj.hee}">${EL[sj.hee]}</b></p></div>
+      <div class="kf"><div class="k">${sj.lack.length?'사주에 없는 기운':'피하면 좋은 기운'}</div><div class="v">${sj.lack.length?sj.lack.map(i=>`<span class="tc${i}">${EL[i]}</span>`).join(' · '):`<span class="tc${sj.gi}">${EL[sj.gi]} ${ELH[sj.gi]}</span>`}</div><p>${sj.lack.length?'이름 한자로 보완하면 좋아요.':'용신을 누르는 기운이라 이름에서는 줄이는 게 좋아요.'}</p></div>
+    </div>
+    ${sj.hasTime?'':'<p class="hint" style="margin:10px 0 0">태어난 시각을 모르면 시주를 빼고 여섯 글자로 분석해요.</p>'}
+    <button class="btn pri block" style="margin-top:14px" data-go="2">다음: 작명 방향 정하기 →</button>
+  </div>`;
+}
+
+/* ================= STEP 2 ================= */
+function buildDeck(){const p=[...pool(false)];for(let i=p.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[p[i],p[j]]=[p[j],p[i]]}return p.slice(0,8)}
+function renderTaste(){
+  const T=S.taste,box=$('#tasteBox');
+  if(!T.deck.length)T.deck=buildDeck();
+  if(T.done||T.idx>=T.deck.length){
+    T.done=true;
+    const top=o=>Object.entries(o).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1]).map(([k])=>k).slice(0,6);
+    const L=top(T.liked),D=top(T.disliked);
+    box.innerHTML=`<div class="taste"><p style="margin:10px 0 4px">취향 분석 완료!</p>
+      <p class="hint">좋아한 글자: <b style="color:var(--good)">${L.join(', ')||'없음'}</b><br>덜 끌린 글자: <b style="color:var(--accent)">${D.join(', ')||'없음'}</b></p>
+      <p class="hint">추천 점수 중 ‘취향’ 항목(10점)에 반영돼요.</p>
+      <button class="btn sm" id="tasteReset">다시 해보기</button></div>`;
+    return;
+  }
+  const nm=T.deck[T.idx];
+  box.innerHTML=`<div class="taste">
+    <p class="hint" style="margin:6px 0 0">이 이름, 어떠세요? 느낌대로 골라주세요.</p>
+    <div class="tcard"><div class="tname">${esc(S.info.surname.r)}${nm}</div><div class="tsub">${esc(pronounce(S.info.surname.r+nm))!==S.info.surname.r+nm?`[${pronounce(S.info.surname.r+nm)}]로 소리나요`:'&nbsp;'}</div></div>
+    <div class="tbtns"><button class="btn" data-taste="-1">별로예요</button><button class="btn ghost" data-taste="0">모르겠어요</button><button class="btn pri" data-taste="1">좋아요</button></div>
+    <div class="prog"><i style="width:${T.idx/T.deck.length*100}%"></i></div>
+    <p class="hint">${T.idx+1} / ${T.deck.length} · <a href="#" id="tasteSkip">건너뛰기</a></p></div>`;
+}
+function tasteVote(v){
+  const T=S.taste,nm=T.deck[T.idx];
+  if(v>0)[...nm].forEach(c=>T.liked[c]=(T.liked[c]||0)+1);
+  if(v<0)[...nm].forEach(c=>T.disliked[c]=(T.disliked[c]||0)+1);
+  T.idx++;save();renderTaste();
+}
+function renderStep2(){
+  renderTaste();
+  const P=S.prefs;
+  $('#moodChips').innerHTML=MOODS.map(([k,l])=>`<button type="button" class="chip${P.moods.includes(k)?' on':''}" data-mood="${k}">${l}</button>`).join('');
+  $('#pDolPos').value=P.dolPos;$('#pDol').value=P.dol;$('#pEx').value=P.ex;$('#pFinal').value=P.fin;$('#pSib').value=P.sib;
+}
+function readPrefs(){
+  const P=S.prefs;
+  P.dolPos=$('#pDolPos').value;P.dol=($('#pDol').value.trim().match(/[가-힣]/)||[''])[0];P.ex=$('#pEx').value;P.fin=$('#pFinal').value;P.sib=$('#pSib').value;
+  save();
+}
+function applyPrefs(){
+  const P=S.prefs;
+  S.filters={moods:[...P.moods],include:[],exclude:(P.ex.match(/[가-힣]/g)||[]),first:P.dolPos==='first'?P.dol:'',last:P.dolPos==='last'?P.dol:'',fin:P.fin,neutral:false,low:false,el:null,allGood:false,tease:true};
+}
+
+/* ================= STEP 3: 대화 + 결과 ================= */
+const PER=9;
+function refresh(){S.results=candidates();S.page=1;renderResults()}
+function renderResults(){
+  const R=S.results,grid=$('#resGrid'),f=S.filters;
+  $('#resLead').textContent=R.length?`조건에 맞는 이름 ${R.length}개 · 점수 높은 순`:'';
+  const chips=[];
+  f.moods.forEach(m=>chips.push(['mood:'+m,MOOD_L[m]]));
+  f.include.forEach(c=>chips.push(['inc:'+c,`‘${c}’ 포함`]));
+  f.exclude.forEach(c=>chips.push(['exc:'+c,`‘${c}’ 제외`]));
+  if(f.first)chips.push(['first',`첫 글자 ‘${f.first}’`]);
+  if(f.last)chips.push(['last',`끝 글자 ‘${f.last}’`]);
+  if(f.fin)chips.push(['fin',f.fin==='none'?'받침 없음':'부드러운 받침']);
+  if(f.neutral)chips.push(['neutral','중성적']);
+  if(f.low)chips.push(['low','쉬운 한자']);
+  if(f.el!=null)chips.push(['el',`${EL[f.el]}(${ELH[f.el]}) 기운`]);
+  if(f.allGood)chips.push(['allGood','4격 모두 길']);
+  $('#fltBox').innerHTML=chips.length?`<span class="lbl">현재 조건</span>`+chips.map(([k,l])=>`<button class="chip x" data-unf="${k}">${esc(l)}</button>`).join(''):'';
+  if(!R.length){grid.innerHTML=`<div class="empty" style="grid-column:1/-1">조건에 맞는 이름이 없어요.<br>조건 칩을 눌러 하나씩 풀어 보세요.</div>`;$('#moreBtn').hidden=true;return}
+  grid.innerHTML=R.slice(0,S.page*PER).map(card).join('');
+  $('#moreBtn').hidden=R.length<=S.page*PER;
+}
+function card(e){
+  const [x,y]=e.chars,sj=e.ctx.saju,tags=[];
+  const gc=e.gy.filter(g=>g.good).length;
+  tags.push(`<span class="tag ${gc===4?'g':gc<=2?'r':''}">4격 ${gc}/4 길</span>`);
+  if(sj){const ys=e.chars.filter(c=>c.o===sj.yong).length;if(ys)tags.push(`<span class="tag g">용신 ${EL[sj.yong]} 보완</span>`)}
+  tags.push(`<span class="tag ${e.sc.sound>=16?'g':e.sc.sound<10?'r':''}">발음 ${e.pr.every(r=>r!=='극')?'상생':'일부 상극'}</span>`);
+  if(e.synth)tags.push('<span class="tag">새 조합</span>');
+  return `<div class="ncard" data-open="${esc(e.key)}">
+    <div class="ntop"><div><div class="nk">${esc(e.sur.r)}${e.name}</div><div class="nh">${e.sur.h}${x.h}${y.h}</div></div><div class="score" style="--p:${e.total}"><span>${e.total}</span></div></div>
+    <div class="nm">${x.m} ${x.r} · ${y.m} ${y.r}</div>
+    <div class="tags">${tags.join('')}</div>
+    <div class="nact"><button class="btn sm" data-speak="${esc(e.key)}">🔊 듣기</button><button class="btn sm" data-save="${esc(e.key)}">${heart(e)}</button></div>
+  </div>`;
+}
+function renderStep3(){
+  if(!S.results.length)refresh();else renderResults();
+  if(!S.chat.length){
+    const sj=S.saju;
+    const top=S.results.slice(0,3).map(e=>`<b>${e.name}</b>`).join(', ');
+    botSay(`${esc(S.info.surname.r)}씨 아이 사주를 보니 <b class="tc${sj.yong}">${EL[sj.yong]}(${ELH[sj.yong]})</b> 기운을 이름에 담으면 좋아요. 그 기운과 취향을 반영해 골라봤어요. 지금은 ${top}이 가장 높아요.<br><br>원하는 느낌이나 조건을 편하게 말씀해 주세요.`);
+  }
+  renderChat();
+  $('#sugg').innerHTML=['밝고 부드러운 느낌','받침 없는 이름','‘준’ 자 들어간 이름','물 기운 있는 이름','4격 모두 좋은 것만','쉬운 한자로','중성적인 이름','서윤 어때?','더 보여줘','처음부터'].map(t=>`<button class="chip" data-say="${t}">${t}</button>`).join('');
+}
+function botSay(html){S.chat.push({who:'bot',html})}
+function renderChat(){const m=$('#msgs');m.innerHTML=S.chat.map(c=>`<div class="msg ${c.who}">${c.who==='me'?esc(c.text):c.html}</div>`).join('');m.scrollTop=m.scrollHeight}
+
+const MOOD_RX=[['밝',/밝|빛|환하|햇/],['지',/지혜|똑똑|총명|슬기|영리|공부/],['덕',/착하|착한|덕|어질|따뜻|다정|예의/],['큼',/큰 |크게|넓|리더|원대|큰사람|대범/],['미',/예쁜|예쁘|아름|고운|곱게|우아|부드/],['자',/자연|맑|숲|바다|시냇|강물|하늘/],['강',/강한|강인|씩씩|튼튼|당당|굳세|용감/],['복',/복|행복|부유|풍요|넉넉|재물/]];
+const EL_RX=[[0,/(나무|목)\s*(기운|오행|성분)/],[1,/(불|화)\s*(기운|오행|성분)/],[2,/(흙|토)\s*(기운|오행|성분)/],[3,/(쇠|금)\s*(기운|오행|성분)/],[4,/(물|수)\s*(기운|오행|성분)/]];
+function handleChat(text){
+  S.chat.push({who:'me',text});
+  const f=S.filters,done=[];
+  let t=text.replace(/\s+/g,' ');
+
+  // 특정 이름 분석
+  const nm=t.match(/([가-힣]{2})\s*(?:은|는|이|가)?\s*(?:어때|어떄|어떤|분석|풀이|봐줘)/);
+  if(nm&&!/이름|느낌|기운|받침|한자|사주|조건|글자/.test(nm[1])){
+    const n=nm[1];
+    if(HJ[n[0]]&&HJ[n[1]]){
+      const combos=[];for(const x of HJ[n[0]])for(const y of HJ[n[1]])if(x.h!==y.h)combos.push(evalCombo([x,y]));
+      combos.sort((a,b)=>b.total-a.total);
+      const e=combos[0];
+      botSay(`<b>${esc(S.info.surname.r)}${n}</b>은(는) 한자 ${combos.length}가지 조합이 가능해요. 가장 좋은 건 <b>${e.sur.h}${e.chars[0].h}${e.chars[1].h}</b> (${e.chars[0].m} ${e.chars[0].r} · ${e.chars[1].m} ${e.chars[1].r}) <b>${e.total}점</b>이에요.<br>${verdict(e)}<br><button class="btn sm mini" data-open="${esc(e.key)}">자세히 보기</button><button class="btn sm mini" data-save="${esc(e.key)}">${heart(e)}</button>`);
+    }else{
+      const miss=[...n].filter(c=>!HJ[c]);
+      botSay(`아쉽지만 ‘${esc(miss.join(', '))}’ 자는 아직 한자 사전에 없어서 분석할 수 없어요.`);
+    }
+    renderChat();return;
+  }
+  if(/처음|초기화|리셋|다시 시작/.test(t)){applyPrefs();refresh();botSay('조건을 작명 방향 단계에서 정한 상태로 되돌렸어요.');renderChat();return}
+
+  // 글자 지정: '준' / 준 자 / 준자
+  const tokRx=/['"‘’“”]([가-힣])['"‘’“”]|([가-힣])\s?(?:자|글자)(?=\s|가|를|는|은|이|로|$)/g;
+  let m;
+  while((m=tokRx.exec(t))){
+    const c=m[1]||m[2],after=t.slice(tokRx.lastIndex,tokRx.lastIndex+10);
+    if(m[2]&&'남여한글숫문'.includes(c))continue; // 남자·여자·한자·글자 등 일반 단어
+    if(/빼|제외|싫|말고|없|안 ?들/.test(after)){f.exclude=[...new Set([...f.exclude,c])];f.include=f.include.filter(x=>x!==c);done.push(`‘${c}’ 자를 뺐어요`)}
+    else if(/시작|앞|첫/.test(after)){f.first=c;done.push(`첫 글자를 ‘${c}’로 고정했어요`)}
+    else if(/끝|뒤|마지막/.test(after)){f.last=c;done.push(`끝 글자를 ‘${c}’로 고정했어요`)}
+    else{if(!HJ[c]){done.push(`‘${c}’ 자는 한자 사전에 없어 넣지 못했어요`);continue}f.include=[...new Set([...f.include,c])];f.exclude=f.exclude.filter(x=>x!==c);done.push(`‘${c}’ 자가 들어간 이름을 찾았어요`)}
+  }
+  const st=t.match(/([가-힣])(?:으로|로) ?시작/);if(st&&!done.length){f.first=st[1];done.push(`첫 글자를 ‘${st[1]}’로 고정했어요`)}
+  const en=t.match(/([가-힣])(?:으로|로) ?끝/);if(en&&!done.length){f.last=en[1];done.push(`끝 글자를 ‘${en[1]}’로 고정했어요`)}
+  const dol=t.match(/돌림자\s*(?:는|은|가|이)?\s*['"‘’]?([가-힣])/);if(dol&&!/없/.test(t)){/뒤|끝/.test(t)?f.last=dol[1]:f.first=dol[1];done.push(`돌림자 ‘${dol[1]}’를 반영했어요`)}
+  if(/돌림자\s*(?:없|빼|안)/.test(t)){f.first='';f.last='';done.push('돌림자를 풀었어요')}
+
+  // 오행
+  for(const [i,rx] of EL_RX)if(rx.test(t)){f.el=i;done.push(`${EL[i]}(${ELH[i]}) 기운 한자를 꼭 넣었어요`)}
+  if(/용신/.test(t)){f.el=S.saju.yong;done.push(`용신인 ${EL[S.saju.yong]} 기운 한자를 꼭 넣었어요`)}
+  // 받침
+  if(/받침\s*(?:없|안\s*들|빼)/.test(t)){f.fin='none';done.push('받침 없는 이름만 골랐어요')}
+  else if(/받침\s*(?:상관|있어도|괜찮)/.test(t)){f.fin='';done.push('받침 조건을 풀었어요')}
+  else if(/부드러|순한|말랑/.test(t)&&f.fin!=='none'){f.fin='soft';done.push('부드러운 받침(ㄴ·ㄹ·ㅁ·ㅇ)만 남겼어요')}
+  // 기타
+  if(/중성|남녀 ?(공용|구분)|성별 ?없/.test(t)){f.neutral=!/말고|빼|아닌/.test(t);done.push(f.neutral?'남녀 모두 쓰는 이름으로 바꿨어요':'중성 조건을 풀었어요')}
+  if(/쉬운 ?한자|획수 ?(적|낮)|간단한 ?한자/.test(t)){f.low=true;done.push('획수 12획 이하 쉬운 한자만 골랐어요')}
+  if(/4격|사격|수리|획수 ?좋/.test(t)){f.allGood=true;done.push('수리 4격이 모두 길한 이름만 남겼어요')}
+  // 느낌
+  const moods=MOOD_RX.filter(([,rx])=>rx.test(t)).map(([k])=>k);
+  if(moods.length){
+    if(/말고|빼|싫|아닌/.test(t)){f.moods=f.moods.filter(x=>!moods.includes(x));done.push(`${moods.map(k=>MOOD_L[k]).join(', ')} 느낌을 뺐어요`)}
+    else{f.moods=[...new Set([...f.moods,...moods])];done.push(`${moods.map(k=>MOOD_L[k]).join(', ')} 느낌을 높게 쳤어요`)}
+  }
+  const more=/더 ?(보여|줘|추천)|다른|또/.test(t)&&!done.length;
+
+  if(!done.length&&!more){
+    botSay('제가 알아들을 수 있게 조금만 바꿔 말씀해 주시겠어요? 이런 말을 이해해요:<br>· “밝고 씩씩한 느낌” · “‘서’ 자 들어간 이름” · “‘민’ 자는 빼줘”<br>· “받침 없는 이름” · “물 기운 있는 이름” · “쉬운 한자로”<br>· “4격 모두 좋은 것만” · “하윤 어때?” · “처음부터”');
+    renderChat();return;
+  }
+  if(more){S.page++;renderResults();const shown=S.results.slice((S.page-1)*PER,S.page*PER);botSay(shown.length?`다른 후보예요: ${shown.slice(0,5).map(e=>`<b>${e.name}</b>(${e.total}점)`).join(', ')}`:'더 보여드릴 이름이 없어요. 조건을 조금 풀어보면 어떨까요?');renderChat();return}
+
+  // 느낌은 점수에 반영되므로 재평가
+  CACHE.clear();refresh();
+  const R=S.results;
+  botSay(`${done.join('. ')}.<br>${R.length?`${R.length}개가 남았고, 위에서부터 ${R.slice(0,3).map(e=>`<b>${e.name}</b>(${e.total}점)`).join(', ')}이에요.`:'이 조건에 맞는 이름이 없어요. 오른쪽 조건 칩을 눌러 하나씩 풀어 보세요.'}`);
+  renderChat();
+}
+function removeFilter(k){
+  const f=S.filters,[a,b]=k.split(':');
+  if(a==='mood')f.moods=f.moods.filter(x=>x!==b);
+  else if(a==='inc')f.include=f.include.filter(x=>x!==b);
+  else if(a==='exc')f.exclude=f.exclude.filter(x=>x!==b);
+  else if(a==='first')f.first='';else if(a==='last')f.last='';else if(a==='fin')f.fin='';
+  else if(a==='neutral')f.neutral=false;else if(a==='low')f.low=false;else if(a==='el')f.el=null;else if(a==='allGood')f.allGood=false;
+  CACHE.clear();refresh();
+}
+
+/* ================= 상세 모달 ================= */
+function openDetail(key){
+  const e=CACHE.get(key);if(!e)return;
+  const [x,y]=e.chars,sj=e.ctx.saju,sur=e.sur,full=sur.r+e.name;
+  const pron=pronounce(full),call=e.name+josa(e.name,'아','야'),callP=pronounce(call);
+  const rom=romanize(sur.r,e.name),enc=englishCheck(rom),tz=teaseCheck(full),cm=commonness(e.name);
+  const sib=e.ctx.sib&&e.ctx.sib.length?sibCheck(e.name,e.ctx.sib):[];
+  const hjBox=(c,lbl,o)=>`<div class="hj"><div class="hint">${lbl}</div><div class="c">${c.h}</div><div class="m">${c.m||''} ${c.r}</div><div class="s">${c.s}획 · 자원오행 <b class="tc${o}">${EL[o]}</b><br>발음오행 <b class="tc${soundEl(c.r)}">${EL[soundEl(c.r)]}</b></div></div>`;
+  const elRole=o=>!sj?'':o===sj.yong?'<span class="tag g">용신</span>':o===sj.hee?'<span class="tag g">희신</span>':sj.lack.includes(o)?'<span class="tag g">부족 보완</span>':o===sj.gi?'<span class="tag r">기신</span>':'<span class="tag">보통</span>';
+  $('#modal').innerHTML=`<button class="xbtn" data-close aria-label="닫기">×</button>
+    <div class="mhead">
+      <div><div class="big">${sur.h}${x.h}${y.h}</div><div class="bigk">${esc(full)}</div></div>
+      <div class="score" style="--p:${e.total};width:72px;height:72px;font-size:24px"><span>${e.total}</span></div>
+    </div>
+    <div class="verdict">${verdict(e)}</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn sm" data-speak="${esc(e.key)}">🔊 이름 듣기</button>
+      <button class="btn sm" data-save="${esc(e.key)}">${heart(e)}</button>
+      <button class="btn sm dark" data-cert="${esc(e.key)}">이름 증서 이미지 저장</button>
+    </div>
+
+    <div class="msec"><h3>한자 풀이</h3><p class="ex">원획법(부수를 본래 글자 획수로 세는 방식) 기준이에요.</p>
+      <div class="hj3">${hjBox({...sur,m:'성'},'성',sur.o)}${hjBox(x,'이름 첫 글자',x.o)}${hjBox(y,'이름 끝 글자',y.o)}</div></div>
+
+    <div class="msec"><h3>수리 4격 <span class="pts">${e.sc.suri} / 40점</span></h3><p class="ex">한자 획수를 더해 인생 시기별 운을 봐요. 81수리에서 길한 수면 ○예요.</p>
+      <div class="gy4">${e.gy.map(g=>`<div class="gy ${g.good?'ok':'no'}"><div class="k">${g.k}</div><div class="n">${g.v}</div><div class="k">${g.sub}</div><b style="color:${g.good?'var(--good)':'var(--bad)'}">${g.good?'○ 길':'× 흉'}</b></div>`).join('')}</div></div>
+
+    <div class="msec"><h3>발음오행 <span class="pts">${e.sc.sound} / 20점</span></h3><p class="ex">소리의 첫 자음이 가진 기운이에요. 성 → 이름으로 서로 살려주는(상생) 흐름이면 좋아요.</p>
+      <div class="flowx">${[sur.r,x.r,y.r].map((c,i)=>`<span class="pill e${e.pe[i]}" style="font-size:15px;padding:6px 12px">${c} · ${EL[e.pe[i]]}</span>${i<2?`<span class="arr">→<br>${relTxt[e.pr[i]]}</span>`:''}`).join('')}</div></div>
+
+    <div class="msec"><h3>음양 조화 <span class="pts">${e.sc.yy} / 10점</span></h3><p class="ex">획수가 홀수면 양(●), 짝수면 음(○). 세 글자가 섞여 있어야 조화로워요.</p>
+      <div class="yy">${e.yy.map(v=>`<i class="${v?'y':''}"></i>`).join('')}<span>${e.yyGood?'음과 양이 고루 섞여 있어요':'한쪽으로 쏠려 있어요'}</span></div></div>
+
+    <div class="msec"><h3>자원오행 · 용신 <span class="pts">${sj?e.sc.el+' / 20점':'사주 정보 없음'}</span></h3><p class="ex">한자 자체가 가진 기운이에요. 사주에 필요한 기운(용신)을 담으면 좋아요.</p>
+      ${sj?`<div class="flowx"><span>${x.h} <b class="tc${x.o}">${EL[x.o]}</b> ${elRole(x.o)}</span><span style="margin:0 10px;color:var(--line)">|</span><span>${y.h} <b class="tc${y.o}">${EL[y.o]}</b> ${elRole(y.o)}</span></div><p class="hint">이 아이의 용신은 <b class="tc${sj.yong}">${EL[sj.yong]}</b>, 희신은 <b class="tc${sj.hee}">${EL[sj.hee]}</b>, 기신은 <b class="tc${sj.gi}">${EL[sj.gi]}</b>이에요.</p>`:'<p class="hint">생년월일을 넣으면 용신 점수가 계산돼요.</p>'}</div>
+
+    <div class="msec"><h3>부르기 · 생활 체크 <span class="pts">이름결 전용</span></h3>
+      <div class="xtra">
+        <div class="xb"><div class="t">실제 소리</div>${pron!==full?`<b>[${pron}]</b>로 소리나요.`:`적힌 그대로 <b>[${full}]</b>로 소리나요.`}<br>부를 때: <b>${call}~</b>${callP!==call?` [${callP}]`:''}</div>
+        <div class="xb"><div class="t">놀림 단어 체크</div>${tz.length?`<span style="color:var(--bad)">‘${tz.join(', ')}’처럼 들릴 수 있어요.</span>`:'놀림받을 만한 단어와 겹치지 않아요 ✓'}</div>
+        <div class="xb"><div class="t">영문 표기</div><b>${rom.full}</b><br><span class="hint">여권식 표기 예: ${rom.sur.toUpperCase()} ${rom.hyphen.toUpperCase()}</span><br>${enc.ok?'해외에서도 읽기 쉬운 편이에요 ✓':enc.notes.map(esc).join('<br>')}</div>
+        <div class="xb"><div class="t">흔한 정도</div><b>${cm[0]}</b><br>${cm[1]}<br><span class="hint">이름결 이름 목록 기준 추정</span></div>
+        ${sib.map(s=>`<div class="xb" style="grid-column:1/-1"><div class="t">형제 ‘${esc(s.sb)}’와 어울림 · ${s.label}</div>${s.pts.length?s.pts.map(esc).join(' · '):'특별히 겹치거나 부딪히는 점이 없어요'}</div>`).join('')}
+      </div></div>
+
+    ${e.alts&&e.alts.length?`<div class="msec"><h3>같은 이름, 다른 한자</h3><div class="alts">${e.alts.map(a=>`<button class="btn sm" data-open="${esc(a.key)}">${a.chars[0].h}${a.chars[1].h} · ${a.chars[0].m} ${a.chars[1].m} · ${a.total}점</button>`).join('')}</div></div>`:''}
+  `;
+  // 다른 한자 클릭 시에도 대안 목록 유지
+  e.alts&&e.alts.forEach(a=>{if(!a.alts)a.alts=[e,...e.alts.filter(z=>z!==a)]});
+  $('#ov').classList.add('on');$('#ov').scrollTop=0;
+}
+function closeModal(){$('#ov').classList.remove('on')}
+
+/* ================= 이름 증서 이미지 ================= */
+async function makeCert(e){
+  try{await document.fonts.ready}catch(_){}
+  const W=1080,H=1350,c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d');
+  g.fillStyle='#f7f0e2';g.fillRect(0,0,W,H);
+  g.strokeStyle='#b5442f';g.lineWidth=6;g.strokeRect(50,50,W-100,H-100);g.lineWidth=2;g.strokeRect(68,68,W-136,H-136);
+  g.textAlign='center';g.fillStyle='#857869';g.font='500 34px "Noto Serif KR",serif';g.fillText('이 름 풀 이',W/2,170);
+  g.fillStyle='#2a2421';g.font='900 190px "Noto Serif KR",serif';g.fillText(e.sur.h+e.chars[0].h+e.chars[1].h,W/2,420);
+  g.font='700 64px "Noto Serif KR",serif';g.fillText([...(e.sur.r+e.name)].join('  '),W/2,530);
+  g.fillStyle='#4a413b';g.font='500 36px "Noto Sans KR",sans-serif';
+  g.fillText(`${e.chars[0].h} ${e.chars[0].m} ${e.chars[0].r}  ·  ${e.chars[1].h} ${e.chars[1].m} ${e.chars[1].r}`,W/2,620);
+  g.strokeStyle='#e5d9c5';g.beginPath();g.moveTo(180,680);g.lineTo(W-180,680);g.stroke();
+  g.font='500 30px "Noto Sans KR",sans-serif';g.fillStyle='#4a413b';
+  const lines=[`수리 4격  ${e.gy.map(x=>`${x.k} ${x.v}${x.good?'○':'×'}`).join('   ')}`,`발음오행  ${e.pe.map(i=>EL[i]).join(' → ')}`,`자원오행  ${ELH[e.chars[0].o]} · ${ELH[e.chars[1].o]}${e.ctx.saju?`   (용신 ${ELH[e.ctx.saju.yong]})`:''}`,`영문 표기  ${romanize(e.sur.r,e.name).full}`];
+  lines.forEach((l,i)=>g.fillText(l,W/2,760+i*62));
+  g.fillStyle='#b5442f';g.font='900 120px "Noto Serif KR",serif';g.fillText(e.total,W/2,1110);
+  g.font='500 28px "Noto Sans KR",sans-serif';g.fillText('종합 점수',W/2,1155);
+  if(S.info&&S.info.date){g.fillStyle='#857869';g.font='500 26px "Noto Sans KR",sans-serif';g.fillText(`${S.info.date.replace(/-/g,'. ')} 생`,W/2,1210)}
+  g.fillStyle='#b5442f';g.fillRect(W-200,H-200,90,90);g.fillStyle='#fff';g.font='900 54px "Noto Serif KR",serif';g.fillText('結',W-155,H-136);
+  const url=c.toDataURL('image/png'),fn=`이름풀이_${e.sur.r}${e.name}.png`;
+  $('#modal').innerHTML=`<button class="xbtn" data-close aria-label="닫기">×</button>
+    <h3>${esc(e.sur.r+e.name)} 이름 증서</h3>
+    <img class="certimg" src="${url}" alt="${esc(e.sur.r+e.name)} 이름 증서">
+    <p class="hint">휴대폰에서는 이미지를 길게 눌러 사진에 저장하세요. PC에서는 마우스 오른쪽 버튼으로 저장할 수 있어요.</p>
+    <a class="btn pri local-only" href="${url}" download="${esc(fn)}">PNG 파일로 받기</a>`;
+  $('#ov').classList.add('on');$('#ov').scrollTop=0;
+}
+
+/* ================= STEP 4 ================= */
+function cmpTable(items,{final=true}={}){
+  if(!items.length)return '';
+  const best=Math.max(...items.map(e=>e.total));
+  const sj=items[0].ctx.saju;
+  const row=(lbl,fn)=>`<tr><td>${lbl}</td>${items.map(e=>`<td class="${S.final===e.key&&final?'final':''}">${fn(e)}</td>`).join('')}</tr>`;
+  return `<div class="cmpwrap"><table class="cmp">
+    <thead><tr><th></th>${items.map(e=>`<th class="${S.final===e.key&&final?'final':''}">${esc(e.sur.r)}${e.name}<div class="nh" style="font-size:14px">${e.sur.h}${e.chars[0].h}${e.chars[1].h}</div></th>`).join('')}</tr></thead>
+    <tbody>
+    ${row('종합 점수',e=>`<span class="${e.total===best?'best':''}" style="padding:2px 8px;border-radius:6px">${e.total}점</span>`)}
+    ${row('뜻',e=>`${e.chars[0].m} ${e.chars[0].r}<br>${e.chars[1].m} ${e.chars[1].r}`)}
+    ${row('획수',e=>`${e.sur.s} · ${e.chars[0].s} · ${e.chars[1].s}`)}
+    ${row('수리 4격',e=>e.gy.map(g=>`<span style="color:${g.good?'var(--good)':'var(--bad)'}" title="${g.k} ${g.v}">${g.good?'○':'×'}</span>`).join(' ')+` <span class="hint">(${e.sc.suri})</span>`)}
+    ${row('발음오행',e=>e.pe.map(i=>`<b class="tc${i}">${EL[i]}</b>`).join('→')+` <span class="hint">(${e.sc.sound})</span>`)}
+    ${row('자원오행',e=>e.chars.map(c=>`<b class="tc${c.o}">${EL[c.o]}</b>`).join(' · ')+(sj?` <span class="hint">(${e.sc.el})</span>`:''))}
+    ${row('음양',e=>e.yy.map(v=>v?'●':'○').join('')+` <span class="hint">(${e.sc.yy})</span>`)}
+    ${row('실제 소리',e=>`[${pronounce(e.sur.r+e.name)}]`)}
+    ${row('영문',e=>romanize(e.sur.r,e.name).full)}
+    ${row('흔한 정도',e=>commonness(e.name)[0])}
+    ${row('',e=>`<div style="display:flex;gap:4px;justify-content:center;flex-wrap:wrap"><button class="btn sm" data-open="${esc(e.key)}">상세</button><button class="btn sm" data-speak="${esc(e.key)}">🔊</button>${final?`<button class="btn sm" data-final="${esc(e.key)}">${S.final===e.key?'★ 최종':'☆'}</button><button class="btn sm ghost" data-save="${esc(e.key)}">삭제</button>`:''}</div>`)}
+    </tbody></table></div>`;
+}
+function renderStep4(){
+  const box=$('#cmpBox');
+  if(!S.info||!S.saved.length){box.innerHTML=`<div class="card empty">아직 담은 이름이 없어요.<br>추천 목록에서 ♡를 눌러 담아 보세요.<br><br><button class="btn pri" data-go="${S.info?3:1}">이름 추천 보러 가기</button></div>`}
+  else{
+    const items=S.saved.map(s=>savedEval(s)).filter(Boolean);
+    const fin=items.find(e=>e.key===S.final);
+    box.innerHTML=(fin?`<div class="card" style="margin-bottom:16px;border-color:var(--accent)"><div class="sec-h" style="margin:0"><div><span class="hint">최종 선택한 이름</span><div class="nk" style="font-size:32px">${esc(fin.sur.r)}${fin.name} <span class="nh">${fin.sur.h}${fin.chars[0].h}${fin.chars[1].h}</span></div></div><button class="btn dark" data-cert="${esc(fin.key)}">이름 증서 저장</button></div></div>`:'')+cmpTable(items);
+  }
+  renderShared();
+}
+function shareLink(){
+  if(!S.info||!S.saved.length){toast('보관함에 이름을 먼저 담아 주세요');return}
+  const d={s:S.info.surname,g:S.info.gender,l:S.saved};
+  if($('#shBirth').checked)Object.assign(d,{d:S.info.date,t:S.info.time,k:S.info.kst});
+  const enc=btoa(unescape(encodeURIComponent(JSON.stringify(d))));
+  const url=location.href.split('#')[0]+'#share='+enc;
+  (navigator.clipboard?navigator.clipboard.writeText(url):Promise.reject()).then(()=>toast('공유 링크를 복사했어요'),()=>prompt('이 링크를 복사해 주세요',url));
+}
+function readShare(){
+  const m=location.hash.match(/share=([^&]+)/);if(!m)return;
+  try{S.shared=JSON.parse(decodeURIComponent(escape(atob(m[1]))))}catch(e){S.shared=null}
+}
+function renderShared(){
+  const box=$('#sharedBox');const d=S.shared;
+  if(!d){box.innerHTML='';return}
+  const ctx={id:'sh:',sur:d.s,saju:d.d?calcSaju(d.d,d.t,d.k):null,gender:d.g,liked:{},disliked:{},moods:[],sib:[]};
+  const items=d.l.map(s=>savedEval(s,ctx)).filter(Boolean);
+  box.innerHTML=`<div class="sec-h" style="margin-top:28px"><div><h2>공유받은 후보</h2><p class="lead">가족이 보낸 이름 후보예요${ctx.saju?'':' (생년월일이 없어 용신 점수는 기본값)'}.</p></div><button class="btn sm" id="shClose">닫기</button></div>${cmpTable(items,{final:false})}`;
+}
+
+/* ================= 후기 ================= */
+const SAMPLE_REVIEWS=[
+  {nick:'콩콩이맘',age:'20대',role:'우리 아이',star:5,c:'#cf5a3e',text:'출산 2주 남기고 급하게 들어왔는데 진짜 살았어요ㅠㅠ 사주 어렵게만 생각했는데 "물 기운이 필요해요" 이렇게 풀어서 알려주니까 남편이랑 바로 이해함ㅋㅋ 후보 세 개 담아서 양가에 링크 돌렸더니 시어머니가 제일 좋아하셨어요🥹'},
+  {nick:'J아빠',age:'30대',role:'우리 아이',star:4,c:'#2f5f9e',text:'수리 4격과 발음오행을 표로 나란히 비교할 수 있는 점이 좋았습니다. 작명소에서 받은 이름도 대화창에 넣어 분석해봤는데 결과가 크게 다르지 않아 신뢰가 갔습니다. 한자 수가 조금 더 많았으면 해서 별 하나 뺍니다.'},
+  {nick:'은비할매',age:'60대 이상',role:'손주',star:5,c:'#a8823a',text:'딸이 알려줘서 손주 이름 지어볼라고 해봤어요. 글씨도 크고 어렵지 않네요. 이름을 소리내서 읽어주는게 있어서 몇번이고 들어봤어요. 우리 손주 이름 참 이쁩니다 고마워요'},
+  {nick:'늦둥이엄마',age:'40대',role:'우리 아이',star:5,c:'#3f8a59',text:'첫째 때는 작명소에 꽤 큰돈을 썼는데, 이번에는 형제 이름 어울림까지 같이 볼 수 있어서 좋았어요. 큰아이 이름과 너무 비슷하지 않으면서도 같은 결을 가진 이름을 찾았습니다. 차분하게 비교하기 좋은 서비스예요.'},
+  {nick:'쌍둥이육아중',age:'30대',role:'우리 아이',star:4,c:'#7d838d',text:'쌍둥이라 이름 두 개 필요했는데 형제 어울림 체크 덕분에 고민이 반으로 줄었어요. "받침 없는 거" 치니까 바로 걸러줘서 편했음. 폰에서 비교표가 좀 좁은 건 아쉬워요'},
+  {nick:'새이름찾는중',age:'20대',role:'나 (개명)',star:5,c:'#8a5bb5',text:'개명 고민하면서 써봤어요! 영문 표기까지 같이 나와서 해외 취업 준비하는 입장에서 꽤 쓸모 있었음. eo 들어가면 외국인이 읽기 어렵다는 건 처음 알았네요 ㅎㅎ'},
+  {nick:'청송거사',age:'50대',role:'손주',star:4,c:'#4a413b',text:'며느리가 보여주어 함께 살펴보았습니다. 용신을 보고 이름을 고른다는 설명이 비교적 잘 되어 있습니다. 다만 이름은 집안 어른들과도 충분히 상의하시기를 권합니다.'}
+];
+let rvStar=5;
+function renderReviews(){
+  const mine=S.reviews;
+  const avg=mine.length?(mine.reduce((t,r)=>t+r.star,0)/mine.length).toFixed(1):null;
+  $('#rvSum').innerHTML=avg?`<div style="font-family:var(--serif);font-size:40px;font-weight:900">${avg}</div><div><div class="stars">${'★'.repeat(Math.round(avg))}${'☆'.repeat(5-Math.round(avg))}</div><div class="hint">실제 작성된 후기 ${mine.length}개 기준</div></div>`:`<div><b>아직 실제 후기가 없어요.</b><div class="hint">첫 후기를 남겨 주세요. 평균 별점은 실제 후기가 생기면 표시돼요.</div></div>`;
+  const rv=(r,tag)=>`<div class="rv"><div class="who"><span class="av" style="background:${r.c||'#b5442f'}">${esc(r.nick[0])}</span><b style="color:var(--ink)">${esc(r.nick)}</b><span>${esc(r.age)} · ${esc(r.role)}</span>${tag}</div><div class="stars">${'★'.repeat(r.star)}${'☆'.repeat(5-r.star)}</div><p>${esc(r.text)}</p>${r.date?`<div class="hint" style="margin-top:6px">${esc(r.date)}</div>`:''}</div>`;
+  $('#rvGrid').innerHTML=mine.slice().reverse().map(r=>rv(r,'<span class="mine">내 후기</span>')).join('')+SAMPLE_REVIEWS.map(r=>rv(r,'<span class="sample">예시</span>')).join('');
+  $('#rvStars').innerHTML=[1,2,3,4,5].map(i=>`<button type="button" data-star="${i}" class="${i<=rvStar?'on':''}" aria-label="${i}점">★</button>`).join('');
+}
+
+/* ================= 이벤트 ================= */
+document.addEventListener('click',ev=>{
+  const t=ev.target;
+  const q=s=>t.closest(s);
+  let el;
+  if((el=q('[data-close]'))||t.id==='ov'){closeModal();return}
+  if((el=q('[data-go]'))){ev.preventDefault();closeModal();go(+el.dataset.go);return}
+  if((el=q('[data-save]'))){ev.stopPropagation();const e=CACHE.get(el.dataset.save);if(e){if(e.ctx.id){toast('공유받은 후보는 보관함에 담을 수 없어요');return}toggleSave(e)}return}
+  if((el=q('[data-speak]'))){const e=CACHE.get(el.dataset.speak);e&&speakName(e);return}
+  if((el=q('[data-cert]'))){const e=CACHE.get(el.dataset.cert);e&&makeCert(e);return}
+  if((el=q('[data-final]'))){S.final=S.final===el.dataset.final?null:el.dataset.final;save();renderStep4();return}
+  if((el=q('[data-open]'))){openDetail(el.dataset.open);return}
+  if((el=q('[data-taste]'))){tasteVote(+el.dataset.taste);return}
+  if(t.id==='tasteSkip'){ev.preventDefault();S.taste.done=true;save();renderTaste();return}
+  if(t.id==='tasteReset'){S.taste={deck:buildDeck(),idx:0,liked:{},disliked:{},done:false};save();renderTaste();return}
+  if((el=q('[data-mood]'))){const k=el.dataset.mood,M=S.prefs.moods;S.prefs.moods=M.includes(k)?M.filter(x=>x!==k):[...M,k];el.classList.toggle('on');save();return}
+  if((el=q('[data-say]'))){handleChat(el.dataset.say);return}
+  if((el=q('[data-unf]'))){removeFilter(el.dataset.unf);return}
+  if((el=q('[data-star]'))){rvStar=+el.dataset.star;renderReviews();return}
+  if((el=q('#fGender button'))){gender=el.dataset.v;document.querySelectorAll('#fGender button').forEach(b=>b.classList.toggle('on',b===el));return}
+  if(t.id==='moreBtn'){S.page++;renderResults();return}
+  if(t.id==='shareBtn'){shareLink();return}
+  if(t.id==='shClose'){S.shared=null;history.replaceState(null,'',location.pathname+location.search);renderShared();return}
+  if(t.id==='goRecommend'){readPrefs();applyPrefs();CACHE.clear();S.results=[];S.chat=[];go(3);return}
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+$('#fSur').addEventListener('input',fillSurSelect);
+$('#fSurH').addEventListener('change',()=>{$('#manualSur').hidden=$('#fSurH').value!=='manual'});
+$('#fNoTime').addEventListener('change',e=>{$('#fTime').disabled=e.target.checked});
+['#pDolPos','#pDol','#pEx','#pFinal','#pSib'].forEach(s=>$(s).addEventListener('change',readPrefs));
+$('#infoForm').addEventListener('submit',ev=>{
+  ev.preventDefault();
+  const r=$('#fSur').value.trim();
+  if(!/^[가-힣]$/.test(r)){toast('성씨를 한글 한 글자로 입력해 주세요');return}
+  let sur;
+  if($('#fSurH').value==='manual'||$('#fSurH').value===''){
+    const s=+$('#fSurS').value;if(!s){$('#manualSur').hidden=false;toast('성씨 한자 획수를 입력해 주세요');return}
+    sur={r,h:r,s,o:+$('#fSurO').value};
+  }else sur=SURS.filter(x=>x.r===r)[+$('#fSurH').value];
+  const date=$('#fDate').value;if(!date){toast('생년월일을 입력해 주세요');return}
+  const time=$('#fNoTime').checked?null:($('#fTime').value||null);
+  const changed=!S.info||S.info.surname.h!==sur.h||S.info.gender!==gender;
+  S.info={surname:sur,gender,date,time,kst:$('#fKst').checked};
+  S.saju=calcSaju(date,time,S.info.kst);
+  if(changed)S.taste={deck:[],idx:0,liked:{},disliked:{},done:false};
+  S.filters=null;S.results=[];S.chat=[];CACHE.clear();
+  save();renderSaju();
+  $('#sajuBox').scrollIntoView({behavior:'smooth',block:'start'});
+});
+$('#chatForm').addEventListener('submit',ev=>{ev.preventDefault();const v=$('#chatIn').value.trim();if(!v)return;$('#chatIn').value='';handleChat(v)});
+$('#rvForm').addEventListener('submit',ev=>{
+  ev.preventDefault();
+  const nick=$('#rvNick').value.trim(),text=$('#rvText').value.trim();if(!nick||!text)return;
+  S.reviews.push({nick,text,star:rvStar,age:$('#rvAge').value,role:$('#rvRole').value,date:new Date().toLocaleDateString('ko-KR')});
+  save();$('#rvForm').reset();rvStar=5;renderReviews();toast('후기를 남겨주셔서 고마워요');
+});
+if('speechSynthesis' in window)speechSynthesis.onvoiceschanged=()=>{koVoice=speechSynthesis.getVoices().find(v=>v.lang&&v.lang.startsWith('ko'))};
+
+/* ================= 시작 ================= */
+load();readShare();
+if(S.info){
+  $('#fSur').value=S.info.surname.r;fillSurSelect();
+  const idx=SURS.filter(x=>x.r===S.info.surname.r).findIndex(x=>x.h===S.info.surname.h);
+  if(idx>=0)$('#fSurH').value=idx;else{$('#fSurH').value='manual';$('#manualSur').hidden=false;$('#fSurS').value=S.info.surname.s;$('#fSurO').value=S.info.surname.o}
+  gender=S.info.gender;$('#fDate').value=S.info.date;
+  if(S.info.time)$('#fTime').value=S.info.time;else{$('#fNoTime').checked=true;$('#fTime').disabled=true}
+  $('#fKst').checked=S.info.kst;
+  S.saju=calcSaju(S.info.date,S.info.time,S.info.kst);
+  renderSaju();
+}
+document.querySelectorAll('#fGender button').forEach(b=>b.classList.toggle('on',b.dataset.v===gender));
+renderSavedN();
+go(S.shared?4:1);
+</script>
+</body>
+</html>
