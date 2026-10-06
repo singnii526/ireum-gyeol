@@ -326,6 +326,8 @@ ul.fm-pts li.n::before{content:'·';color:var(--muted)}
 .my-msg.b{background:var(--bad-soft);color:var(--bad)}
 .my-sim{display:grid;gap:6px}
 .my-why{font-size:12.5px;font-weight:700;color:var(--gold);padding-left:4px}
+.legal{font-size:12px;font-weight:700;color:var(--good)}
+.legal.no{color:var(--bad)}
 /* 붓글씨: 서예 연습지(田자 칸) 위에 획순대로 쓰기 */
 .stage{position:relative;margin:26px -6px 0;padding:22px 16px 16px;border-radius:16px;background:radial-gradient(120% 90% at 50% 0%,var(--paper),var(--soft));border:1px solid var(--line);text-align:center}
 .stage .bigk{font-family:var(--serif);font-size:28px;font-weight:700;letter-spacing:.5em;margin:14px 0 4px;padding-left:.5em;color:var(--ink)}
@@ -620,7 +622,7 @@ table.cmp{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px;f
     </form>
   </section>
 
-  <p class="disclaimer">이름결의 분석은 전통 성명학 이론(사주·오행·수리)을 단순화한 참고용 정보입니다. 한자 획수는 원획법 기준이며, 출생신고 전 대법원 인명용 한자 여부를 꼭 확인하세요.</p>
+  <p class="disclaimer">이름결의 분석은 전통 성명학 이론(사주·오행·수리)을 단순화한 참고용 정보입니다. 추천 한자는 모두 대법원 인명용 한자표(2024.6 시행, 9,389자)에 있는 글자이며, 획수는 원획법(강희자전) 기준입니다. 출생신고 전 <a href="https://efamily.scourt.go.kr" target="_blank" rel="noopener">전자가족관계등록시스템</a>에서 한 번 더 확인하세요.</p>
 </main>
 
 <div class="ov" id="ov"><div class="modal" id="modal"></div></div>
@@ -639,6 +641,7 @@ table.cmp{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px;f
 </div>
 <div class="toast" id="toast"></div>
 
+<script src="hanja-db.js"></script>
 <script>
 /* ================= 데이터 ================= */
 const EL = ['목','화','토','금','수'];
@@ -859,7 +862,6 @@ const HJ_RAW=`가|佳|아름다울|8|화|f|미
 희|熙|빛날|13|화|n|밝
 희|喜|기쁠|12|수|n|복
 희|希|바랄|7|목|n|복
-희|姬|아가씨|9|토|f|미
 결|潔|깨끗할|16|수|n|덕`;
 
 // 성|한자|원획|자원오행
@@ -972,9 +974,27 @@ const EN_BAD=['dong','bum','dung','poo','pee','kill','die','dumb','fat','sin','s
 /* ================= 파싱 ================= */
 const HJ={}, HJ_ALL=[];
 HJ_RAW.trim().split('\n').forEach(l=>{const [r,h,m,s,o,g,t]=l.trim().split('|');const e={r,h,m,s:+s,o:ELK[o],g,t:t.split(',')};(HJ[r]=HJ[r]||[]).push(e);HJ_ALL.push(e)});
+HJ_ALL.forEach(e=>{e.src='cur'});
+const HJX={};HJ_ALL.forEach(e=>(HJX[e.r]=HJX[e.r]||[]).push(e));
+(window.HANJA_EXT||'').split(';').forEach(l=>{
+  if(!l)return;const [r,h,m,s,o,fl,tg]=l.split('|');
+  if((HJX[r]||[]).some(x=>x.h===h))return;
+  const e={r,h,m,s:+s,o:+o,g:'n',t:tg?[...tg]:[],src:fl.includes('a')?'auto':'ext',edu:fl.includes('e')};
+  (HJX[r]=HJX[r]||[]).push(e);
+  if(e.src==='auto')(HJ[r]=HJ[r]||[]).push(e);
+});
+const LEGAL=new Set((window.HANJA_LEGAL_PAIRS||'').split(';'));
+const LEGAL_COUNT=window.HANJA_LEGAL_COUNT||{};
+const isLegal=(r,h)=>LEGAL.has(r+h);
+const HJ_SRC={cur:'작명 검수 한자',auto:'교육용·인명용 한자',ext:'드물게 쓰는 인명용 한자'};
 const SYLS=Object.keys(HJ);
 const SURS=SUR_RAW.trim().split('\n').map(l=>{const [r,h,s,o]=l.trim().split('|');return {r,h,s:+s,o:ELK[o]}});
-const findHJ=(r,h)=>(HJ[r]||[]).find(x=>x.h===h);
+const findHJ=(r,h)=>(HJX[r]||[]).find(x=>x.h===h);
+const PER_SYL=14; // 자동 추천에서 음절당 검토할 한자 수 (검수 한자 먼저)
+// 친숙도: 작명 검수 한자 > 교육용 기초한자 > 그 밖의 인명용 한자. 드문 한자가 획수만으로 앞서지 않게 함
+const famOf=c=>c.src==='cur'?6:c.edu?4:c.src==='auto'?2:0;
+const famB=e=>famOf(e.chars[0])+famOf(e.chars[1]);
+const goodMeaning=c=>c.src==='cur'||c.t.some(t=>t!=='자');
 
 /* ================= 한글 유틸 ================= */
 const dec=ch=>{const c=ch.charCodeAt(0)-0xAC00;return c<0||c>11171?null:{cho:Math.floor(c/588),jung:Math.floor(c%588/28),jong:c%28}};
@@ -1351,7 +1371,7 @@ function candidates(){
     if(f.fin==='none'&&(jong(a)||jong(b)))continue;
     if(f.fin==='soft'&&!(SOFT_JONG.has(jong(a))&&SOFT_JONG.has(jong(b))))continue;
     if(f.tease&&teaseCheck(S.info.surname.r+nm).length)continue;
-    const A=(HJ[a]||[]).filter(h=>hjOk(h,f.neutral)),B=(HJ[b]||[]).filter(h=>hjOk(h,f.neutral));
+    const A=(HJ[a]||[]).filter(h=>hjOk(h,f.neutral)).slice(0,PER_SYL),B=(HJ[b]||[]).filter(h=>hjOk(h,f.neutral)).slice(0,PER_SYL);
     const combos=[];
     for(const x of A)for(const y of B){
       if(x.h===y.h)continue;
@@ -1363,11 +1383,11 @@ function candidates(){
       combos.push(e);
     }
     if(!combos.length)continue;
-    combos.sort((p,q)=>q.total-p.total||q.rank-p.rank);
+    combos.sort((p,q)=>(q.total+famB(q))-(p.total+famB(p))||q.rank-p.rank);
     const best=combos[0];best.alts=combos.slice(1,5);best.synth=!P.includes(nm);
     out.push(best);
   }
-  out.sort((p,q)=>q.rank-p.rank||q.total-p.total||(p.synth-q.synth));
+  out.sort((p,q)=>(q.rank+famB(q))-(p.rank+famB(p))||q.total-p.total||(p.synth-q.synth));
   return out;
 }
 function verdict(e){
@@ -1429,7 +1449,9 @@ function relSentence(a,b,from,to,ctxTxt){
   return `‘${from}’(${EL[a]})${josa(EL[a],'과','와')} ‘${to}’(${EL[b]})${josa(EL[b],'이','가')} 서로 부딪혀요(<b>${k}</b>). ${ctxTxt[2]}`;
 }
 function nameStory(e){
-  const [x,y]=e.chars,px=TAG_PHRASE[x.t[0]],py=TAG_PHRASE[y.t[0]];
+  const [x,y]=e.chars,tx=TAG_PHRASE[x.t[0]],ty=TAG_PHRASE[y.t[0]];
+  if(!tx||!ty)return `<p><b>${x.h}</b>(${x.m} ${x.r})와 <b>${y.h}</b>(${y.m} ${y.r})의 뜻이 어우러진 이름이에요.</p>`;
+  const px=tx,py=ty;
   const wish=x.t[0]===y.t[0]?`“${px} 사람”이라는 바람이 두 글자에 겹쳐 담겨 뜻이 더욱 또렷해요.`:`두 글자가 만나 “${px}, 그리고 ${py} 사람”으로 자라길 바라는 이름이에요.`;
   return `<p><b>${x.h}</b>(${x.m} ${x.r})에는 ${px} 뜻이, <b>${y.h}</b>(${y.m} ${y.r})에는 ${py} 뜻이 담겨 있어요. ${wish}</p>`;
 }
@@ -1450,7 +1472,7 @@ function nameReading(e){
 function hjReading(c,sj,pos){
   const E=EL_INFO[c.o];
   const role=!sj?'':c.o===sj.yong?`사주의 용신과 같은 기운이라 <b>가장 필요한 기운을 직접 채워 주는 글자</b>예요.`:c.o===sj.hee?'용신을 돕는 희신 기운이라 사주의 균형에 보탬이 돼요.':sj.lack.includes(c.o)?'사주에 없는 기운을 채워 주는 글자예요.':c.o===sj.gi?'용신을 누르는 기신 기운이라 사주 면에서는 아쉬운 글자예요.':'사주에 크게 부담을 주지 않는 무난한 기운이에요.';
-  return `<p><b>${c.h} ${c.m} ${c.r}</b> · ${pos} · ${c.s}획 · 자원오행 ${elB(c.o)}<br>${TAG_PHRASE[c.t[0]]} 뜻을 지닌 글자예요. ${EL[c.o]} 기운은 ${E.kw}${josa(E.kw,'을','를')} 상징해요. ${role}</p>`;
+  return `<p><b>${c.h} ${c.m} ${c.r}</b> · ${pos} · ${c.s}획 · 자원오행 ${elB(c.o)} · <span class="legal${isLegal(c.r,c.h)?'':' no'}">${isLegal(c.r,c.h)?'대법원 인명용 한자 ✓':'인명용 한자표에서 확인 필요'}</span><br>${c.src&&c.src!=='cur'?`${HJ_SRC[c.src]}예요. 획수는 강희자전 기준 원획, 자원오행은 부수(${EL[c.o]} 계열)로 정했어요. `:''}${TAG_PHRASE[c.t[0]]?TAG_PHRASE[c.t[0]]+' 뜻을':`‘${c.m}’ 뜻을`} 지닌 글자예요. ${EL[c.o]} 기운은 ${E.kw}${josa(E.kw,'을','를')} 상징해요. ${role}</p>`;
 }
 
 /* ================= 가족 사주 · 궁합 · 이름 시너지 ================= */
@@ -1780,11 +1802,15 @@ function card(e){
 /* ---------- 부모가 정한 이름으로 한자 찾기 ---------- */
 // 소리 비슷함: 초성 2 + 중성 3 + 받침 1 (최대 6)
 function sylSim(a,b){const x=dec(a),y=dec(b);if(!x||!y)return 0;return (x.cho===y.cho?2:0)+(x.jung===y.jung?3:0)+(x.jong===y.jong?1:0)}
-function hjFor(syl){const all=HJ[syl]||[],ok=all.filter(h=>hjOk(h,false));return ok.length?ok:all}
+function hjFor(syl){
+  let all=HJX[syl]||[];const pos=all.filter(goodMeaning);if(pos.length)all=pos;
+  all=[...all].sort((a,b)=>famOf(b)-famOf(a)).slice(0,40);
+  const ok=all.filter(h=>hjOk(h,false));return ok.length?ok:all;
+}
 function combosFor(name){
   const A=hjFor(name[0]),B=hjFor(name[1]),out=[];
   for(const x of A)for(const y of B)if(x.h!==y.h)out.push(evalCombo([x,y]));
-  return out.sort((p,q)=>q.total-p.total||q.rank-p.rank);
+  return out.sort((p,q)=>(q.total+famB(q))-(p.total+famB(p))||q.rank-p.rank);
 }
 const GOOD_ENOUGH=70;
 function similarNames(name,limit=4,minSim=4){
@@ -1794,8 +1820,8 @@ function similarNames(name,limit=4,minSim=4){
     cand.set(n,why)};
   SYLS.forEach(s=>{
     const sa=sylSim(a,s),sb=sylSim(b,s);
-    if(HJ[b]&&sa>=minSim)consider(s+b,{sim:sa+6,txt:`‘${a}’ 대신 소리가 비슷한 ‘${s}’`});
-    if(HJ[a]&&sb>=minSim)consider(a+s,{sim:sb+6,txt:`‘${b}’ 대신 소리가 비슷한 ‘${s}’`});
+    if(HJX[b]&&sa>=minSim)consider(s+b,{sim:sa+6,txt:`‘${a}’ 대신 소리가 비슷한 ‘${s}’`});
+    if(HJX[a]&&sb>=minSim)consider(a+s,{sim:sb+6,txt:`‘${b}’ 대신 소리가 비슷한 ‘${s}’`});
   });
   const near=s0=>SYLS.filter(s=>sylSim(s0,s)>=minSim).sort((p,q)=>sylSim(s0,q)-sylSim(s0,p)).slice(0,6);
   near(a).forEach(s1=>near(b).forEach(s2=>consider(s1+s2,{sim:sylSim(a,s1)+sylSim(b,s2),txt:`‘${a}${b}’${josa(b,'과','와')} 소리가 비슷한 ‘${s1}${s2}’`})));
@@ -1807,17 +1833,19 @@ function similarNames(name,limit=4,minSim=4){
 function myNameSearch(raw){
   const out=$('#myOut'),name=raw.replace(/\s/g,'');
   if(!/^[가-힣]{2}$/.test(name)){out.innerHTML='<p class="my-msg b">이름을 한글 두 글자로 적어 주세요. 예: 하준, 서윤</p>';return}
-  const sur=S.info.surname.r,missing=[...name].filter(c=>!HJ[c]);
+  const sur=S.info.surname.r,missing=[...name].filter(c=>!HJX[c]);
   let html='';
   const combos=missing.length?[]:combosFor(name);
   const best=combos[0],good=combos.filter(e=>e.total>=GOOD_ENOUGH);
   if(combos.length){
+    const cnt=[...name].map(c=>`‘${c}’ 인명용 한자 ${LEGAL_COUNT[c]||0}자 중 ${(HJX[c]||[]).length}자`).join(', ');
+    html+=`<p class="hint" style="margin:14px 0 0">${cnt}를 검토했어요. 뜻이 좋지 않거나 획수·자원오행을 확정할 수 없는 글자는 뺐어요.</p>`;
     html+=`<div class="my-head"><b>${esc(sur+name)}</b>에 쓸 수 있는 한자 조합 ${combos.length}가지 중 ${good.length?`점수 ${GOOD_ENOUGH}점 이상 <b>${good.length}가지</b>를 골랐어요.`:'점수가 높은 조합이 없어 가장 나은 조합을 보여 드려요.'}</div>`;
     html+=`<div class="grid">${(good.length?good.slice(0,4):combos.slice(0,2)).map(card).join('')}</div>`;
   }
   const poor=missing.length||!best||best.total<GOOD_ENOUGH;
   if(poor){
-    const why=missing.length?`‘${missing.join(`’, ‘`)}’ 자는 이름결 한자 사전(인명용 한자 중 이름에 많이 쓰는 글자)에 없어서 뜻 좋은 한자를 찾지 못했어요.`
+    const why=missing.length?`‘${missing.join(`’, ‘`)}’ 음에는 ${missing.every(c=>!LEGAL_COUNT[c])?'대법원 인명용 한자가 없어요':'뜻이 좋고 획수·자원오행이 확실한 인명용 한자가 없어요'}. 그래서 한자 이름으로는 추천하기 어려워요.`
       :`‘${name}’${josa(name,'은','는')} 뜻과 소리, 획수가 모두 좋은 조합(${GOOD_ENOUGH}점 이상)이 없어요.`;
     let sim=similarNames(name);if(!sim.length)sim=similarNames(name,4,3);
     html+=`<p class="my-msg">${why} ${sim.length?'대신 소리가 비슷하고 점수가 좋은 이름을 추천해 드려요.':'소리가 비슷한 이름도 찾지 못했어요. 다른 이름을 적어 보시겠어요?'}</p>`;
@@ -1855,13 +1883,13 @@ function handleChat(text){
   const nm=t.match(/([가-힣]{2})\s*(?:은|는|이|가)?\s*(?:어때|어떄|어떤|분석|풀이|봐줘)/);
   if(nm&&!/이름|느낌|기운|받침|한자|사주|조건|글자/.test(nm[1])){
     const n=nm[1];
-    if(HJ[n[0]]&&HJ[n[1]]){
-      const combos=[];for(const x of HJ[n[0]])for(const y of HJ[n[1]])if(x.h!==y.h)combos.push(evalCombo([x,y]));
+    if(HJX[n[0]]&&HJX[n[1]]){
+      const combos=combosFor(n);
       combos.sort((a,b)=>b.total-a.total);
       const e=combos[0];
       botSay(`<b>${esc(S.info.surname.r)}${n}</b>은(는) 한자 ${combos.length}가지 조합이 가능해요. 가장 좋은 건 <b>${e.sur.h}${e.chars[0].h}${e.chars[1].h}</b> (${e.chars[0].m} ${e.chars[0].r} · ${e.chars[1].m} ${e.chars[1].r}) <b>${e.total}점</b>이에요.<br>${verdict(e)}<br><button class="btn sm mini" data-open="${esc(e.key)}">자세히 보기</button><button class="btn sm mini" data-save="${esc(e.key)}">${heart(e)}</button>`);
     }else{
-      const miss=[...n].filter(c=>!HJ[c]);
+      const miss=[...n].filter(c=>!HJX[c]);
       botSay(`아쉽지만 ‘${esc(miss.join(', '))}’ 자는 아직 한자 사전에 없어서 분석할 수 없어요.`);
     }
     renderChat();return;
@@ -1877,7 +1905,7 @@ function handleChat(text){
     if(/빼|제외|싫|말고|없|안 ?들/.test(after)){f.exclude=[...new Set([...f.exclude,c])];f.include=f.include.filter(x=>x!==c);done.push(`‘${c}’ 자를 뺐어요`)}
     else if(/시작|앞|첫/.test(after)){f.first=c;done.push(`첫 글자를 ‘${c}’로 고정했어요`)}
     else if(/끝|뒤|마지막/.test(after)){f.last=c;done.push(`끝 글자를 ‘${c}’로 고정했어요`)}
-    else{if(!HJ[c]){done.push(`‘${c}’ 자는 한자 사전에 없어 넣지 못했어요`);continue}f.include=[...new Set([...f.include,c])];f.exclude=f.exclude.filter(x=>x!==c);done.push(`‘${c}’ 자가 들어간 이름을 찾았어요`)}
+    else{if(!HJX[c]){done.push(`‘${c}’ 자는 한자 사전에 없어 넣지 못했어요`);continue}f.include=[...new Set([...f.include,c])];f.exclude=f.exclude.filter(x=>x!==c);done.push(`‘${c}’ 자가 들어간 이름을 찾았어요`)}
   }
   const st=t.match(/([가-힣])(?:으로|로) ?시작/);if(st&&!done.length){f.first=st[1];done.push(`첫 글자를 ‘${st[1]}’로 고정했어요`)}
   const en=t.match(/([가-힣])(?:으로|로) ?끝/);if(en&&!done.length){f.last=en[1];done.push(`끝 글자를 ‘${en[1]}’로 고정했어요`)}
