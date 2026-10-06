@@ -11,7 +11,7 @@
 <style>
 /* 한지 바탕 위 인장(낙관) 붉은색 하나로 포인트, 명조 제목 + 고딕 본문 */
 :root{
-  --bg:#f5efe3; --paper:#fffdf8; --field:#fff; --sunk:#f1e9da; --soft:#faf5ec; --track:#efe5d4; --bubble:#f5eee2; --tagbg:#f3ecdf;
+  --outer:#e6dccb; --bg:#f5efe3; --paper:#fffdf8; --field:#fff; --sunk:#f1e9da; --soft:#faf5ec; --track:#efe5d4; --bubble:#f5eee2; --tagbg:#f3ecdf;
   --ink:#2a2421; --ink2:#4a413b; --muted:#857869; --line:#e5d9c5; --on-ink:#fff;
   --accent:#b5442f; --accent-ink:#fff; --accent-soft:#f6e4dc;
   --good:#2f7d55; --good-soft:#e8f4ec; --good-line:#cfe6d7; --bad:#b5442f; --bad-soft:#fbefea; --bad-line:#f0d3c8; --final:#fbeee8;
@@ -22,7 +22,7 @@
   --serif:'Noto Serif KR','Nanum Myeongjo','Batang',serif; --sans:'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',system-ui,sans-serif;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#191512; --paper:#231e1a; --field:#2c2621; --sunk:#2f2823; --soft:#2a241f; --track:#3a322b; --bubble:#2f2823; --tagbg:#332b25;
+  --outer:#0f0c0a; --bg:#191512; --paper:#231e1a; --field:#2c2621; --sunk:#2f2823; --soft:#2a241f; --track:#3a322b; --bubble:#2f2823; --tagbg:#332b25;
   --ink:#efe6d8; --ink2:#d3c7b6; --muted:#a39584; --line:#3d342d; --on-ink:#1c1815;
   --accent:#d4644c; --accent-soft:#3e231c;
   --good:#6cc195; --good-soft:#1f3329; --good-line:#2c4a3a; --bad:#e07a62; --bad-soft:#3a221c; --bad-line:#5a3127; --final:#35231d;
@@ -32,7 +32,7 @@
   color-scheme:dark;
 }}
 :root[data-theme="dark"]{
-  --bg:#191512; --paper:#231e1a; --field:#2c2621; --sunk:#2f2823; --soft:#2a241f; --track:#3a322b; --bubble:#2f2823; --tagbg:#332b25;
+  --outer:#0f0c0a; --bg:#191512; --paper:#231e1a; --field:#2c2621; --sunk:#2f2823; --soft:#2a241f; --track:#3a322b; --bubble:#2f2823; --tagbg:#332b25;
   --ink:#efe6d8; --ink2:#d3c7b6; --muted:#a39584; --line:#3d342d; --on-ink:#1c1815;
   --accent:#d4644c; --accent-soft:#3e231c;
   --good:#6cc195; --good-soft:#1f3329; --good-line:#2c4a3a; --bad:#e07a62; --bad-soft:#3a221c; --bad-line:#5a3127; --final:#35231d;
@@ -44,7 +44,9 @@
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 html,body{margin:0}
-body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+body{margin:0 auto}
+html{background:var(--outer)}
+body{max-width:480px;margin:0 auto;min-height:100vh;box-shadow:0 0 0 1px var(--line),0 0 48px var(--shadow-c);background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
 button,input,select,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
@@ -81,7 +83,7 @@ h3{font-size:17px}
 /* hero */
 .hero{display:grid;grid-template-columns:1.1fr 1fr;gap:28px;align-items:start}
 .hero>*{min-width:0}
-.hero-copy h1{font-size:clamp(28px,4.4vw,44px);line-height:1.25;font-weight:900}
+.hero-copy h1{font-size:30px;line-height:1.3;word-break:keep-all;font-weight:900}
 .hero-copy h1 em{font-style:normal;color:var(--accent)}
 .hero-copy p{color:var(--ink2);font-size:16px}
 .flow{list-style:none;padding:0;margin:22px 0 0;display:grid;gap:10px}
@@ -188,7 +190,7 @@ h3{font-size:17px}
 /* modal */
 .ov{position:fixed;inset:0;background:var(--overlay);z-index:50;display:none;align-items:flex-start;justify-content:center;padding:calc(env(safe-area-inset-top,0px) + 24px) 12px 24px;overflow-y:auto}
 .ov.on{display:flex}
-.modal{background:var(--paper);border-radius:20px;max-width:760px;width:100%;padding:24px;position:relative;animation:fade .25s}
+.modal{background:var(--paper);border-radius:20px;max-width:468px;width:100%;padding:24px;position:relative;animation:fade .25s}
 .xbtn{position:absolute;top:14px;right:14px;border:0;background:var(--sunk);width:34px;height:34px;border-radius:50%;font-size:18px}
 .mhead{display:flex;gap:18px;align-items:center;flex-wrap:wrap;padding-right:30px}
 .mhead .big{font-family:var(--serif);font-size:44px;font-weight:900;letter-spacing:.08em;line-height:1.1}
@@ -220,9 +222,9 @@ h3{font-size:17px}
 .alts{display:flex;gap:8px;flex-wrap:wrap}
 /* 붓글씨: 서예 연습지(田자 칸) 위에 획순대로 쓰기 */
 .stage{position:relative;margin:26px -6px 0;padding:22px 16px 16px;border-radius:16px;background:radial-gradient(120% 90% at 50% 0%,var(--paper),var(--soft));border:1px solid var(--line);text-align:center}
-.stage .bigk{font-family:var(--serif);font-size:clamp(22px,5vw,32px);font-weight:700;letter-spacing:.5em;margin:14px 0 4px;padding-left:.5em;color:var(--ink)}
+.stage .bigk{font-family:var(--serif);font-size:28px;font-weight:700;letter-spacing:.5em;margin:14px 0 4px;padding-left:.5em;color:var(--ink)}
 .stage-foot{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;margin-top:6px;padding-inline:52px}
-@media (max-width:560px){
+@media all{
   .ov{padding-inline:6px}
   .modal{padding:18px 14px}
   .stage{margin-inline:-4px;padding:16px 6px 14px}
@@ -256,7 +258,7 @@ ul.kv{list-style:none;padding:0;margin:0 0 12px;display:grid;gap:8px}
 ul.kv li{display:grid;grid-template-columns:96px 1fr;gap:10px;font-size:13.5px;line-height:1.6}
 ul.kv li>b{font-size:13px}
 ul.kv li>span{color:var(--ink2);min-width:0}
-@media (max-width:560px){ul.kv li{grid-template-columns:1fr;gap:2px}}
+@media all{ul.kv li{grid-template-columns:1fr;gap:2px}}
 .certimg{width:100%;border-radius:12px;border:1px solid var(--line);display:block;margin:12px 0}
 
 /* compare */
@@ -288,11 +290,11 @@ table.cmp{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px;f
 .toast{position:fixed;bottom:calc(env(safe-area-inset-bottom,0px) + 24px);left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--on-ink);padding:10px 18px;border-radius:999px;font-size:14px;opacity:0;transition:all .25s;z-index:60;pointer-events:none;max-width:calc(100% - 32px);text-align:center}
 .toast.on{opacity:1;transform:translateX(-50%)}
 
-@media (max-width:900px){
+@media all{
   .hero,.s3,.two{grid-template-columns:1fr}
-  .chat{position:static;height:520px}
+  .card.chat{position:static;height:440px;padding:0}
 }
-@media (max-width:560px){
+@media all{
   .hbar{gap:8px}
   .logo span.t{display:none}
   .tab{padding:7px 9px;font-size:13px}
