@@ -218,6 +218,17 @@ h3{font-size:17px}
 .xb{border:1px solid var(--line);border-radius:12px;padding:12px;font-size:13.5px;min-width:0;overflow-wrap:anywhere}
 .xb .t{font-weight:700;font-size:13px;color:var(--accent);margin-bottom:4px}
 .alts{display:flex;gap:8px;flex-wrap:wrap}
+/* 붓글씨: 서예 연습지(田자 칸) 위에 획순대로 쓰기 */
+.brush{display:flex;gap:6px;cursor:pointer;margin-bottom:6px}
+.bc{position:relative;border:1px solid var(--accent-soft);background:
+  linear-gradient(var(--accent-soft),var(--accent-soft)) center/100% 1px no-repeat,
+  linear-gradient(var(--accent-soft),var(--accent-soft)) center/1px 100% no-repeat,var(--soft);border-radius:4px;display:grid;place-items:center;overflow:hidden}
+.bc svg{position:relative}
+.bf{font-family:var(--serif);font-weight:500;line-height:1;color:var(--ink)}
+.bf.anim{animation:inkdown 1s cubic-bezier(.3,.6,.3,1) both}
+@keyframes inkdown{from{clip-path:inset(0 0 100% 0);filter:blur(3px);opacity:.4}60%{filter:blur(.6px);opacity:.9}to{clip-path:inset(0 0 0 0);filter:blur(0);opacity:1}}
+.brush+.bigk{transition:opacity .5s}
+.brush:not(.done)+.bigk{opacity:.3}
 .reading{margin-top:18px;border-top:1px solid var(--line);padding-top:16px}
 .reading>h3{margin-bottom:2px}
 .reading p,.rdb p{margin:0 0 10px;font-size:14px;line-height:1.75;color:var(--ink2)}
@@ -1335,12 +1346,13 @@ function openDetail(key){
   const elRole=o=>!sj?'':o===sj.yong?'<span class="tag g">용신</span>':o===sj.hee?'<span class="tag g">희신</span>':sj.lack.includes(o)?'<span class="tag g">부족 보완</span>':o===sj.gi?'<span class="tag r">기신</span>':'<span class="tag">보통</span>';
   $('#modal').innerHTML=`<button class="xbtn" data-close aria-label="닫기">×</button>
     <div class="mhead">
-      <div><div class="big">${sur.h}${x.h}${y.h}</div><div class="bigk">${esc(full)}</div></div>
+      <div><div class="brush" id="brush" role="img" aria-label="${sur.h}${x.h}${y.h}" title="누르면 바로 완성돼요" data-chars="${sur.h}${x.h}${y.h}"></div><div class="bigk">${esc(full)}</div></div>
       <div class="score" style="--p:${e.total};width:72px;height:72px;font-size:24px"><span>${e.total}</span></div>
     </div>
     <div class="verdict">${verdict(e)}</div>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
       <button class="btn sm" data-speak="${esc(e.key)}">🔊 이름 듣기</button>
+      <button class="btn sm" data-rewrite>✍ 다시 쓰기</button>
       <button class="btn sm" data-save="${esc(e.key)}">${heart(e)}</button>
       <button class="btn sm dark" data-cert="${esc(e.key)}">이름 증서 이미지 저장</button>
     </div>
@@ -1384,8 +1396,53 @@ function openDetail(key){
   // 다른 한자 클릭 시에도 대안 목록 유지
   e.alts&&e.alts.forEach(a=>{if(!a.alts)a.alts=[e,...e.alts.filter(z=>z!==a)]});
   $('#ov').classList.add('on');$('#ov').scrollTop=0;
+  writeName([...$('#brush').dataset.chars]);
 }
-function closeModal(){$('#ov').classList.remove('on')}
+function closeModal(){$('#ov').classList.remove('on');brushRun++}
+
+/* ================= 붓글씨 획순 애니메이션 ================= */
+// Hanzi Writer(획순 데이터)를 처음 열 때만 불러온다. 데이터가 없는 한자는 먹이 번지듯 드러나는 효과로 대신한다.
+let HW_P=null,brushRun=0;
+function loadHW(){
+  if(window.HanziWriter)return Promise.resolve(window.HanziWriter);
+  return HW_P||(HW_P=new Promise((res,rej)=>{
+    const s=document.createElement('script');
+    s.src='https://cdn.jsdelivr.net/npm/hanzi-writer@3.7.3/dist/hanzi-writer.min.js';
+    s.onload=()=>res(window.HanziWriter);s.onerror=()=>{HW_P=null;rej()};
+    document.head.appendChild(s);
+  }));
+}
+function fallbackChar(cell,ch,instant){
+  cell.innerHTML=`<span class="bf${instant?'':' anim'}" style="font-size:${Math.round(cell.clientWidth*.8)}px">${ch}</span>`;
+  return new Promise(r=>setTimeout(r,instant?0:1000));
+}
+function writeOne(HW,cell,ch,size,ink,instant){
+  if(!HW)return fallbackChar(cell,ch,instant);
+  return new Promise(resolve=>{
+    try{
+      const w=HW.create(cell,ch,{width:size,height:size,padding:3,showOutline:false,showCharacter:false,
+        strokeColor:ink,radicalColor:ink,strokeAnimationSpeed:2.2,delayBetweenStrokes:60,
+        onLoadCharDataSuccess:()=>{if(instant){w.showCharacter();resolve()}else w.animateCharacter({onComplete:resolve})},
+        onLoadCharDataError:()=>{cell.innerHTML='';fallbackChar(cell,ch,instant).then(resolve)}});
+    }catch(err){fallbackChar(cell,ch,instant).then(resolve)}
+  });
+}
+async function writeName(chars,instant=false){
+  const box=$('#brush');if(!box)return;
+  const run=++brushRun;
+  const ink=getComputedStyle(document.documentElement).getPropertyValue('--ink').trim()||'#2a2421';
+  const size=innerWidth<560?66:84;
+  box.classList.remove('done');
+  box.innerHTML=chars.map(()=>`<div class="bc" style="width:${size}px;height:${size}px"></div>`).join('');
+  instant=instant||matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let HW=null;try{HW=await loadHW()}catch(e){}
+  const cells=[...box.children];
+  for(let i=0;i<chars.length;i++){
+    if(run!==brushRun)return;
+    await writeOne(HW,cells[i],chars[i],size,ink,instant);
+  }
+  if(run===brushRun)box.classList.add('done');
+}
 
 /* ================= 이름 증서 이미지 ================= */
 async function makeCert(e){
@@ -1496,6 +1553,8 @@ document.addEventListener('click',ev=>{
   if((el=q('[data-go]'))){ev.preventDefault();closeModal();go(+el.dataset.go);return}
   if((el=q('[data-save]'))){ev.stopPropagation();const e=CACHE.get(el.dataset.save);if(e){if(e.ctx.id){toast('공유받은 후보는 보관함에 담을 수 없어요');return}toggleSave(e)}return}
   if((el=q('[data-speak]'))){const e=CACHE.get(el.dataset.speak);e&&speakName(e);return}
+  if((el=q('[data-rewrite]'))){const b=$('#brush');b&&writeName([...b.dataset.chars]);return}
+  if((el=q('#brush'))){if(!el.classList.contains('done'))writeName([...el.dataset.chars],true);return}
   if((el=q('[data-cert]'))){const e=CACHE.get(el.dataset.cert);e&&makeCert(e);return}
   if((el=q('[data-final]'))){S.final=S.final===el.dataset.final?null:el.dataset.final;save();renderStep4();return}
   if((el=q('[data-open]'))){openDetail(el.dataset.open);return}
