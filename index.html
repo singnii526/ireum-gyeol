@@ -11,7 +11,7 @@
 <style>
 /* 한지 바탕 위 인장(낙관) 붉은색 하나로 포인트, 명조 제목 + 고딕 본문 */
 :root{
-  --outer:#e6dccb; --bg:#f5efe3; --paper:#fffdf8; --field:#fff; --sunk:#f1e9da; --soft:#faf5ec; --track:#efe5d4; --bubble:#f5eee2; --tagbg:#f3ecdf;
+  --outer:#e6dccb; --gold:#93702c; --info-bg:#ebe3d4; --bg:#f5efe3; --paper:#fffdf8; --field:#fff; --sunk:#f1e9da; --soft:#faf5ec; --track:#efe5d4; --bubble:#f5eee2; --tagbg:#f3ecdf;
   --ink:#2a2421; --ink2:#4a413b; --muted:#857869; --line:#e5d9c5; --on-ink:#fff;
   --accent:#b5442f; --accent-ink:#fff; --accent-soft:#f6e4dc;
   --good:#2f7d55; --good-soft:#e8f4ec; --good-line:#cfe6d7; --bad:#b5442f; --bad-soft:#fbefea; --bad-line:#f0d3c8; --final:#fbeee8;
@@ -22,7 +22,7 @@
   --serif:'Noto Serif KR','Nanum Myeongjo','Batang',serif; --sans:'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',system-ui,sans-serif;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --outer:#0f0c0a; --bg:#191512; --paper:#231e1a; --field:#2c2621; --sunk:#2f2823; --soft:#2a241f; --track:#3a322b; --bubble:#2f2823; --tagbg:#332b25;
+  --outer:#0f0c0a; --gold:#d9b04e; --info-bg:#2f2823; --bg:#191512; --paper:#231e1a; --field:#2c2621; --sunk:#2f2823; --soft:#2a241f; --track:#3a322b; --bubble:#2f2823; --tagbg:#332b25;
   --ink:#efe6d8; --ink2:#d3c7b6; --muted:#a39584; --line:#3d342d; --on-ink:#1c1815;
   --accent:#d4644c; --accent-soft:#3e231c;
   --good:#6cc195; --good-soft:#1f3329; --good-line:#2c4a3a; --bad:#e07a62; --bad-soft:#3a221c; --bad-line:#5a3127; --final:#35231d;
@@ -32,7 +32,7 @@
   color-scheme:dark;
 }}
 :root[data-theme="dark"]{
-  --outer:#0f0c0a; --bg:#191512; --paper:#231e1a; --field:#2c2621; --sunk:#2f2823; --soft:#2a241f; --track:#3a322b; --bubble:#2f2823; --tagbg:#332b25;
+  --outer:#0f0c0a; --gold:#d9b04e; --info-bg:#2f2823; --bg:#191512; --paper:#231e1a; --field:#2c2621; --sunk:#2f2823; --soft:#2a241f; --track:#3a322b; --bubble:#2f2823; --tagbg:#332b25;
   --ink:#efe6d8; --ink2:#d3c7b6; --muted:#a39584; --line:#3d342d; --on-ink:#1c1815;
   --accent:#d4644c; --accent-soft:#3e231c;
   --good:#6cc195; --good-soft:#1f3329; --good-line:#2c4a3a; --bad:#e07a62; --bad-soft:#3a221c; --bad-line:#5a3127; --final:#35231d;
@@ -220,6 +220,52 @@ h3{font-size:17px}
 .xb{border:1px solid var(--line);border-radius:12px;padding:12px;font-size:13.5px;min-width:0;overflow-wrap:anywhere}
 .xb .t{font-weight:700;font-size:13px;color:var(--accent);margin-bottom:4px}
 .alts{display:flex;gap:8px;flex-wrap:wrap}
+
+/* 출생 지역 · 지방시 보정 */
+.ic{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.region{margin:14px 0 6px;padding:16px;border-radius:20px;background:var(--soft);border:1px solid var(--line);box-shadow:inset 0 1px 0 color-mix(in srgb,var(--field) 70%,transparent)}
+.region-h{display:flex;align-items:baseline;gap:8px;margin-bottom:12px}
+.region-h b{font-size:14px;color:var(--ink)}
+.region-h span{font-size:12.5px;color:var(--muted)}
+.region-row{width:100%;display:flex;align-items:center;gap:12px;padding:15px 16px;border:1px solid var(--line);border-radius:14px;background:var(--field);text-align:left;box-shadow:0 1px 2px var(--shadow-c),0 4px 14px var(--shadow-c);transition:border-color .15s,transform .1s}
+.region-row:hover{border-color:color-mix(in srgb,var(--gold) 45%,var(--line))}
+.region-row:active{transform:scale(.99)}
+.region-row .ic{color:var(--ink2)}
+.region-name{flex:1;font-size:17px;font-weight:700;color:var(--ink)}
+.region-row .chev{color:var(--muted);width:18px;height:18px}
+.region-info{display:flex;gap:10px;align-items:flex-start;margin-top:12px;padding:12px 14px;border-radius:12px;background:var(--info-bg)}
+.region-info .ic{width:16px;height:16px;margin-top:2px;color:var(--ink2)}
+.region-info p{margin:0;font-size:13px;line-height:1.65;color:var(--ink2);word-break:keep-all}
+.region-info b{color:var(--ink)}
+.region-info em{font-style:normal;font-weight:700;color:var(--gold)}
+.region-info .sm{font-size:12px;color:var(--muted)}
+.corr-note{margin:4px 0 0;padding:9px 12px;border-radius:10px;background:var(--soft);border:1px solid var(--line);font-size:12.5px;color:var(--ink2);line-height:1.6}
+.corr-note span{color:var(--muted)}
+/* 지역 선택 시트 */
+.sheet-ov{position:fixed;inset:0;z-index:70;background:var(--overlay);opacity:0;pointer-events:none;transition:opacity .25s}
+.sheet-ov.on{opacity:1;pointer-events:auto}
+.sheet{position:absolute;left:50%;bottom:0;width:min(480px,100%);max-height:84vh;display:flex;flex-direction:column;background:var(--paper);border-radius:22px 22px 0 0;padding:8px 16px calc(env(safe-area-inset-bottom,0px) + 16px);transform:translate(-50%,100%);transition:transform .34s cubic-bezier(.2,.8,.2,1);box-shadow:0 -10px 40px var(--shadow-c)}
+.sheet-ov.on .sheet{transform:translate(-50%,0)}
+.sheet-grip{width:40px;height:4px;border-radius:2px;background:var(--line);margin:4px auto 10px}
+.sheet-h{display:flex;align-items:center;justify-content:space-between}
+.sheet-h .xbtn{position:static}
+.sheet-sub{margin:4px 0 12px}
+.sheet-search{display:flex;align-items:center;gap:8px;padding:0 12px;border:1px solid var(--line);border-radius:12px;background:var(--field)}
+.sheet-search .ic{color:var(--muted);width:18px;height:18px}
+.sheet-search input{flex:1;min-width:0;border:0;background:none;padding:11px 0;outline:none}
+.sheet-search:focus-within{border-color:var(--gold)}
+.sheet-tabs{display:flex;gap:6px;overflow-x:auto;padding:12px 0 10px;scrollbar-width:none;flex:none}
+.sheet-tabs::-webkit-scrollbar{display:none}
+.sheet-tabs .chip{white-space:nowrap;padding:6px 12px;font-size:13px}
+.sheet-list{overflow-y:auto;flex:1;min-height:180px;padding-bottom:4px}
+.sheet-group{font-size:12px;color:var(--muted);margin:10px 2px 6px}
+.sheet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.city{display:flex;flex-direction:column;align-items:center;gap:2px;padding:12px 4px;border:1px solid var(--line);border-radius:12px;background:var(--field);transition:border-color .15s,background .15s}
+.city span{font-size:15px;font-weight:700;color:var(--ink)}
+.city small{font-size:11.5px;color:var(--muted)}
+.city.on{border-color:var(--gold);background:color-mix(in srgb,var(--gold) 12%,var(--field))}
+.city.on small{color:var(--gold);font-weight:700}
+@media (prefers-reduced-motion:reduce){.sheet,.sheet-ov{transition:none}}
 /* 붓글씨: 서예 연습지(田자 칸) 위에 획순대로 쓰기 */
 .stage{position:relative;margin:26px -6px 0;padding:22px 16px 16px;border-radius:16px;background:radial-gradient(120% 90% at 50% 0%,var(--paper),var(--soft));border:1px solid var(--line);text-align:center}
 .stage .bigk{font-family:var(--serif);font-size:28px;font-weight:700;letter-spacing:.5em;margin:14px 0 4px;padding-left:.5em;color:var(--ink)}
@@ -376,7 +422,18 @@ table.cmp{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px;f
             <div class="field"><label for="fTime">태어난 시각</label><input class="inp" id="fTime" type="time"></div>
           </div>
           <label class="check"><input type="checkbox" id="fNoTime"> 태어난 시각을 몰라요 (출산 예정이라면 예정일만 넣어도 돼요)</label>
-          <label class="check" style="margin-top:6px"><input type="checkbox" id="fKst" checked> 한국 표준시 보정 (−30분, 일반적인 사주 계산 방식)</label>
+          <section class="region" aria-labelledby="regionLbl">
+            <div class="region-h"><b id="regionLbl">출생 지역</b><span>지방시 보정</span></div>
+            <button type="button" class="region-row" id="regionBtn" aria-haspopup="dialog">
+              <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/></svg>
+              <span class="region-name" id="regionName">서울</span>
+              <svg class="ic chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+            </button>
+            <div class="region-info">
+              <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>
+              <p id="regionInfo"></p>
+            </div>
+          </section>
           <p class="hint">음력 생일은 <a href="https://astro.kasi.re.kr/life/pageView/8" target="_blank" rel="noopener">한국천문연구원 음양력 변환</a>에서 양력으로 바꿔 입력해 주세요. 두 글자 성(남궁·제갈 등)은 아직 지원하지 않아요.</p>
           <button class="btn pri block" type="submit" style="margin-top:8px">사주 분석하기</button>
         </form>
@@ -470,6 +527,19 @@ table.cmp{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px;f
 </main>
 
 <div class="ov" id="ov"><div class="modal" id="modal"></div></div>
+<div class="sheet-ov" id="sheetOv" aria-hidden="true">
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+    <div class="sheet-grip" aria-hidden="true"></div>
+    <div class="sheet-h"><h3 id="sheetTitle">출생 지역 선택</h3><button type="button" class="xbtn" data-sheet-close aria-label="닫기">×</button></div>
+    <p class="hint sheet-sub">태어난 곳의 경도에 따라 실제 태양시가 달라져요. 가장 가까운 도시를 골라 주세요.</p>
+    <div class="sheet-search">
+      <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg>
+      <input id="regionQ" type="search" placeholder="도시 이름 검색 (예: 전주, 포항)" autocomplete="off">
+    </div>
+    <div class="sheet-tabs" id="regionTabs"></div>
+    <div class="sheet-list" id="regionList"></div>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -869,7 +939,44 @@ function englishCheck(rom){
 /* ================= 사주 ================= */
 function jdn(y,m,d){const a=Math.floor((14-m)/12),Y=y+4800-a,M=m+12*a-3;return d+Math.floor((153*M+2)/5)+365*Y+Math.floor(Y/4)-Math.floor(Y/100)+Math.floor(Y/400)-32045}
 const TERMS=[[1,6,1],[2,4,2],[3,6,3],[4,5,4],[5,6,5],[6,6,6],[7,7,7],[8,8,8],[9,8,9],[10,8,10],[11,7,11],[12,7,0]];
-function calcSaju(dateStr,timeStr,kst){
+/* ---------- 출생 지역 · 지방시 보정 ---------- */
+// [지역 묶음, [[도시, 경도°E], ...]] — 경도는 시청 소재지 기준
+const REGIONS=[
+  ['서울·광역시',[['서울',126.978],['부산',129.075],['대구',128.601],['인천',126.705],['광주',126.851],['대전',127.385],['울산',129.311],['세종',127.289]]],
+  ['경기',[['수원',127.029],['성남',127.137],['고양',126.832],['용인',127.178],['부천',126.766],['안산',126.831],['안양',126.951],['남양주',127.216],['화성',126.831],['평택',127.112],['의정부',127.034],['파주',126.780],['김포',126.716],['광명',126.865],['시흥',126.803],['하남',127.215],['이천',127.442],['오산',127.077],['구리',127.130],['양주',127.046],['포천',127.200],['여주',127.638],['가평',127.510],['양평',127.488]]],
+  ['강원',[['춘천',127.730],['원주',127.920],['강릉',128.876],['속초',128.592],['동해',129.114],['삼척',129.166],['태백',128.986],['홍천',127.888],['철원',127.313]]],
+  ['충북',[['청주',127.489],['충주',127.926],['제천',128.191],['음성',127.690],['진천',127.436],['옥천',127.572]]],
+  ['충남',[['천안',127.114],['아산',127.002],['공주',127.119],['보령',126.613],['서산',126.450],['당진',126.646],['논산',127.099],['홍성',126.661],['태안',126.298]]],
+  ['전북',[['전주',127.148],['익산',126.957],['군산',126.737],['정읍',126.856],['남원',127.390],['김제',126.881]]],
+  ['전남',[['목포',126.392],['여수',127.662],['순천',127.487],['나주',126.711],['광양',127.696],['무안',126.482],['해남',126.599],['완도',126.755]]],
+  ['경북',[['포항',129.343],['경주',129.225],['구미',128.344],['안동',128.729],['김천',128.114],['영주',128.624],['상주',128.159],['경산',128.741],['영천',128.939],['문경',128.187],['울진',129.400],['울릉',130.906]]],
+  ['경남',[['창원',128.681],['진주',128.108],['김해',128.889],['양산',129.037],['거제',128.621],['통영',128.433],['사천',128.064],['밀양',128.747],['거창',127.909],['남해',127.892]]],
+  ['제주',[['제주',126.531],['서귀포',126.560]]],
+  ['기타',[['해외·모름',null]]]
+];
+const REGION_BY={};REGIONS.forEach(([g,list])=>list.forEach(([n,lon])=>REGION_BY[n]={n,g,lon}));
+// 표준 자오선: 1908.4~1911, 1954.3.21~1961.8.9 는 동경 127.5°, 그 외 135°
+function stdMeridian(y,m,d){const k=y*10000+m*100+d;return (k>=19080401&&k<=19111231)||(k>=19540321&&k<=19610809)?127.5:135}
+// 서머타임: 1987·1988년 (그 이전 시행 기간은 반영하지 않음)
+function inDST(y,m,d,hh,mi){
+  const k=(y*10000+m*100+d)*10000+hh*100+mi;
+  if(y===1987)return k>=198705100200&&k<198710110300;
+  if(y===1988)return k>=198805080200&&k<198810090300;
+  return false;
+}
+function timeCorr(dateStr,timeStr,rid){
+  const r=REGION_BY[rid];
+  if(!r||r.lon==null||!dateStr)return {min:0,lmt:0,dst:false,mer:135,r:r||null};
+  const [y,m,d]=dateStr.split('-').map(Number),[hh,mi]=(timeStr||'12:00').split(':').map(Number);
+  const mer=stdMeridian(y,m,d),lmt=Math.round((r.lon-mer)*4),dst=!!timeStr&&inDST(y,m,d,hh,mi);
+  return {min:lmt-(dst?60:0),lmt,dst,mer,r};
+}
+const pad2=n=>String(n).padStart(2,'0');
+
+function calcSaju(dateStr,timeStr,region){
+  if(region===true)region='서울';if(region===false||region==null)region='해외·모름'; // 예전 저장값 호환
+  const corr=timeCorr(dateStr,timeStr,region);
+  let solarT=null;
   const [y,m,d]=dateStr.split('-').map(Number);
   // 연주 (입춘 기준)
   const sy=(m<2||(m===2&&d<4))?y-1:y;
@@ -880,8 +987,10 @@ function calcSaju(dateStr,timeStr,kst){
   // 일주 + 시주
   let shift=0,hS=null,hB=null;
   if(timeStr){
-    let [hh,mi]=timeStr.split(':').map(Number);let t=hh*60+mi-(kst?30:0);
+    let [hh,mi]=timeStr.split(':').map(Number);let t=hh*60+mi+corr.min;
     if(t<0){t+=1440;shift=-1}
+    if(t>=1440){t-=1440;shift=1}
+    solarT={t:`${pad2(Math.floor(t/60))}:${pad2(t%60)}`,day:shift};
     if(t>=1380)shift+=1; // 23시 이후는 다음 날 자시
     hB=Math.floor(((t+60)%1440)/120);
   }
@@ -909,7 +1018,7 @@ function calcSaju(dateStr,timeStr,kst){
   else yong=pickMin([0,1,2,3,4]);
   const hee=(yong+4)%5, gi=(yong+3)%5;
   const lack=cnt.map((c,i)=>c===0?i:-1).filter(i=>i>=0);
-  return {P,cnt,dS,dEl,strength,ratio,yong,hee,gi,lack,yB,hasTime:hB!=null};
+  return {P,cnt,dS,dEl,strength,ratio,yong,hee,gi,lack,yB,hasTime:hB!=null,corr,solarT,birthT:timeStr};
 }
 function elPoint(o,sj){if(o===sj.yong)return 10;if(o===sj.hee)return 7;if(sj.lack.includes(o))return 6;if(o===sj.gi)return 0;return 4}
 
@@ -1148,6 +1257,43 @@ function savedEval(s,ctx){const x=findHJ(s.n[0],s.h[0]),y=findHJ(s.n[1],s.h[1]);
 
 /* ================= STEP 1 ================= */
 let gender='m';
+let region='서울',regionTab=0;
+const signMin=n=>`${n>0?'+':n<0?'−':''}${Math.abs(n)}분`;
+function renderRegion(){
+  $('#regionName').textContent=region;
+  const date=$('#fDate').value,time=$('#fNoTime').checked?null:$('#fTime').value||null;
+  const c=timeCorr(date||'2000-01-01',time,region);
+  let html;
+  if(!c.r||c.r.lon==null){
+    html='출생 지역을 모르거나 해외에서 태어났다면 <b>보정 없이 입력한 시각 그대로</b> 계산합니다. 국내 출생이라면 가까운 도시를 골라 주세요.';
+  }else{
+    html=`출생 지역에 따라 <b>표준시와 실제 태양시의 차이</b>가 발생합니다. 정확한 사주 계산을 위해 지방시 보정이 필요합니다. <em>${region} 기준 약 ${Math.abs(c.lmt)}분 차이</em>`;
+    if(c.mer!==135)html+=`<br><span class="sm">이 날짜는 한국 표준시가 동경 127.5° 기준이던 시기라 그 기준으로 계산합니다.</span>`;
+    if(c.dst)html+=`<br><em>서머타임 기간(${date.slice(0,4)}년)이라 1시간을 추가로 보정합니다.</em>`;
+    if(!time)html+='<br><span class="sm">태어난 시각을 모르면 보정은 적용되지 않아요.</span>';
+  }
+  $('#regionInfo').innerHTML=html;
+}
+function corrNote(sj){
+  const c=sj.corr;if(!c||!c.r||c.r.lon==null)return '<p class="corr-note">출생 시각 보정 없이 입력한 시각 그대로 계산했어요.</p>';
+  const parts=[`${c.r.n} 지방시 ${signMin(c.lmt)}`];if(c.dst)parts.push('서머타임 −60분');
+  return `<p class="corr-note">출생 시각 <b>${sj.birthT}</b> → 실제 태양시 <b>${sj.solarT.day<0?'전날 ':sj.solarT.day>0?'다음 날 ':''}${sj.solarT.t}</b> <span>(${parts.join(', ')})</span> 기준으로 계산했어요.</p>`;
+}
+function renderRegionList(){
+  const q=$('#regionQ').value.trim();
+  $('#regionTabs').innerHTML=REGIONS.map(([g],i)=>`<button type="button" class="chip${!q&&i===regionTab?' on':''}" data-rtab="${i}">${g}</button>`).join('');
+  const groups=q?REGIONS.map(([g,l])=>[g,l.filter(([n])=>n.includes(q)||g.includes(q))]).filter(([,l])=>l.length):[REGIONS[regionTab]];
+  $('#regionList').innerHTML=groups.length?groups.map(([g,l])=>`${q?`<div class="sheet-group">${g}</div>`:''}<div class="sheet-grid">${l.map(([n,lon])=>{
+    const m=lon==null?null:Math.round((lon-135)*4);
+    return `<button type="button" class="city${n===region?' on':''}" data-region="${n}"><span>${n}</span><small>${m==null?'보정 안 함':`약 ${Math.abs(m)}분`}</small></button>`}).join('')}</div>`).join(''):'<p class="empty">찾는 도시가 없어요. 가장 가까운 도시를 골라 주세요.</p>';
+}
+function openSheet(){
+  const g=REGION_BY[region];regionTab=Math.max(0,REGIONS.findIndex(([n])=>n===(g&&g.g)));
+  $('#regionQ').value='';renderRegionList();
+  const ov=$('#sheetOv');ov.classList.add('on');ov.setAttribute('aria-hidden','false');
+  setTimeout(()=>{const on=$('#regionList .city.on');on&&on.scrollIntoView({block:'nearest'})},50);
+}
+function closeSheet(){const ov=$('#sheetOv');ov.classList.remove('on');ov.setAttribute('aria-hidden','true');$('#regionBtn').focus()}
 function fillSurSelect(){
   const r=$('#fSur').value.trim(),sel=$('#fSurH'),opts=SURS.filter(s=>s.r===r);
   sel.innerHTML=opts.length?opts.map((s,i)=>`<option value="${i}">${s.h} (${s.s}획 · ${EL[s.o]})</option>`).join('')+'<option value="manual">목록에 없음 (직접 입력)</option>':r?'<option value="manual">목록에 없음 (직접 입력)</option>':'<option value="">성씨를 먼저 입력</option>';
@@ -1168,7 +1314,7 @@ function renderSaju(){
       <div class="kf"><div class="k">이름에 담으면 좋은 기운 (용신)</div><div class="v tc${sj.yong}">${EL[sj.yong]} ${ELH[sj.yong]}</div><p>${ELN[sj.yong]}의 기운이 균형을 잡아줘요. 함께 좋은 기운: <b class="tc${sj.hee}">${EL[sj.hee]}</b></p></div>
       <div class="kf"><div class="k">${sj.lack.length?'사주에 없는 기운':'피하면 좋은 기운'}</div><div class="v">${sj.lack.length?sj.lack.map(i=>`<span class="tc${i}">${EL[i]}</span>`).join(' · '):`<span class="tc${sj.gi}">${EL[sj.gi]} ${ELH[sj.gi]}</span>`}</div><p>${sj.lack.length?'이름 한자로 보완하면 좋아요.':'용신을 누르는 기운이라 이름에서는 줄이는 게 좋아요.'}</p></div>
     </div>
-    ${sj.hasTime?'':'<p class="hint" style="margin:10px 0 0">태어난 시각을 모르면 시주를 빼고 여섯 글자로 분석해요.</p>'}
+    ${sj.hasTime?corrNote(sj):'<p class="hint" style="margin:10px 0 0">태어난 시각을 모르면 시주를 빼고 여섯 글자로 분석해요.</p>'}
     ${sajuReading(sj)}
     <button class="btn pri block" style="margin-top:14px" data-go="2">다음: 작명 방향 정하기 →</button>
   </div>`;
@@ -1527,7 +1673,7 @@ function renderStep4(){
 function shareLink(){
   if(!S.info||!S.saved.length){toast('보관함에 이름을 먼저 담아 주세요');return}
   const d={s:S.info.surname,g:S.info.gender,l:S.saved};
-  if($('#shBirth').checked)Object.assign(d,{d:S.info.date,t:S.info.time,k:S.info.kst});
+  if($('#shBirth').checked)Object.assign(d,{d:S.info.date,t:S.info.time,r:S.info.region});
   const enc=btoa(unescape(encodeURIComponent(JSON.stringify(d))));
   const url=location.href.split('#')[0]+'#share='+enc;
   (navigator.clipboard?navigator.clipboard.writeText(url):Promise.reject()).then(()=>toast('공유 링크를 복사했어요'),()=>prompt('이 링크를 복사해 주세요',url));
@@ -1539,7 +1685,7 @@ function readShare(){
 function renderShared(){
   const box=$('#sharedBox');const d=S.shared;
   if(!d){box.innerHTML='';return}
-  const ctx={id:'sh:',sur:d.s,saju:d.d?calcSaju(d.d,d.t,d.k):null,gender:d.g,liked:{},disliked:{},moods:[],sib:[]};
+  const ctx={id:'sh:',sur:d.s,saju:d.d?calcSaju(d.d,d.t,d.r??d.k):null,gender:d.g,liked:{},disliked:{},moods:[],sib:[]};
   const items=d.l.map(s=>savedEval(s,ctx)).filter(Boolean);
   box.innerHTML=`<div class="sec-h" style="margin-top:28px"><div><h2>공유받은 후보</h2><p class="lead">가족이 보낸 이름 후보예요${ctx.saju?'':' (생년월일이 없어 용신 점수는 기본값)'}.</p></div><button class="btn sm" id="shClose">닫기</button></div>${cmpTable(items,{final:false})}`;
 }
@@ -1573,6 +1719,10 @@ document.addEventListener('click',ev=>{
   if((el=q('[data-go]'))){ev.preventDefault();closeModal();go(+el.dataset.go);return}
   if((el=q('[data-save]'))){ev.stopPropagation();const e=CACHE.get(el.dataset.save);if(e){if(e.ctx.id){toast('공유받은 후보는 보관함에 담을 수 없어요');return}toggleSave(e)}return}
   if((el=q('[data-speak]'))){const e=CACHE.get(el.dataset.speak);e&&speakName(e);return}
+  if(t.id==='regionBtn'||q('#regionBtn')){openSheet();return}
+  if(q('[data-sheet-close]')||t.id==='sheetOv'){closeSheet();return}
+  if((el=q('[data-rtab]'))){regionTab=+el.dataset.rtab;$('#regionQ').value='';renderRegionList();return}
+  if((el=q('[data-region]'))){region=el.dataset.region;renderRegion();renderRegionList();setTimeout(closeSheet,160);return}
   if((el=q('[data-rewrite]'))){const b=$('#brush');b&&writeName([...b.dataset.chars]);return}
   if((el=q('#brush'))){if(!el.classList.contains('done'))writeName([...el.dataset.chars],true);return}
   if((el=q('[data-cert]'))){const e=CACHE.get(el.dataset.cert);e&&makeCert(e);return}
@@ -1591,7 +1741,9 @@ document.addEventListener('click',ev=>{
   if(t.id==='shClose'){S.shared=null;history.replaceState(null,'',location.pathname+location.search);renderShared();return}
   if(t.id==='goRecommend'){readPrefs();applyPrefs();CACHE.clear();S.results=[];S.chat=[];go(3);return}
 });
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if($('#sheetOv').classList.contains('on'))closeSheet();else closeModal()});
+$('#regionQ').addEventListener('input',renderRegionList);
+['#fDate','#fTime','#fNoTime'].forEach(s=>$(s).addEventListener('change',renderRegion));
 $('#fSur').addEventListener('input',fillSurSelect);
 $('#fSurH').addEventListener('change',()=>{$('#manualSur').hidden=$('#fSurH').value!=='manual'});
 $('#fNoTime').addEventListener('change',e=>{$('#fTime').disabled=e.target.checked});
@@ -1608,8 +1760,8 @@ $('#infoForm').addEventListener('submit',ev=>{
   const date=$('#fDate').value;if(!date){toast('생년월일을 입력해 주세요');return}
   const time=$('#fNoTime').checked?null:($('#fTime').value||null);
   const changed=!S.info||S.info.surname.h!==sur.h||S.info.gender!==gender;
-  S.info={surname:sur,gender,date,time,kst:$('#fKst').checked};
-  S.saju=calcSaju(date,time,S.info.kst);
+  S.info={surname:sur,gender,date,time,region};
+  S.saju=calcSaju(date,time,region);
   if(changed)S.taste={deck:[],idx:0,liked:{},disliked:{},done:false};
   S.filters=null;S.results=[];S.chat=[];CACHE.clear();
   save();renderSaju();
@@ -1632,11 +1784,13 @@ if(S.info){
   if(idx>=0)$('#fSurH').value=idx;else{$('#fSurH').value='manual';$('#manualSur').hidden=false;$('#fSurS').value=S.info.surname.s;$('#fSurO').value=S.info.surname.o}
   gender=S.info.gender;$('#fDate').value=S.info.date;
   if(S.info.time)$('#fTime').value=S.info.time;else{$('#fNoTime').checked=true;$('#fTime').disabled=true}
-  $('#fKst').checked=S.info.kst;
-  S.saju=calcSaju(S.info.date,S.info.time,S.info.kst);
+  if(!S.info.region)S.info.region=S.info.kst===false?'해외·모름':'서울';
+  region=S.info.region;renderRegion();
+  S.saju=calcSaju(S.info.date,S.info.time,S.info.region);
   renderSaju();
 }
 document.querySelectorAll('#fGender button').forEach(b=>b.classList.toggle('on',b.dataset.v===gender));
+renderRegion();
 renderSavedN();
 go(S.shared?4:1);
 </script>
