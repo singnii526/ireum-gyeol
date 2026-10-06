@@ -313,6 +313,19 @@ ul.fm-pts li.n::before{content:'·';color:var(--muted)}
 .fam-sum{margin-top:12px;padding:14px;border-radius:14px;background:var(--info-bg)}
 .fam-sum p{margin:6px 0 0;font-size:13.5px;line-height:1.7;color:var(--ink2)}
 .tag.fam{background:color-mix(in srgb,var(--gold) 16%,var(--field));color:var(--gold)}
+/* 부모가 정한 이름 */
+.myname{margin-top:22px;padding:18px;border-radius:20px;border:1px dashed color-mix(in srgb,var(--gold) 55%,var(--line));background:var(--soft)}
+.myname h3{font-size:18px;margin-bottom:4px}
+.myname>.hint{margin:0 0 12px;line-height:1.6}
+.my-form{display:flex;gap:8px;align-items:center}
+.my-sur{flex:none;width:46px;height:46px;border-radius:12px;display:grid;place-items:center;font-family:var(--serif);font-weight:900;font-size:20px;background:var(--field);border:1px solid var(--line)}
+.my-form .inp{flex:1;min-width:0;font-family:var(--serif);font-size:20px;font-weight:700;letter-spacing:.2em;padding:9px 12px}
+.my-form .btn{flex:none}
+.my-head{margin:16px 0 10px;font-size:14px;color:var(--ink2);line-height:1.6}
+.my-msg{margin:16px 0 10px;padding:10px 12px;border-radius:12px;background:var(--info-bg);font-size:13.5px;line-height:1.65;color:var(--ink2)}
+.my-msg.b{background:var(--bad-soft);color:var(--bad)}
+.my-sim{display:grid;gap:6px}
+.my-why{font-size:12.5px;font-weight:700;color:var(--gold);padding-left:4px}
 /* 붓글씨: 서예 연습지(田자 칸) 위에 획순대로 쓰기 */
 .stage{position:relative;margin:26px -6px 0;padding:22px 16px 16px;border-radius:16px;background:radial-gradient(120% 90% at 50% 0%,var(--paper),var(--soft));border:1px solid var(--line);text-align:center}
 .stage .bigk{font-family:var(--serif);font-size:28px;font-weight:700;letter-spacing:.5em;margin:14px 0 4px;padding-left:.5em;color:var(--ink)}
@@ -552,6 +565,16 @@ table.cmp{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px;f
         <div class="flt" id="fltBox"></div>
         <div class="grid" id="resGrid"></div>
         <div style="text-align:center;margin-top:16px"><button class="btn" id="moreBtn">더 보기</button></div>
+        <section class="myname" aria-labelledby="myTitle">
+          <h3 id="myTitle">혹시 마음에 오는 이름이 없나요?</h3>
+          <p class="hint">짓고 싶은 이름을 한글로 적어 주세요. 그 소리에 맞는 좋은 뜻의 한자를 찾아 드리고, 마땅한 한자가 없으면 소리가 비슷한 이름을 추천해 드려요.</p>
+          <form id="myForm" class="my-form" autocomplete="off">
+            <span class="my-sur" id="mySur">김</span>
+            <input id="myName" class="inp" maxlength="2" placeholder="예: 하준" aria-label="짓고 싶은 이름 (한글 두 글자)">
+            <button class="btn pri">한자 찾기</button>
+          </form>
+          <div id="myOut"></div>
+        </section>
       </div>
     </div>
   </section>
@@ -1754,7 +1777,61 @@ function card(e){
     <div class="nact"><button class="btn sm" data-speak="${esc(e.key)}">🔊 듣기</button><button class="btn sm" data-save="${esc(e.key)}">${heart(e)}</button></div>
   </div>`;
 }
+/* ---------- 부모가 정한 이름으로 한자 찾기 ---------- */
+// 소리 비슷함: 초성 2 + 중성 3 + 받침 1 (최대 6)
+function sylSim(a,b){const x=dec(a),y=dec(b);if(!x||!y)return 0;return (x.cho===y.cho?2:0)+(x.jung===y.jung?3:0)+(x.jong===y.jong?1:0)}
+function hjFor(syl){const all=HJ[syl]||[],ok=all.filter(h=>hjOk(h,false));return ok.length?ok:all}
+function combosFor(name){
+  const A=hjFor(name[0]),B=hjFor(name[1]),out=[];
+  for(const x of A)for(const y of B)if(x.h!==y.h)out.push(evalCombo([x,y]));
+  return out.sort((p,q)=>q.total-p.total||q.rank-p.rank);
+}
+const GOOD_ENOUGH=70;
+function similarNames(name,limit=4,minSim=4){
+  const [a,b]=name,cand=new Map();
+  const consider=(n,why)=>{if(n===name||n[0]===n[1]||cand.has(n))return;
+    const st=birthStat(n);if(st.t<20&&!MALE.includes(n)&&!FEMALE.includes(n)&&!NEUTRAL.includes(n))return; // 실제로 쓰는 이름만
+    cand.set(n,why)};
+  SYLS.forEach(s=>{
+    const sa=sylSim(a,s),sb=sylSim(b,s);
+    if(HJ[b]&&sa>=minSim)consider(s+b,{sim:sa+6,txt:`‘${a}’ 대신 소리가 비슷한 ‘${s}’`});
+    if(HJ[a]&&sb>=minSim)consider(a+s,{sim:sb+6,txt:`‘${b}’ 대신 소리가 비슷한 ‘${s}’`});
+  });
+  const near=s0=>SYLS.filter(s=>sylSim(s0,s)>=minSim).sort((p,q)=>sylSim(s0,q)-sylSim(s0,p)).slice(0,6);
+  near(a).forEach(s1=>near(b).forEach(s2=>consider(s1+s2,{sim:sylSim(a,s1)+sylSim(b,s2),txt:`‘${a}${b}’${josa(b,'과','와')} 소리가 비슷한 ‘${s1}${s2}’`})));
+  return [...cand].map(([n,why])=>{const c=combosFor(n).filter(e=>e.chars.every(x=>hjOk(x,false)));return c.length?{e:c[0],why}:null})
+    .filter(x=>x&&x.e.total>=GOOD_ENOUGH)
+    .sort((p,q)=>q.why.sim-p.why.sim||q.e.total-p.e.total||(p.e.name<q.e.name?-1:1))
+    .slice(0,limit);
+}
+function myNameSearch(raw){
+  const out=$('#myOut'),name=raw.replace(/\s/g,'');
+  if(!/^[가-힣]{2}$/.test(name)){out.innerHTML='<p class="my-msg b">이름을 한글 두 글자로 적어 주세요. 예: 하준, 서윤</p>';return}
+  const sur=S.info.surname.r,missing=[...name].filter(c=>!HJ[c]);
+  let html='';
+  const combos=missing.length?[]:combosFor(name);
+  const best=combos[0],good=combos.filter(e=>e.total>=GOOD_ENOUGH);
+  if(combos.length){
+    html+=`<div class="my-head"><b>${esc(sur+name)}</b>에 쓸 수 있는 한자 조합 ${combos.length}가지 중 ${good.length?`점수 ${GOOD_ENOUGH}점 이상 <b>${good.length}가지</b>를 골랐어요.`:'점수가 높은 조합이 없어 가장 나은 조합을 보여 드려요.'}</div>`;
+    html+=`<div class="grid">${(good.length?good.slice(0,4):combos.slice(0,2)).map(card).join('')}</div>`;
+  }
+  const poor=missing.length||!best||best.total<GOOD_ENOUGH;
+  if(poor){
+    const why=missing.length?`‘${missing.join(`’, ‘`)}’ 자는 이름결 한자 사전(인명용 한자 중 이름에 많이 쓰는 글자)에 없어서 뜻 좋은 한자를 찾지 못했어요.`
+      :`‘${name}’${josa(name,'은','는')} 뜻과 소리, 획수가 모두 좋은 조합(${GOOD_ENOUGH}점 이상)이 없어요.`;
+    let sim=similarNames(name);if(!sim.length)sim=similarNames(name,4,3);
+    html+=`<p class="my-msg">${why} ${sim.length?'대신 소리가 비슷하고 점수가 좋은 이름을 추천해 드려요.':'소리가 비슷한 이름도 찾지 못했어요. 다른 이름을 적어 보시겠어요?'}</p>`;
+    if(sim.length)html+=`<div class="grid">${sim.map(s=>`<div class="my-sim"><div class="my-why">${s.why.txt}</div>${card(s.e)}</div>`).join('')}</div>`;
+    if(missing.length)html+=`<p class="my-msg n"><b>‘${esc(name)}’ 그대로 쓰고 싶다면</b> 한자 없이 한글 이름으로 출생신고할 수 있어요(가족관계등록부 한자 칸을 비워 둠). 하늘·로운·나래 같은 순우리말 이름이 이렇게 등록돼요. 다만 이 경우 수리 4격·자원오행 풀이는 할 수 없어요.</p>`;
+  }else{
+    const sim=similarNames(name,2).filter(s=>s.e.total>best.total);
+    if(sim.length)html+=`<p class="my-msg n">소리가 비슷하면서 점수가 더 높은 이름도 있어요.</p><div class="grid">${sim.map(s=>`<div class="my-sim"><div class="my-why">${s.why.txt}</div>${card(s.e)}</div>`).join('')}</div>`;
+  }
+  out.innerHTML=html;
+}
+
 function renderStep3(){
+  $('#mySur').textContent=S.info.surname.r;
   if(!S.results.length)refresh();else renderResults();
   if(!S.chat.length){
     const sj=S.saju;
@@ -2130,6 +2207,7 @@ $('#infoForm').addEventListener('submit',ev=>{
   save();renderSaju();
   $('#sajuBox').scrollIntoView({behavior:'smooth',block:'start'});
 });
+$('#myForm').addEventListener('submit',ev=>{ev.preventDefault();myNameSearch($('#myName').value)});
 $('#chatForm').addEventListener('submit',ev=>{ev.preventDefault();const v=$('#chatIn').value.trim();if(!v)return;$('#chatIn').value='';handleChat(v)});
 $('#rvForm').addEventListener('submit',ev=>{
   ev.preventDefault();
