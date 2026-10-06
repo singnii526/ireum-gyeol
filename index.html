@@ -219,7 +219,19 @@ h3{font-size:17px}
 .xb .t{font-weight:700;font-size:13px;color:var(--accent);margin-bottom:4px}
 .alts{display:flex;gap:8px;flex-wrap:wrap}
 /* 붓글씨: 서예 연습지(田자 칸) 위에 획순대로 쓰기 */
-.brush{display:flex;gap:6px;cursor:pointer;margin-bottom:6px}
+.stage{position:relative;margin:26px -6px 0;padding:22px 16px 16px;border-radius:16px;background:radial-gradient(120% 90% at 50% 0%,var(--paper),var(--soft));border:1px solid var(--line);text-align:center}
+.stage .bigk{font-family:var(--serif);font-size:clamp(22px,5vw,32px);font-weight:700;letter-spacing:.5em;margin:14px 0 4px;padding-left:.5em;color:var(--ink)}
+.stage-foot{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;margin-top:6px;padding-inline:52px}
+@media (max-width:560px){
+  .ov{padding-inline:6px}
+  .modal{padding:18px 14px}
+  .stage{margin-inline:-4px;padding:16px 6px 14px}
+  .brush{gap:5px}
+  .stage-foot{gap:8px;padding-inline:50px}
+}
+.stamp{position:absolute;right:14px;bottom:14px;width:44px;height:44px;border-radius:6px;background:var(--accent);color:var(--accent-ink);font-family:var(--serif);font-weight:900;font-size:26px;display:grid;place-items:center;opacity:0;transform:scale(1.8) rotate(-12deg);transition:opacity .25s,transform .35s cubic-bezier(.2,1.6,.4,1)}
+.stage:has(.brush.done) .stamp{opacity:.92;transform:scale(1) rotate(-6deg)}
+.brush{display:flex;gap:12px;justify-content:center;cursor:pointer;width:100%}
 .bc{position:relative;border:1px solid var(--accent-soft);background:
   linear-gradient(var(--accent-soft),var(--accent-soft)) center/100% 1px no-repeat,
   linear-gradient(var(--accent-soft),var(--accent-soft)) center/1px 100% no-repeat,var(--soft);border-radius:4px;display:grid;place-items:center;overflow:hidden}
@@ -1345,9 +1357,14 @@ function openDetail(key){
   const hjBox=(c,lbl,o)=>`<div class="hj"><div class="hint">${lbl}</div><div class="c">${c.h}</div><div class="m">${c.m||''} ${c.r}</div><div class="s">${c.s}획 · 자원오행 <b class="tc${o}">${EL[o]}</b><br>발음오행 <b class="tc${soundEl(c.r)}">${EL[soundEl(c.r)]}</b></div></div>`;
   const elRole=o=>!sj?'':o===sj.yong?'<span class="tag g">용신</span>':o===sj.hee?'<span class="tag g">희신</span>':sj.lack.includes(o)?'<span class="tag g">부족 보완</span>':o===sj.gi?'<span class="tag r">기신</span>':'<span class="tag">보통</span>';
   $('#modal').innerHTML=`<button class="xbtn" data-close aria-label="닫기">×</button>
-    <div class="mhead">
-      <div><div class="brush" id="brush" role="img" aria-label="${sur.h}${x.h}${y.h}" title="누르면 바로 완성돼요" data-chars="${sur.h}${x.h}${y.h}"></div><div class="bigk">${esc(full)}</div></div>
-      <div class="score" style="--p:${e.total};width:72px;height:72px;font-size:24px"><span>${e.total}</span></div>
+    <div class="stage">
+      <div class="brush" id="brush" role="img" aria-label="${sur.h}${x.h}${y.h}" title="누르면 바로 완성돼요" data-chars="${sur.h}${x.h}${y.h}"></div>
+      <div class="bigk">${esc(full)}</div>
+      <div class="stage-foot">
+        <span class="hint">${x.h} ${x.m} ${x.r} · ${y.h} ${y.m} ${y.r}</span>
+        <div class="score" style="--p:${e.total};width:64px;height:64px;font-size:22px"><span>${e.total}</span></div>
+      </div>
+      <span class="stamp" aria-hidden="true">結</span>
     </div>
     <div class="verdict">${verdict(e)}</div>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
@@ -1420,7 +1437,7 @@ function writeOne(HW,cell,ch,size,ink,instant){
   if(!HW)return fallbackChar(cell,ch,instant);
   return new Promise(resolve=>{
     try{
-      const w=HW.create(cell,ch,{width:size,height:size,padding:3,showOutline:false,showCharacter:false,
+      const w=HW.create(cell,ch,{width:size,height:size,padding:Math.round(size*.05),showOutline:false,showCharacter:false,
         strokeColor:ink,radicalColor:ink,strokeAnimationSpeed:2.2,delayBetweenStrokes:60,
         onLoadCharDataSuccess:()=>{if(instant){w.showCharacter();resolve()}else w.animateCharacter({onComplete:resolve})},
         onLoadCharDataError:()=>{cell.innerHTML='';fallbackChar(cell,ch,instant).then(resolve)}});
@@ -1431,7 +1448,8 @@ async function writeName(chars,instant=false){
   const box=$('#brush');if(!box)return;
   const run=++brushRun;
   const ink=getComputedStyle(document.documentElement).getPropertyValue('--ink').trim()||'#2a2421';
-  const size=innerWidth<560?66:84;
+  const gap=parseFloat(getComputedStyle(box).columnGap)||12;
+  const size=Math.max(80,Math.min(210,Math.floor((box.clientWidth-gap*(chars.length-1))/chars.length)));
   box.classList.remove('done');
   box.innerHTML=chars.map(()=>`<div class="bc" style="width:${size}px;height:${size}px"></div>`).join('');
   instant=instant||matchMedia('(prefers-reduced-motion: reduce)').matches;
