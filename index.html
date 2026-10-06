@@ -218,6 +218,22 @@ h3{font-size:17px}
 .xb{border:1px solid var(--line);border-radius:12px;padding:12px;font-size:13.5px;min-width:0;overflow-wrap:anywhere}
 .xb .t{font-weight:700;font-size:13px;color:var(--accent);margin-bottom:4px}
 .alts{display:flex;gap:8px;flex-wrap:wrap}
+.reading{margin-top:18px;border-top:1px solid var(--line);padding-top:16px}
+.reading>h3{margin-bottom:2px}
+.reading p,.rdb p{margin:0 0 10px;font-size:14px;line-height:1.75;color:var(--ink2)}
+.reading p b,.rdb p b{color:var(--ink)}
+.rdb{margin-top:10px}
+details.rd{border:1px solid var(--line);border-radius:12px;background:var(--soft);margin-top:10px}
+details.rd summary{cursor:pointer;padding:12px 14px;font-family:var(--serif);font-weight:700;font-size:15px;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:8px}
+details.rd summary::-webkit-details-marker{display:none}
+details.rd summary::after{content:'＋';color:var(--muted);font-family:var(--sans);font-weight:400}
+details.rd[open] summary::after{content:'－'}
+details.rd .rdb{margin:0;padding:0 14px 6px}
+ul.kv{list-style:none;padding:0;margin:0 0 12px;display:grid;gap:8px}
+ul.kv li{display:grid;grid-template-columns:96px 1fr;gap:10px;font-size:13.5px;line-height:1.6}
+ul.kv li>b{font-size:13px}
+ul.kv li>span{color:var(--ink2);min-width:0}
+@media (max-width:560px){ul.kv li{grid-template-columns:1fr;gap:2px}}
 .certimg{width:100%;border-radius:12px;border:1px solid var(--line);display:block;margin:12px 0}
 
 /* compare */
@@ -444,6 +460,78 @@ const ANIMAL=['쥐','소','호랑이','토끼','용','뱀','말','양','원숭�
 const DAY_DESC=['곧게 자라는 큰 나무','부드럽게 뻗는 꽃과 풀','세상을 비추는 태양','은은히 밝히는 촛불','듬직한 큰 산','곡식을 키우는 논밭','단단한 바위와 쇠','반짝이는 보석','넓은 바다','촉촉한 빗물'];
 const MOODS=[['밝','밝음·빛'],['지','지혜·총명'],['덕','어짊·따뜻함'],['큼','큰 뜻·리더'],['미','아름다움·고움'],['자','자연·맑음'],['강','굳셈·씩씩함'],['복','복·풍요']];
 const MOOD_L=Object.fromEntries(MOODS);
+
+/* ================= 풀이 문장 데이터 ================= */
+// 일간(나를 뜻하는 글자) 10가지 성품
+const STEM_READ=[
+  {t:'곧게 뻗는 큰 나무',p:'하늘을 향해 곧게 자라는 큰 나무처럼 우직하고 바른 기질을 타고났어요. 정의감과 책임감이 강하고, 한번 정한 목표는 끝까지 밀고 나가는 리더형이에요. 어려서부터 자기 생각이 뚜렷해 고집이 세 보일 수 있지만, 그만큼 믿음직하고 남을 감싸는 그늘이 넓은 사람으로 자라요.',good:'추진력, 책임감, 의리, 앞장서는 리더십',care:'굽힐 줄 모르는 고집, 계획대로 안 될 때의 답답함',tip:'스스로 고르고 결정할 기회를 자주 주세요. 존중받는다고 느낄 때 가장 크게 자라요.'},
+  {t:'부드럽게 뻗는 꽃과 풀',p:'바람에 휘어도 꺾이지 않는 풀과 덩굴처럼 유연하고 생명력이 강한 기질이에요. 주변 환경에 맞춰 길을 찾아내는 적응력과 사람을 편하게 해 주는 친화력이 뛰어나요. 섬세한 감각으로 분위기를 잘 읽어 어디서든 사랑받는 아이로 자라요.',good:'적응력, 친화력, 섬세함, 끈질긴 생명력',care:'남의 눈치를 많이 보거나 결정을 미루는 모습',tip:'결과보다 과정을 칭찬해 주세요. 안정된 환경에서 자신감이 쑥쑥 자라요.'},
+  {t:'세상을 비추는 태양',p:'온 세상을 고루 비추는 태양처럼 밝고 열정적인 기질이에요. 솔직하고 표현력이 풍부해 자연스럽게 사람들의 중심에 서요. 숨김없는 성격 덕분에 따르는 사람이 많고, 큰 무대에서 빛을 발하는 타입이에요.',good:'밝은 에너지, 표현력, 솔직함, 사교성',care:'성급함, 쉽게 달아올랐다 쉽게 식는 마음',tip:'발표·공연·운동처럼 에너지를 마음껏 펼칠 무대를 만들어 주세요. 끝까지 해내는 경험을 함께 쌓아 주면 좋아요.'},
+  {t:'은은히 밝히는 촛불',p:'어둠 속에서 주변을 따뜻하게 밝히는 촛불처럼 섬세하고 배려 깊은 기질이에요. 한 가지에 깊이 몰입하는 집중력과 예술적 감수성을 지녔어요. 겉으로는 조용해 보여도 속에 뜨거운 열정을 품고 있어요.',good:'배려심, 집중력, 예술 감각, 따뜻한 마음',care:'속으로 삭이는 마음, 예민함',tip:'아이의 감정을 말로 표현하도록 자주 물어봐 주세요. 그림·음악처럼 마음을 담는 활동이 잘 맞아요.'},
+  {t:'듬직한 큰 산',p:'흔들림 없는 큰 산처럼 듬직하고 믿음직한 기질이에요. 포용력이 커서 갈등을 중재하고 사람들을 품어요. 말보다 행동으로 보여 주는 타입이라 시간이 갈수록 신뢰가 깊어져요.',good:'신뢰감, 포용력, 끈기, 중재 능력',care:'변화에 느리게 반응하거나 속마음을 잘 드러내지 않는 점',tip:'재촉하기보다 기다려 주세요. 스스로 납득하면 누구보다 꾸준히 해내요.'},
+  {t:'곡식을 키우는 논밭',p:'씨앗을 받아 곡식을 키우는 기름진 논밭처럼 실속 있고 다정한 기질이에요. 꼼꼼하고 현실 감각이 좋아 맡은 일을 알뜰하게 챙기고, 주변 사람을 세심하게 보살펴요.',good:'꼼꼼함, 보살핌, 현실 감각, 성실함',care:'걱정이 많거나 작은 일에 소심해지는 모습',tip:'작은 성공 경험을 자주 만들어 주세요. "잘했어"라는 확인이 큰 용기가 돼요.'},
+  {t:'단단한 바위와 쇠',p:'단단한 바위나 다듬기 전의 쇠처럼 강직하고 결단력 있는 기질이에요. 옳고 그름이 분명하고 의리를 중시해요. 위기 앞에서 오히려 강해지는 타입이라 어려운 일을 맡길수록 빛나요.',good:'결단력, 의리, 정의감, 위기 대처 능력',care:'날카로운 말투, 부딪힐 때 물러서지 않는 성격',tip:'운동이나 규칙 있는 활동으로 에너지를 다듬어 주세요. 이유를 설명해 주면 잘 따라요.'},
+  {t:'반짝이는 보석',p:'잘 다듬어진 보석처럼 섬세하고 깔끔한 기질이에요. 미적 감각과 자존심이 높아 자기 일을 완성도 있게 해내요. 맑고 반듯한 인상으로 어디서나 돋보여요.',good:'섬세함, 미적 감각, 깔끔함, 높은 기준',care:'완벽주의, 작은 말에도 상처받는 마음',tip:'존중하는 말투로 대해 주세요. 실수해도 괜찮다는 경험이 마음을 단단하게 해요.'},
+  {t:'넓은 바다',p:'모든 물을 받아들이는 넓은 바다처럼 지혜롭고 포용력 있는 기질이에요. 생각의 폭이 넓어 큰 그림을 보고, 자유롭게 새로운 길을 찾아 나서요.',good:'지혜, 포용력, 큰 그림을 보는 눈, 자유로운 발상',care:'산만해지거나 한 가지를 오래 붙들기 어려운 점',tip:'여행·독서처럼 다양한 경험을 열어 주세요. 관심사가 넓을수록 지혜가 깊어져요.'},
+  {t:'촉촉한 빗물',p:'메마른 땅을 적시는 빗물처럼 영리하고 감수성이 풍부한 기질이에요. 직관이 뛰어나 남이 못 보는 것을 먼저 알아채고, 조용하지만 깊은 지혜를 품고 있어요.',good:'영리함, 직관, 감수성, 조용한 지혜',care:'걱정이 많거나 앞에 나서기를 망설이는 모습',tip:'혼자 생각하고 정리할 시간을 주세요. 생각을 글이나 그림으로 표현하게 하면 재능이 드러나요.'}
+];
+// 오행별 성질 (전통 오행 관점)
+const EL_INFO=[
+  {kw:'성장과 시작',color:'초록·청색',dir:'동쪽',season:'봄',num:'3, 8',taste:'신맛',organ:'간·담',
+   over:'나무 기운이 많아 자존심과 고집이 강하고 생각이 앞서는 편이에요. 시작한 일이 많아 마무리를 챙겨 주면 좋아요.',
+   lack:'나무 기운이 없어 새 일을 시작하거나 계획을 세우는 힘을 보태 주면 좋아요.'},
+  {kw:'열정과 표현',color:'빨강·주황',dir:'남쪽',season:'여름',num:'2, 7',taste:'쓴맛',organ:'심장·소장',
+   over:'불 기운이 많아 열정이 넘치지만 성격이 급하고 감정 기복이 생기기 쉬워요.',
+   lack:'불 기운이 없어 표현력과 활력, 자신을 드러내는 힘을 보태 주면 좋아요.'},
+  {kw:'믿음과 중심',color:'노랑·황토',dir:'중앙',season:'환절기',num:'5, 10',taste:'단맛',organ:'비장·위',
+   over:'흙 기운이 많아 신중하고 듬직하지만 변화에 둔감하고 고집스러울 수 있어요.',
+   lack:'흙 기운이 없어 마음의 중심과 끈기, 신뢰를 쌓는 힘을 보태 주면 좋아요.'},
+  {kw:'결단과 의리',color:'흰색·은색',dir:'서쪽',season:'가을',num:'4, 9',taste:'매운맛',organ:'폐·대장',
+   over:'쇠 기운이 많아 결단력이 강하지만 말이 날카롭거나 냉정해 보일 수 있어요.',
+   lack:'쇠 기운이 없어 맺고 끊는 결단력과 원칙을 세우는 힘을 보태 주면 좋아요.'},
+  {kw:'지혜와 유연함',color:'검정·남색',dir:'북쪽',season:'겨울',num:'1, 6',taste:'짠맛',organ:'신장·방광',
+   over:'물 기운이 많아 생각이 깊지만 걱정이 많고 마음이 자주 바뀔 수 있어요.',
+   lack:'물 기운이 없어 유연한 생각과 지혜, 융통성을 보태 주면 좋아요.'}
+];
+// 일간에서 본 다른 오행의 역할 (십성 묶음)
+const ROLE=[
+  ['비겁','나와 같은 기운','형제·친구처럼 곁에서 힘이 되어 주고 자신감과 독립심을 키워 줘요'],
+  ['식상','내가 낳는 기운','타고난 재능과 표현력을 밖으로 꽃피우게 해 줘요'],
+  ['재성','내가 다스리는 기운','현실 감각과 재물을 다루는 능력을 키워 줘요'],
+  ['관성','나를 다듬는 기운','책임감과 명예, 바른 규율을 세워 줘요'],
+  ['인성','나를 낳는 기운','배움의 복과 어른의 도움, 마음의 안정을 줘요']
+];
+const roleOf=(el,dEl)=>ROLE[(el-dEl+5)%5];
+const SEASON=['겨울','겨울','봄','봄','봄','여름','여름','여름','가을','가을','가을','겨울'];
+const GEN_NM=['목생화','화생토','토생금','금생수','수생목'];
+const CTRL_NM=['목극토','화극금','토극수','금극목','수극화'];
+const TAG_PHRASE={밝:'세상을 환하게 밝히는',지:'지혜롭고 총명한',덕:'어질고 따뜻한 마음을 지닌',큼:'큰 뜻을 품고 멀리 나아가는',미:'곱고 아름다운',자:'자연처럼 맑고 너그러운',강:'굳세고 당당한',복:'복이 넘치고 넉넉한'};
+// 81수리 격 이름과 풀이 (전통 해석, 학파마다 조금씩 다름)
+const NUM81=[null,
+['기본격','만물이 시작되는 수예요. 큰 뜻을 세우고 부귀와 명예를 얻는다고 봐요.'],['분리격','기운이 나뉘어 흔들리기 쉬운 수예요. 꾸준함으로 보완해야 해요.'],['명예격','지혜와 재능으로 이름을 떨치는 수예요.'],['부정격','일이 막히고 고생이 따르기 쉬운 수예요.'],['복수격','복과 장수가 함께하는 원만한 수예요.'],
+['계성격','덕이 쌓여 집안을 이어 번창시키는 수예요.'],['독립격','굳센 의지로 홀로 서서 뜻을 이루는 수예요.'],['발달격','노력한 만큼 꾸준히 발전하는 수예요.'],['궁박격','재능은 있으나 어려움이 따르기 쉬운 수예요.'],['공허격','공들인 일이 허무해지기 쉬운 수예요.'],
+['신성격','새롭게 일어나 집안을 다시 일으키는 수예요.'],['박약격','의지가 약해지기 쉬워 끈기가 필요한 수예요.'],['지모격','지혜와 재치로 뜻을 이루는 수예요.'],['이산격','사람과 재물이 흩어지기 쉬운 수예요.'],['통솔격','덕망으로 사람을 이끄는 리더의 수예요.'],
+['덕망격','인덕이 두터워 귀인의 도움을 받는 수예요.'],['용진격','굳은 뜻으로 어려움을 뚫고 나아가는 수예요.'],['발전격','뜻한 바를 이루며 크게 발전하는 수예요.'],['고난격','재능에 비해 고난이 따르기 쉬운 수예요.'],['허망격','이룬 것이 흩어지기 쉬운 수예요.'],
+['두령격','우두머리가 되어 존경받는 수예요.'],['중절격','일이 중간에 꺾이기 쉬운 수예요.'],['공명격','공을 세우고 이름을 널리 알리는 수예요.'],['입신격','맨손에서 일어나 재물을 모으는 수예요.'],['안강격','성품이 단정하고 편안하게 성공하는 수예요.'],
+['영웅격','파란이 많지만 비범한 기개를 지닌 수예요.'],['중단격','이루어 가던 일이 멈추기 쉬운 수예요.'],['파란격','풍파가 잦아 마음고생이 따르는 수예요.'],['성공격','지혜와 재능으로 큰 성공을 거두는 수예요.'],['부몽격','좋고 나쁨이 엇갈려 부침이 큰 수예요.'],
+['융창격','지혜와 덕으로 크게 번창하는 수예요.'],['순풍격','순풍에 돛 단 듯 뜻밖의 행운이 따르는 수예요.'],['승천격','하늘로 오르듯 크게 이름을 떨치는 수예요.'],['변란격','뜻밖의 변화와 어려움이 따르는 수예요.'],['평범격','온화하고 평안하게 복을 누리는 수예요.'],
+['영걸격','의협심이 강하나 파란을 겪는 수예요.'],['인덕격','인덕과 성실함으로 존경받는 수예요.'],['문예격','학문과 예술에서 재능을 꽃피우는 수예요.'],['안락격','어려움을 이기고 안락과 부귀를 누리는 수예요.'],['무상격','성공과 실패가 무상하게 반복되는 수예요.'],
+['대공격','덕과 재능을 갖춰 큰 공을 세우는 수예요.'],['고행격','재주는 많으나 고생이 따르는 수예요.'],['미혹격','겉은 화려하나 실속이 약한 수예요.'],['마장격','뜻밖의 장애가 가로막기 쉬운 수예요.'],['대각격','큰 깨달음과 지혜로 뜻을 이루는 수예요.'],
+['부지격','노력에 비해 결실이 늦은 수예요.'],['출세격','귀인의 도움으로 출세하는 수예요.'],['유덕격','덕과 지혜로 남을 이끄는 스승의 수예요.'],['은퇴격','좋고 나쁨이 엇갈려 변화가 많은 수예요.'],['부몽격','한때 성공해도 지키기 어려운 수예요.'],
+['성패격','성공과 실패가 번갈아 오는 수예요.'],['약진격','앞을 내다보는 안목으로 크게 도약하는 수예요.'],['내허격','겉은 넉넉해 보이나 속은 허한 수예요.'],['무덕격','노력에 비해 덕을 얻기 어려운 수예요.'],['미달격','겉은 번성하나 끝맺음이 약한 수예요.'],
+['한탄격','뜻대로 되지 않아 아쉬움이 남는 수예요.'],['노력격','노력 끝에 큰 결실을 맺는 수예요.'],['후복격','처음은 어려워도 뒤로 갈수록 복이 오는 수예요.'],['재화격','의지가 약해 일이 꼬이기 쉬운 수예요.'],['동요격','마음이 흔들려 방향을 잃기 쉬운 수예요.'],
+['영화격','명예와 재물을 함께 누리는 수예요.'],['쇠퇴격','기운이 점차 약해지기 쉬운 수예요.'],['길상격','하는 일마다 좋은 일이 따르는 수예요.'],['침체격','일이 막혀 정체되기 쉬운 수예요.'],['휘양격','집안이 번창하고 복이 넘치는 수예요.'],
+['쇠망격','안팎으로 어려움이 따르기 쉬운 수예요.'],['영달격','하는 일이 순조롭게 뻗어 나가는 수예요.'],['명지격','밝은 지혜로 새로운 일을 이루는 수예요.'],['종말격','일이 마무리되지 못하기 쉬운 수예요.'],['공허격','공허함과 외로움이 따르기 쉬운 수예요.'],
+['견실격','성실하게 노력하면 결실을 보는 수예요.'],['상반격','좋고 나쁨이 반씩 섞인 수예요.'],['평길격','큰 굴곡 없이 평탄한 수예요.'],['우매격','노력이 헛되기 쉬운 수예요.'],['정수격','분수를 지키면 평안한 수예요.'],
+['선곤격','처음에 어렵고 뒤에 나아지는 수예요.'],['전후격','앞뒤로 좋고 나쁨이 엇갈리는 수예요.'],['선길격','초반은 좋으나 뒤가 약한 수예요.'],['종극격','끝맺음이 약해 아쉬움이 남는 수예요.'],['종결격','기운이 다해 정리하는 수예요.'],
+['환원격','다시 처음으로 돌아가 크게 번영하는 수예요.']
+];
+const GY_DESC={
+  원격:'이름 두 글자의 획수를 더한 수예요. 태어나서 스무 살 무렵까지의 성장 환경, 성격의 바탕, 건강을 봐요.',
+  형격:'성과 이름 첫 글자의 획수를 더한 수로, 이름의 중심(주운)이에요. 20~40대의 학업·직업·사회 활동을 봐요.',
+  이격:'성과 이름 끝 글자의 획수를 더한 수예요. 40대 이후의 가정, 배우자, 대인 관계를 봐요.',
+  정격:'세 글자 획수를 모두 더한 수로, 평생의 총운이자 말년운이에요. 이름 전체가 주는 큰 흐름을 보여 줘요.'
+};
 
 // 음|한자|뜻|원획|자원오행|성별(m/f/n)|느낌태그
 const HJ_RAW=`가|佳|아름다울|8|화|f|미
@@ -898,6 +986,78 @@ function verdict(e){
   return `<b>${head}</b> ${good.join(', ')}${good.length?'.':''}${weak.length?` 다만 ${weak.join(', ')}.`:''}`;
 }
 
+/* ================= 상세 풀이 ================= */
+const rdSec=(title,body,open=true)=>`<details class="rd"${open?' open':''}><summary>${title}</summary><div class="rdb">${body}</div></details>`;
+const elB=i=>`<b class="tc${i}">${EL[i]}(${ELH[i]})</b>`;
+function sajuReading(sj){
+  const S1=STEM_READ[sj.dS],dEl=sj.dEl,E=EL_INFO;
+  const mB=sj.P[2].b,mEl=BR_EL[mB],season=SEASON[mB];
+  const deuk=mEl===dEl||mEl===(dEl+4)%5,mRole=roleOf(mEl,dEl);
+  const n=sj.cnt.reduce((a,b)=>a+b,0);
+  const over=sj.cnt.map((c,i)=>c>=3?i:-1).filter(i=>i>=0);
+  const mx=Math.max(...sj.cnt),most=sj.cnt.map((c,i)=>c===mx?i:-1).filter(i=>i>=0);
+  const yr=roleOf(sj.yong,dEl),Y=E[sj.yong];
+  const pct=Math.round(sj.ratio*100);
+
+  const s1=`<p>사주에서 태어난 날의 천간(일간)은 ‘나 자신’을 뜻해요. 이 아이의 일간은 <b>${STEMS[sj.dS]}(${STEMS_K[sj.dS]}${EL[dEl]})</b>, 자연에 빗대면 <b>${S1.t}</b>예요.</p><p>${S1.p}</p>
+    <ul class="kv"><li><b>강점</b><span>${S1.good}</span></li><li><b>살펴 줄 점</b><span>${S1.care}</span></li><li><b>키울 때 팁</b><span>${S1.tip}</span></li></ul>`;
+
+  const s2=`<p>${season}의 ${BR[mB]}(${BR_K[mB]})월에 태어났어요. 이 달은 ${elB(mEl)} 기운이 가장 왕성해요. 태어난 달은 사주 여덟 글자 중 힘이 가장 센 자리라서, 타고난 기운의 바탕이 돼요.</p>
+    <p>${deuk?`일간 ${EL[dEl]}에게 힘을 실어 주는 계절이라 <b>제철에 태어난 셈</b>이에요(득령). 자기 색깔이 분명하고 뿌리가 단단한 편이에요.`
+      :`일간 ${EL[dEl]} 입장에서 이 계절은 <b>${mRole[0]}</b>(${mRole[1]})에 해당해요. ${mRole[2]}. 다만 내 기운이 제철은 아니라서, 주변의 응원과 도움이 큰 힘이 돼요.`}</p>`;
+
+  const lines=sj.cnt.map((c,i)=>`<li><b class="tc${i}">${EL[i]}(${ELH[i]}) ${c}개</b><span>${c===0?E[i].lack:c>=3?E[i].over:c===1?`${E[i].kw}의 기운이 조금 있어요.`:`${E[i].kw}의 기운이 알맞게 있어요.`}</span></li>`).join('');
+  const s3=`<p>여덟 글자${sj.hasTime?'':'(시각을 몰라 여섯 글자)'}를 오행으로 나누면 ${n}개 중 ${most.map(elB).join(', ')} 기운이 ${most.length>1?`${mx}개씩으로 가장 많아요`:'가장 많아요'}. ${sj.lack.length?`${sj.lack.map(elB).join(', ')} 기운은 하나도 없어서, 이름으로 채워 주면 균형이 좋아져요.`:over.length?'빠진 기운은 없지만 한쪽으로 쏠린 기운이 있어요.':'다섯 기운이 비교적 고르게 퍼져 있는 좋은 구성이에요.'}</p><ul class="kv">${lines}</ul>`;
+
+  const s4=`<p>일간을 도와주는 기운(같은 기운과 나를 낳는 기운)이 사주 전체의 약 <b>${pct}%</b>예요(태어난 달은 두 배로 계산).</p><p>${
+    sj.strength==='강'?'<b>신강</b>한 사주예요. 자기 기운이 강해 주관이 뚜렷하고 스스로 길을 개척하는 힘이 있어요. 기운이 넘치면 고집이 되기 쉬워서, 그 힘을 밖으로 펼치게 하거나(식상) 다듬어 주는(재성·관성) 기운이 필요해요.'
+    :sj.strength==='약'?'<b>신약</b>한 사주예요. 주변 기운이 더 강해 섬세하고 협조적이며, 좋은 사람들과 함께할 때 힘을 내요. 나를 도와주는 기운(인성)이나 같은 편 기운(비겁)을 보태 주면 자신감과 추진력이 자라요.'
+    :'<b>중화</b>된 사주예요. 일간의 힘이 알맞아서 어느 한쪽으로 치우치지 않아요. 이런 경우에는 사주에서 가장 부족한 기운을 채워 주는 쪽으로 이름을 지어요.'}</p>`;
+
+  const s5=`<p>용신은 사주의 균형을 잡아 주는 <b>가장 필요한 기운</b>이에요. 작명에서는 이름 한자의 자원오행으로 용신을 채워 줘요.</p>
+    <p>이 아이의 용신은 ${elB(sj.yong)}${josa(EL[sj.yong],"이에요","예요")}. 일간 ${EL[dEl]}에게 ${EL[sj.yong]}${josa(EL[sj.yong],'은','는')} <b>${yr[0]}</b>(${yr[1]})으로, ${yr[2]}. ${Y.kw}의 기운이 더해지면 사주 전체가 한결 편안해져요.</p>
+    <ul class="kv"><li><b>희신 ${EL[sj.hee]}</b><span>용신을 낳아 주는 기운이라 함께 있으면 좋아요.</span></li><li><b>기신 ${EL[sj.gi]}</b><span>용신을 누르는 기운이라 이름에서는 줄이는 게 좋아요.</span></li></ul>`;
+
+  const s6=`<p>이름 말고도 생활 속에서 용신 ${elB(sj.yong)}의 기운을 가까이할 수 있어요. 전통 오행에서 이렇게 연결해요.</p>
+    <ul class="kv"><li><b>색</b><span>${Y.color} — 옷, 이불, 방 소품</span></li><li><b>방향</b><span>${Y.dir} — 책상·침대 머리 방향</span></li><li><b>계절</b><span>${Y.season}에 기운이 살아나요</span></li><li><b>숫자</b><span>${Y.num}</span></li><li><b>맛</b><span>${Y.taste}</span></li><li><b>몸</b><span>${Y.organ}${josa(Y.organ,'과','와')} 연결된다고 봐요</span></li></ul>
+    <p class="hint">전통 오행 관점의 참고 정보예요. 건강은 의료 전문가와 상의하세요.</p>`;
+
+  return `<div class="reading"><h3>사주 상세 풀이</h3><p class="hint">항목 제목을 누르면 접고 펼 수 있어요.</p>
+    ${rdSec('① 타고난 성품',s1)}${rdSec('② 태어난 계절의 기운',s2)}${rdSec('③ 오행 균형',s3)}${rdSec('④ 기운의 세기 (신강·신약)',s4)}${rdSec('⑤ 용신, 이름에 담을 기운',s5)}${rdSec('⑥ 생활 속 용신 활용',s6)}</div>`;
+}
+function relSentence(a,b,from,to,ctxTxt){
+  const r=rel(a,b),J=(w,p,q)=>`‘${w}’${josa(w,p,q)}`;
+  if(r==='같음')return `${J(from,'과','와')} ${J(to,'은','는')} 둘 다 ${elB(a)} 소리예요. 같은 기운이 이어져 무난하지만, 서로 살려 주는 흐름보다는 힘이 덜해요. ${ctxTxt[3]||''}`;
+  if(r==='생')return `‘${from}’(${EL[a]})${josa(EL[a],'이','가')} ‘${to}’(${EL[b]})${josa(EL[b],'을','를')} 살려 줘요(<b>${GEN_NM[a]}</b>). ${ctxTxt[0]}`;
+  if(r==='역생')return `‘${to}’(${EL[b]})${josa(EL[b],'이','가')} ‘${from}’(${EL[a]})${josa(EL[a],'을','를')} 받쳐 줘요(<b>${GEN_NM[b]}</b>). ${ctxTxt[1]}`;
+  const k=(a+2)%5===b?CTRL_NM[a]:CTRL_NM[b];
+  return `‘${from}’(${EL[a]})${josa(EL[a],'과','와')} ‘${to}’(${EL[b]})${josa(EL[b],'이','가')} 서로 부딪혀요(<b>${k}</b>). ${ctxTxt[2]}`;
+}
+function nameStory(e){
+  const [x,y]=e.chars,px=TAG_PHRASE[x.t[0]],py=TAG_PHRASE[y.t[0]];
+  const wish=x.t[0]===y.t[0]?`“${px} 사람”이라는 바람이 두 글자에 겹쳐 담겨 뜻이 더욱 또렷해요.`:`두 글자가 만나 “${px}, 그리고 ${py} 사람”으로 자라길 바라는 이름이에요.`;
+  return `<p><b>${x.h}</b>(${x.m} ${x.r})에는 ${px} 뜻이, <b>${y.h}</b>(${y.m} ${y.r})에는 ${py} 뜻이 담겨 있어요. ${wish}</p>`;
+}
+function nameReading(e){
+  const [x,y]=e.chars,sj=e.ctx.saju,sur=e.sur;
+  const gc=e.gy.filter(g=>g.good).length;
+  const parts=[];
+  parts.push(nameStory(e));
+  parts.push(`<p>수리 4격은 ${gc===4?'네 시기가 모두 길해 <b>평생 운의 흐름이 고르게 좋아요</b>':gc===3?`네 시기 중 세 곳이 길해요. ${e.gy.find(g=>!g.good).k}(${e.gy.find(g=>!g.good).sub.split(' · ')[0]})만 조심하면 돼요`:`길한 시기가 ${gc}곳이라 수리 면에서는 아쉬움이 있어요`}. 소리의 흐름은 ${e.pr.every(r=>r!=='극')?'성부터 이름 끝까지 막힘없이 이어지고':'중간에 부딪히는 구간이 있고'}, 획수의 음양은 ${e.yyGood?'고르게 섞여 조화로워요':'한쪽으로 쏠려 있어요'}.</p>`);
+  if(sj){
+    const ys=e.chars.filter(c=>c.o===sj.yong).length,hs=e.chars.filter(c=>c.o===sj.hee).length,gs=e.chars.filter(c=>c.o===sj.gi).length;
+    parts.push(`<p>사주와 맞춰 보면, ${ys?`용신 ${elB(sj.yong)} 기운을 ${ys===2?'두 글자가 모두':'한 글자가'} 직접 채워 줘서 <b>사주의 부족한 부분을 이름이 메워 주는 구조</b>예요.`:hs?`용신을 돕는 희신 ${elB(sj.hee)} 기운이 들어 있어 간접적으로 균형을 잡아 줘요.`:`용신 ${elB(sj.yong)} 기운이 직접 들어 있지는 않아요.`}${gs?` 다만 기신 ${elB(sj.gi)} 기운 글자가 있어 사주 면에서는 아쉬워요.`:''}</p>`);
+  }
+  const best=e.total>=85?'작명소에서 권하는 이름과 견주어도 손색없는 좋은 이름이에요.':e.total>=72?'전반적으로 균형이 잡힌 좋은 이름이에요.':e.total>=58?'무난하지만 다른 한자 조합도 함께 비교해 보길 권해요.':'아쉬운 부분이 많아 다른 후보를 함께 살펴보길 권해요.';
+  parts.push(`<p><b>종합하면</b>, ${best}</p>`);
+  return parts.join('');
+}
+function hjReading(c,sj,pos){
+  const E=EL_INFO[c.o];
+  const role=!sj?'':c.o===sj.yong?`사주의 용신과 같은 기운이라 <b>가장 필요한 기운을 직접 채워 주는 글자</b>예요.`:c.o===sj.hee?'용신을 돕는 희신 기운이라 사주의 균형에 보탬이 돼요.':sj.lack.includes(c.o)?'사주에 없는 기운을 채워 주는 글자예요.':c.o===sj.gi?'용신을 누르는 기신 기운이라 사주 면에서는 아쉬운 글자예요.':'사주에 크게 부담을 주지 않는 무난한 기운이에요.';
+  return `<p><b>${c.h} ${c.m} ${c.r}</b> · ${pos} · ${c.s}획 · 자원오행 ${elB(c.o)}<br>${TAG_PHRASE[c.t[0]]} 뜻을 지닌 글자예요. ${EL[c.o]} 기운은 ${E.kw}${josa(E.kw,'을','를')} 상징해요. ${role}</p>`;
+}
+
 /* ================= 차별화 기능 ================= */
 function teaseCheck(full){const p=pronounce(full),raw=full;return TEASE.filter(w=>p.includes(w)||raw.includes(w))}
 function commonness(name){
@@ -984,6 +1144,7 @@ function renderSaju(){
       <div class="kf"><div class="k">${sj.lack.length?'사주에 없는 기운':'피하면 좋은 기운'}</div><div class="v">${sj.lack.length?sj.lack.map(i=>`<span class="tc${i}">${EL[i]}</span>`).join(' · '):`<span class="tc${sj.gi}">${EL[sj.gi]} ${ELH[sj.gi]}</span>`}</div><p>${sj.lack.length?'이름 한자로 보완하면 좋아요.':'용신을 누르는 기운이라 이름에서는 줄이는 게 좋아요.'}</p></div>
     </div>
     ${sj.hasTime?'':'<p class="hint" style="margin:10px 0 0">태어난 시각을 모르면 시주를 빼고 여섯 글자로 분석해요.</p>'}
+    ${sajuReading(sj)}
     <button class="btn pri block" style="margin-top:14px" data-go="2">다음: 작명 방향 정하기 →</button>
   </div>`;
 }
@@ -1184,24 +1345,34 @@ function openDetail(key){
       <button class="btn sm dark" data-cert="${esc(e.key)}">이름 증서 이미지 저장</button>
     </div>
 
+    <div class="msec reading"><h3>이름 종합 해설</h3>${nameReading(e)}</div>
+
     <div class="msec"><h3>한자 풀이</h3><p class="ex">원획법(부수를 본래 글자 획수로 세는 방식) 기준이에요.</p>
-      <div class="hj3">${hjBox({...sur,m:'성'},'성',sur.o)}${hjBox(x,'이름 첫 글자',x.o)}${hjBox(y,'이름 끝 글자',y.o)}</div></div>
+      <div class="hj3">${hjBox({...sur,m:'성'},'성',sur.o)}${hjBox(x,'이름 첫 글자',x.o)}${hjBox(y,'이름 끝 글자',y.o)}</div>
+      <div class="rdb">${hjReading(x,sj,'이름 첫 글자')}${hjReading(y,sj,'이름 끝 글자')}</div></div>
 
-    <div class="msec"><h3>수리 4격 <span class="pts">${e.sc.suri} / 40점</span></h3><p class="ex">한자 획수를 더해 인생 시기별 운을 봐요. 81수리에서 길한 수면 ○예요.</p>
-      <div class="gy4">${e.gy.map(g=>`<div class="gy ${g.good?'ok':'no'}"><div class="k">${g.k}</div><div class="n">${g.v}</div><div class="k">${g.sub}</div><b style="color:${g.good?'var(--good)':'var(--bad)'}">${g.good?'○ 길':'× 흉'}</b></div>`).join('')}</div></div>
+    <div class="msec"><h3>수리 4격 <span class="pts">${e.sc.suri} / 40점</span></h3><p class="ex">한자 획수를 더해 인생의 네 시기 운을 봐요. 81가지 수 하나하나에 전통적으로 정해진 이름과 뜻이 있어요.</p>
+      <div class="gy4">${e.gy.map(g=>`<div class="gy ${g.good?'ok':'no'}"><div class="k">${g.k}</div><div class="n">${g.v}</div><div class="k">${NUM81[g.v][0]}</div><b style="color:${g.good?'var(--good)':'var(--bad)'}">${g.good?'○ 길':'× 흉'}</b></div>`).join('')}</div>
+      <div class="rdb">${e.gy.map(g=>`<p><b>${g.k} ${g.v}수 · ${NUM81[g.v][0]}</b> <span class="hint">${g.sub}</span><br>${GY_DESC[g.k]} ${g.v}수는 ‘${NUM81[g.v][0]}’으로, ${NUM81[g.v][1]}</p>`).join('')}</div></div>
 
-    <div class="msec"><h3>발음오행 <span class="pts">${e.sc.sound} / 20점</span></h3><p class="ex">소리의 첫 자음이 가진 기운이에요. 성 → 이름으로 서로 살려주는(상생) 흐름이면 좋아요.</p>
-      <div class="flowx">${[sur.r,x.r,y.r].map((c,i)=>`<span class="pill e${e.pe[i]}" style="font-size:15px;padding:6px 12px">${c} · ${EL[e.pe[i]]}</span>${i<2?`<span class="arr">→<br>${relTxt[e.pr[i]]}</span>`:''}`).join('')}</div></div>
+    <div class="msec"><h3>발음오행 <span class="pts">${e.sc.sound} / 20점</span></h3><p class="ex">소리의 첫 자음이 가진 기운이에요. 이름은 평생 불리기 때문에, 소리의 기운이 서로 살려 주는(상생) 흐름이면 좋다고 봐요.</p>
+      <div class="flowx">${[sur.r,x.r,y.r].map((c,i)=>`<span class="pill e${e.pe[i]}" style="font-size:15px;padding:6px 12px">${c} · ${EL[e.pe[i]]}</span>${i<2?`<span class="arr">→<br>${relTxt[e.pr[i]]}</span>`:''}`).join('')}</div>
+      <div class="rdb">
+        <p><b>성 → 이름 첫 글자</b><br>${relSentence(e.pe[0],e.pe[1],sur.r,x.r,['집안의 기운이 아이를 밀어 주는 흐름이라, 부모와 윗사람의 도움을 받기 좋다고 봐요.','아이의 기운이 집안을 받쳐 주는 흐름이라, 자라서 집안을 빛낸다고 봐요.','집안과 아이의 기운이 부딪혀, 이 구간은 다른 장점으로 보완하는 게 좋아요.','집안과 같은 결의 기운을 이어받는다고 봐요.'])}</p>
+        <p><b>이름 첫 글자 → 끝 글자</b><br>${relSentence(e.pe[1],e.pe[2],x.r,y.r,['이름 안에서 기운이 앞에서 뒤로 자연스럽게 흘러, 부르기 편하고 안정감 있는 소리예요.','뒤 글자가 앞 글자를 받쳐 주어, 소리의 마무리가 단단해요.','이름 안에서 소리 기운이 부딪혀, 부를 때 힘이 분산된다고 봐요.','이름 두 글자가 한 가지 기운으로 모여 성격이 뚜렷한 소리예요.'])}</p>
+      </div></div>
 
     <div class="msec"><h3>음양 조화 <span class="pts">${e.sc.yy} / 10점</span></h3><p class="ex">획수가 홀수면 양(●), 짝수면 음(○). 세 글자가 섞여 있어야 조화로워요.</p>
-      <div class="yy">${e.yy.map(v=>`<i class="${v?'y':''}"></i>`).join('')}<span>${e.yyGood?'음과 양이 고루 섞여 있어요':'한쪽으로 쏠려 있어요'}</span></div></div>
+      <div class="yy">${e.yy.map(v=>`<i class="${v?'y':''}"></i>`).join('')}<span>${e.yyGood?'음과 양이 고루 섞여 있어요':'한쪽으로 쏠려 있어요'}</span></div>
+      <div class="rdb"><p>${[sur,x,y].map((c,i)=>`${c.h}(${c.s}획) ${e.yy[i]?'양':'음'}`).join(' · ')}<br>${e.yyGood?'음은 고요함과 안정, 양은 활동과 추진을 뜻해요. 이 이름은 두 기운이 함께 있어 <b>밖으로 나아갈 힘과 안으로 지킬 힘이 균형</b>을 이뤄요.':`세 글자가 모두 ${e.yy[0]?'양':'음'}이라 기운이 한쪽으로 쏠려요. ${e.yy[0]?'활동적이지만 쉬어 가는 힘이 약해질 수 있다고 봐요.':'차분하지만 앞으로 나아가는 힘이 약해질 수 있다고 봐요.'} 획수가 다른 한자로 바꾸면 쉽게 고칠 수 있어요.`}</p></div></div>
 
     <div class="msec"><h3>자원오행 · 용신 <span class="pts">${sj?e.sc.el+' / 20점':'사주 정보 없음'}</span></h3><p class="ex">한자 자체가 가진 기운이에요. 사주에 필요한 기운(용신)을 담으면 좋아요.</p>
-      ${sj?`<div class="flowx"><span>${x.h} <b class="tc${x.o}">${EL[x.o]}</b> ${elRole(x.o)}</span><span style="margin:0 10px;color:var(--line)">|</span><span>${y.h} <b class="tc${y.o}">${EL[y.o]}</b> ${elRole(y.o)}</span></div><p class="hint">이 아이의 용신은 <b class="tc${sj.yong}">${EL[sj.yong]}</b>, 희신은 <b class="tc${sj.hee}">${EL[sj.hee]}</b>, 기신은 <b class="tc${sj.gi}">${EL[sj.gi]}</b>이에요.</p>`:'<p class="hint">생년월일을 넣으면 용신 점수가 계산돼요.</p>'}</div>
+      ${sj?`<div class="flowx"><span>${x.h} <b class="tc${x.o}">${EL[x.o]}</b> ${elRole(x.o)}</span><span style="margin:0 10px;color:var(--line)">|</span><span>${y.h} <b class="tc${y.o}">${EL[y.o]}</b> ${elRole(y.o)}</span></div>
+      <div class="rdb"><p>이 아이의 용신은 ${elB(sj.yong)}, 희신은 ${elB(sj.hee)}, 기신은 ${elB(sj.gi)}${josa(EL[sj.gi],"이에요","예요")}${sj.lack.length?`. 사주에 없는 기운은 ${sj.lack.map(elB).join(', ')}${josa(EL[sj.lack[sj.lack.length-1]],"이에요","예요")}`:''}. 이름 한자의 기운이 용신에 가까울수록 점수가 높아요(용신 10, 희신 7, 없는 기운 6, 기신 0, 그 외 4점).</p></div>`:'<p class="hint">생년월일을 넣으면 용신 점수가 계산돼요.</p>'}</div>
 
     <div class="msec"><h3>부르기 · 생활 체크 <span class="pts">이름결 전용</span></h3>
       <div class="xtra">
-        <div class="xb"><div class="t">실제 소리</div>${pron!==full?`<b>[${pron}]</b>로 소리나요.`:`적힌 그대로 <b>[${full}]</b>로 소리나요.`}<br>부를 때: <b>${call}~</b>${callP!==call?` [${callP}]`:''}</div>
+        <div class="xb"><div class="t">실제 소리</div>${pron!==full?`<b>[${pron}]</b>${josa(pron,"으로","로")} 소리나요.`:`적힌 그대로 <b>[${full}]</b>${josa(full,"으로","로")} 소리나요.`}<br>부를 때: <b>${call}~</b>${callP!==call?` [${callP}]`:''}</div>
         <div class="xb"><div class="t">놀림 단어 체크</div>${tz.length?`<span style="color:var(--bad)">‘${tz.join(', ')}’처럼 들릴 수 있어요.</span>`:'놀림받을 만한 단어와 겹치지 않아요 ✓'}</div>
         <div class="xb"><div class="t">영문 표기</div><b>${rom.full}</b><br><span class="hint">여권식 표기 예: ${rom.sur.toUpperCase()} ${rom.hyphen.toUpperCase()}</span><br>${enc.ok?'해외에서도 읽기 쉬운 편이에요 ✓':enc.notes.map(esc).join('<br>')}</div>
         <div class="xb"><div class="t">흔한 정도</div><b>${cm[0]}</b><br>${cm[1]}<br><span class="hint">이름결 이름 목록 기준 추정</span></div>
