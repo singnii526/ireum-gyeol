@@ -1399,7 +1399,7 @@ function candidates(){
     const best=combos[0];best.alts=combos.slice(1,5);best.synth=!P.includes(nm);
     out.push(best);
   }
-  out.sort((p,q)=>(q.rank+famB(q))-(p.rank+famB(p))||q.total-p.total||(p.synth-q.synth));
+  out.sort((p,q)=>q.total-p.total||(q.rank+famB(q))-(p.rank+famB(p))||(p.synth-q.synth));
   return out;
 }
 function verdict(e){
@@ -1839,7 +1839,7 @@ function similarNames(name,limit=4,minSim=4){
   return [...cand].map(([n,why])=>{const c=combosFor(n).filter(e=>e.chars.every(x=>hjOk(x,false)));return c.length?{e:c[0],why}:null})
     .filter(x=>x&&x.e.total>=GOOD_ENOUGH)
     .sort((p,q)=>q.why.sim-p.why.sim||q.e.total-p.e.total||(p.e.name<q.e.name?-1:1))
-    .slice(0,limit);
+    .slice(0,limit).sort((p,q)=>q.e.total-p.e.total);
 }
 function myNameSearch(raw){
   const out=$('#myOut'),name=raw.replace(/\s/g,'');
@@ -1852,7 +1852,8 @@ function myNameSearch(raw){
     const cnt=[...name].map(c=>`‘${c}’ 인명용 한자 ${LEGAL_COUNT[c]||0}자 중 ${(HJX[c]||[]).length}자`).join(', ');
     html+=`<p class="hint" style="margin:14px 0 0">${cnt}를 검토했어요. 뜻이 좋지 않거나 획수·자원오행을 확정할 수 없는 글자는 뺐어요.</p>`;
     html+=`<div class="my-head"><b>${esc(sur+name)}</b>에 쓸 수 있는 한자 조합 ${combos.length}가지 중 ${good.length?`점수 ${GOOD_ENOUGH}점 이상 <b>${good.length}가지</b>를 골랐어요.`:'점수가 높은 조합이 없어 가장 나은 조합을 보여 드려요.'}</div>`;
-    html+=`<div class="grid">${(good.length?good.slice(0,4):combos.slice(0,2)).map(card).join('')}</div>`;
+    const shown=(good.length?good.slice(0,4):combos.slice(0,2)).sort((p,q)=>q.total-p.total||famB(q)-famB(p));
+    html+=`<div class="grid">${shown.map(e=>card(e)).join('')}</div>`;
   }
   const poor=missing.length||!best||best.total<GOOD_ENOUGH;
   if(poor){
