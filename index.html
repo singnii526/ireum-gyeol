@@ -84,7 +84,40 @@ h3{font-size:17px}
 .hero{display:grid;grid-template-columns:1.1fr 1fr;gap:28px;align-items:start}
 .hero>*{min-width:0}
 .hero-copy h1{font-size:30px;line-height:1.3;word-break:keep-all;font-weight:900}
-.hero-copy h1 em{font-style:normal;color:var(--accent)}
+/* 첫 화면 장면: 지금 이 순간의 사주 → 오행 번짐 → 붓으로 名 → 낙관 (한 번만, 약 3.5초) */
+.opening{position:relative;margin:0 0 22px;padding:18px 16px 22px;border:1px solid var(--line);border-radius:16px;overflow:hidden;cursor:pointer;
+  background:radial-gradient(140% 90% at 50% 0%,var(--paper) 0%,var(--soft) 70%,var(--sunk) 100%)}
+.opening:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.op-pillars{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;max-width:236px;margin:0 auto}
+.op-col{display:grid;justify-items:center;gap:1px}
+.op-col small{font-size:11px;color:var(--muted);margin-bottom:2px}
+.op-col b{font-family:var(--serif);font-size:25px;font-weight:700;line-height:1.25;color:var(--ink);
+  opacity:0;filter:blur(7px);transform:scale(1.14);animation:inkin .75s cubic-bezier(.2,.7,.2,1) forwards;animation-delay:calc(var(--i)*120ms + var(--j)*60ms)}
+.op-col b::after{content:'';display:block;width:4px;height:4px;border-radius:50%;margin:1px auto 0;background:var(--dot);opacity:.7}
+@keyframes inkin{to{opacity:1;filter:blur(0);transform:none}}
+.op-cap{text-align:center;font-size:12px;color:var(--muted);margin:6px 0 14px;opacity:0;animation:capin .6s ease .55s forwards}
+@keyframes capin{to{opacity:1}}
+.op-sheet{position:relative;width:188px;height:188px;margin:0 auto;display:grid;place-items:center}
+.op-drops{position:absolute;inset:-26px}
+.op-drops i{position:absolute;width:118px;height:118px;margin:-59px 0 0 -59px;border-radius:50%;
+  background:radial-gradient(circle,var(--c) 0%,transparent 66%);opacity:0;transform:scale(.25);animation:drop 1.6s cubic-bezier(.2,.6,.2,1) forwards;animation-delay:calc(.85s + var(--k)*.13s)}
+@keyframes drop{to{opacity:.2;transform:scale(1)}}
+.op-char{position:relative;width:168px;height:168px;display:grid;place-items:center;border:1px solid color-mix(in srgb,var(--accent) 22%,var(--line));border-radius:4px;
+  background:linear-gradient(var(--accent-soft),var(--accent-soft)) center/100% 1px no-repeat,linear-gradient(var(--accent-soft),var(--accent-soft)) center/1px 100% no-repeat,color-mix(in srgb,var(--paper) 82%,transparent)}
+.op-char .bf{font-size:136px}
+.op-seal{position:absolute;right:-4px;bottom:-4px;width:42px;height:42px;display:grid;place-items:center;border-radius:6px;background:var(--accent);color:var(--accent-ink);
+  font-family:var(--serif);font-weight:900;font-size:23px;opacity:0;transform:scale(1.9) rotate(-16deg)}
+.opening.sealed .op-seal{animation:stamp .5s cubic-bezier(.2,1.5,.4,1) forwards}
+.opening.sealed .op-sheet{animation:press .5s ease-out}
+@keyframes stamp{to{opacity:.95;transform:scale(1) rotate(-6deg)}}
+@keyframes press{30%{transform:scale(.985)}}
+.opening.still *{animation-duration:0s!important;animation-delay:0s!important}
+/* 동작 줄이기: 애니메이션 없이 완성된 장면 */
+@media (prefers-reduced-motion:reduce){
+  .op-col b,.op-cap{opacity:1;filter:none;transform:none}
+  .op-drops i{opacity:.2;transform:none}
+  .opening.sealed .op-seal{opacity:.95;transform:rotate(-6deg)}
+}
 .hero-copy p{color:var(--ink2);font-size:16px}
 .flow{list-style:none;padding:0;margin:22px 0 0;display:grid;gap:10px}
 .flow li{display:flex;gap:12px;align-items:flex-start}
@@ -438,7 +471,22 @@ table.cmp{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px;f
   <section class="step" id="step1">
     <div class="hero">
       <div class="hero-copy">
-        <h1>사주에 필요한 기운을 담아<br><em>부르기 좋은 이름</em>을 함께 지어요</h1>
+        <figure class="opening" id="opening" role="img" tabindex="0" title="누르면 다시 재생돼요" aria-label="지금 이 순간의 사주팔자와, 붓으로 이름 명(名) 자를 쓰고 낙관을 찍는 장면">
+          <div class="op-pillars" id="opPillars"></div>
+          <figcaption class="op-cap" id="opCap">지금 이 순간의 사주팔자</figcaption>
+          <div class="op-sheet">
+            <div class="op-drops" aria-hidden="true">
+              <i style="--c:var(--e0);--k:0;left:50%;top:6%"></i>
+              <i style="--c:var(--e1);--k:1;left:90%;top:38%"></i>
+              <i style="--c:var(--e2);--k:2;left:75%;top:88%"></i>
+              <i style="--c:var(--e3);--k:3;left:25%;top:88%"></i>
+              <i style="--c:var(--e4);--k:4;left:10%;top:38%"></i>
+            </div>
+            <div class="op-char" id="opChar"></div>
+            <span class="op-seal" aria-hidden="true">結</span>
+          </div>
+        </figure>
+        <h1>태어난 때를 읽고,<br>평생 부를 이름을 지어요</h1>
         <p>성씨와 태어난 날짜만 넣으면 사주팔자와 오행을 풀어드리고, 대화하듯 조건을 말하면 이름 후보를 바로 추려드려요.</p>
         <ol class="flow">
           <li><span class="num">1</span><div>기본 정보 입력<small>사주팔자·오행·용신을 자동 분석해요</small></div></li>
@@ -2044,6 +2092,35 @@ function openDetail(key){
 }
 function closeModal(){$('#ov').classList.remove('on');brushRun++}
 
+/* ================= 첫 화면 장면 ================= */
+// 화면을 연 지금 이 순간(서울 기준)의 사주를 실제로 계산해 보여 주고, 붓으로 名을 쓴 뒤 낙관을 찍는다
+let openingRun=0;
+async function runOpening(){
+  const box=$('#opening');if(!box)return;
+  const run=++openingRun;
+  const still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // 애니메이션을 처음부터 다시 걸기
+  box.classList.remove('sealed');box.classList.toggle('still',still);
+  const now=new Date(),d=`${now.getFullYear()}-${pad2(now.getMonth()+1)}-${pad2(now.getDate())}`,t=`${pad2(now.getHours())}:${pad2(now.getMinutes())}`;
+  const sj=calcSaju(d,t,'서울');
+  // 전통 배열(오른쪽 年 → 왼쪽 時)대로, 오른쪽 기둥부터 먹이 번진다
+  $('#opPillars').innerHTML=sj.P.map((p,i)=>`<div class="op-col"><small>${'시일월연'[i]}</small>`+
+    `<b style="--i:${3-i};--j:0;--dot:var(--e${Math.floor(p.s/2)})">${STEMS[p.s]}</b>`+
+    `<b style="--i:${3-i};--j:1;--dot:var(--e${BR_EL[p.b]})">${BR[p.b]}</b></div>`).join('');
+  const h=now.getHours();
+  $('#opCap').textContent=`${now.getMonth()+1}월 ${now.getDate()}일 ${h<12?'오전':'오후'} ${h%12||12}시 ${now.getMinutes()}분, 지금 이 순간의 사주팔자`;
+  const drops=box.querySelector('.op-drops');drops.replaceWith(drops.cloneNode(true)); // 오행 번짐 재생
+  const cap=$('#opCap');cap.style.animation='none';void cap.offsetWidth;cap.style.animation='';
+  const cell=$('#opChar');cell.innerHTML='';
+  if(!still)await new Promise(r=>setTimeout(r,1150));
+  if(run!==openingRun)return;
+  let HW=null;try{HW=await loadHW()}catch(e){}
+  if(run!==openingRun)return;
+  const ink=getComputedStyle(document.documentElement).getPropertyValue('--ink').trim()||'#2a2421';
+  await writeOne(HW,cell,'名',168,ink,still);
+  if(run===openingRun)box.classList.add('sealed');
+}
+
 /* ================= 붓글씨 획순 애니메이션 ================= */
 // Hanzi Writer(획순 데이터)를 처음 열 때만 불러온다. 데이터가 없는 한자는 먹이 번지듯 드러나는 효과로 대신한다.
 let HW_P=null,brushRun=0;
@@ -2203,6 +2280,7 @@ document.addEventListener('click',ev=>{
   if((el=q('[data-rtab]'))){regionTab=+el.dataset.rtab;$('#regionQ').value='';renderRegionList();return}
   if((el=q('[data-region]'))){region=el.dataset.region;renderRegion();renderRegionList();setTimeout(closeSheet,160);return}
   if((el=q('[data-pclear]'))){const k=el.dataset.pclear;$(`#p${k}Date`).value='';$(`#p${k}Time`).value='';$(`#p${k}Time`).disabled=false;$(`#p${k}NoTime`).checked=false;return}
+  if(q('#opening')){runOpening();return}
   if((el=q('[data-rewrite]'))){const b=$('#brush');b&&writeName([...b.dataset.chars]);return}
   if((el=q('#brush'))){if(!el.classList.contains('done'))writeName([...el.dataset.chars],true);return}
   if((el=q('[data-cert]'))){const e=CACHE.get(el.dataset.cert);e&&makeCert(e);return}
@@ -2220,7 +2298,7 @@ document.addEventListener('click',ev=>{
   if(t.id==='shClose'){S.shared=null;history.replaceState(null,'',location.pathname+location.search);renderShared();return}
   if(t.id==='goRecommend'){readPrefs();applyPrefs();CACHE.clear();S.results=[];S.chat=[];go(3);return}
 });
-document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if($('#sheetOv').classList.contains('on'))closeSheet();else closeModal()});
+document.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&document.activeElement&&document.activeElement.id==='opening'){e.preventDefault();runOpening();return}if(e.key!=='Escape')return;if($('#sheetOv').classList.contains('on'))closeSheet();else closeModal()});
 $('#regionQ').addEventListener('input',renderRegionList);
 ['#fDate','#fTime','#fNoTime'].forEach(s=>$(s).addEventListener('change',renderRegion));
 $('#fSur').addEventListener('input',fillSurSelect);
@@ -2278,6 +2356,7 @@ fillParentForm(null);
 ['f','m'].forEach(k=>$(`#p${k}NoTime`).addEventListener('change',e=>{$(`#p${k}Time`).disabled=e.target.checked}));
 renderSavedN();
 go(S.shared?4:1);
+runOpening();
 </script>
 </body>
 </html>
