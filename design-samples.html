@@ -115,6 +115,10 @@ body{margin:0;background:#e9e8e5;color:#222;font-family:'Pretendard Variable',Pr
 .t1 .gy div{padding:8px 0;border-left:1px solid var(--line)}
 .t1 .gy div:first-child{border-left:0}
 
+/* ===== 1안 + 3안 한자: 1안 화면, 한자만 함렛 500으로 또렷하게 ===== */
+.t4 .pillars b,.t4 .sheet,.t4 .cell,.t4 .nh{font-weight:500}
+.t4 .nh{color:var(--ink2)}
+
 /* ===== 2안 붓과 먹 ===== */
 .t2{--bg:#fbfaf6;--paper:#ffffff;--ink:#23201c;--ink2:#514b43;--muted:#958e83;--line:#e8e3d9;--seal:#b03a26;--accent:#2f4a6b;
     --disp:'Gowun Batang',serif;--hanja:'Song Myung',serif;--body:'Pretendard Variable',Pretendard,sans-serif}
@@ -207,6 +211,7 @@ body{margin:0;background:#e9e8e5;color:#222;font-family:'Pretendard Variable',Pr
     <button data-t="1" class="on" role="tab">1안 · 여백의 서재</button>
     <button data-t="2" role="tab">2안 · 붓과 먹</button>
     <button data-t="3" role="tab">3안 · 포근한 앱</button>
+    <button data-t="4" role="tab">1안 + 3안 한자</button>
   </div>
   <div class="about" id="about"></div>
   <div class="phones" id="phones"></div>
@@ -339,6 +344,10 @@ const T={
 - 한 단어만 색칠하는 강조, 대문자 라벨, 화살표 붙은 버튼 문구는 쓰지 않기.
 - 모바일 480px 기둥 레이아웃, 다크 모드, 동작 줄이기 대응은 지금처럼 유지.`}
 };
+T[4]={name:'1안 + 3안 한자',desc:'1안 여백의 서재 화면 그대로에, 한자만 3안처럼 함렛 500으로 굵혔어요. 얇은 한글 제목과 대비되어 사주 글자와 이름 한자가 더 또렷하고 단단하게 보여요. 이름 옆 한자도 흐린 회색 대신 진한 먹색에 가깝게 올렸어요.',
+  fonts:'<b>함렛</b>(제목 300~400, 한자 500) + <b>프리텐다드</b>(본문)',sw:T[1].sw,
+  spec:T[1].spec.replace('[방향] 1안 여백의 서재','[방향] 1안 여백의 서재 + 3안 한자 굵기')
+    .replace('- 제목·이름·한자: Hahmlet (Google Fonts, 300/400/500). 큰 제목은 300.','- 제목·한글 이름: Hahmlet (Google Fonts, 300/400). 큰 제목은 300.\n- 한자(사주 기둥, 이름 한자, 붓글씨 칸, 이름 옆 한자): Hahmlet 500. 이름 옆 한자 색은 --ink2(흐린 회색 말고).')};
 const tpl=document.getElementById('screens').content;
 let cur='1';
 function show(t){
@@ -347,7 +356,7 @@ function show(t){
   const a=T[t];
   document.getElementById('about').innerHTML=`<h2>${a.name}</h2>${a.desc}<p class="fonts">글꼴: ${a.fonts}</p><div class="sw">${a.sw.map(([c,n])=>`<span><i style="background:${c}"></i>${n} ${c}</span>`).join('')}</div>`;
   const ph=document.getElementById('phones');ph.innerHTML='';
-  [...tpl.children].forEach(n=>{const c=n.cloneNode(true);c.querySelector('.phone').classList.add('t'+t);ph.appendChild(c)});
+  [...tpl.children].forEach(n=>{const c=n.cloneNode(true);c.querySelector('.phone').classList.add(...(t==='4'?['t1','t4']:['t'+t]));ph.appendChild(c)});
   document.getElementById('spec').textContent=a.spec;
 }
 document.getElementById('pick').addEventListener('click',e=>{const b=e.target.closest('button');if(b)show(b.dataset.t)});
