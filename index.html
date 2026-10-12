@@ -7,7 +7,7 @@
 <meta name="description" content="성씨와 생년월일시로 사주·오행을 분석하고, 대화하며 이름을 추천받는 작명 도우미">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@500&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
 <style>
 /* 한지 바탕 위 인장(낙관) 붉은색 하나로 포인트, 명조 제목 + 고딕 본문 */
@@ -20,7 +20,7 @@
   --e0:#3f8a59; --e1:#cf5a3e; --e2:#a8822a; --e3:#737983; --e4:#2f5f9e;
   --e0s:#e3f1e7; --e1s:#f9e5df; --e2s:#f6edd4; --e3s:#eceef1; --e4s:#e1eaf6;
   --radius:2px; --shadow:none;
-  --serif:'Hahmlet','Noto Serif KR',serif; --sans:'Pretendard Variable',Pretendard,'Apple SD Gothic Neo','Malgun Gothic',system-ui,sans-serif;
+  --serif:'Pretendard Variable',Pretendard,'Apple SD Gothic Neo','Malgun Gothic',system-ui,sans-serif; --hanja:'Hahmlet','Noto Serif KR',serif; --sans:'Pretendard Variable',Pretendard,'Apple SD Gothic Neo','Malgun Gothic',system-ui,sans-serif;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --accent-ink:#ffffff;
@@ -518,6 +518,16 @@ h2,h3,.ph b,.fm-h b,details.rd summary{font-weight:400}
 details.parents,details.rd{background:transparent}
 .cmpwrap{background:transparent;border:0;border-block:1px solid var(--line)}
 @media (max-width:360px){.wrap{padding-inline:16px}.tab{padding-inline:8px}}
+
+/* 글꼴 3안: 프리텐다드 한 가지로 굵기만 달리하고, 한자만 함렛 500 */
+h1,h2,h3{font-weight:800;letter-spacing:-.03em}
+.hero-copy h1{font-weight:800;letter-spacing:-.03em}
+.logo,.nk,.tname,.my-sur,.cmp thead th{font-weight:800;letter-spacing:-.01em}
+.stage .bigk,.mhead .bigk{font-weight:800}
+.my-form .inp,.inp{font-weight:600}
+.rk,.score span,.bs-n,.gy .n,.kf .v{font-weight:800;letter-spacing:-.02em}
+details.rd summary,.ph b,.fm-h b,.tab b,.flow .num{font-weight:700}
+.gz,.op-col b,.mini-p .gz,.nh,.hj .c,.bf,.big,.mhead .big,.cmp .nh,.seal,.stamp,.op-seal{font-family:var(--hanja);font-weight:500}
 </style>
 </head>
 <body>
@@ -2240,19 +2250,19 @@ async function makeCert(e){
   const W=1080,H=1350,c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d');
   g.fillStyle='#f7f0e2';g.fillRect(0,0,W,H);
   g.strokeStyle='#b5442f';g.lineWidth=6;g.strokeRect(50,50,W-100,H-100);g.lineWidth=2;g.strokeRect(68,68,W-136,H-136);
-  g.textAlign='center';g.fillStyle='#857869';g.font='500 34px "Hahmlet",serif';g.fillText('이 름 풀 이',W/2,170);
-  g.fillStyle='#2a2421';g.font='900 190px "Hahmlet",serif';g.fillText(e.sur.h+e.chars[0].h+e.chars[1].h,W/2,420);
-  g.font='700 64px "Hahmlet",serif';g.fillText([...(e.sur.r+e.name)].join('  '),W/2,530);
+  g.textAlign='center';g.fillStyle='#857869';g.font='600 34px "Pretendard Variable",sans-serif';g.fillText('이 름 풀 이',W/2,170);
+  g.fillStyle='#2a2421';g.font='500 190px "Hahmlet",serif';g.fillText(e.sur.h+e.chars[0].h+e.chars[1].h,W/2,420);
+  g.font='800 64px "Pretendard Variable",sans-serif';g.fillText([...(e.sur.r+e.name)].join('  '),W/2,530);
   g.fillStyle='#4a413b';g.font='500 36px "Pretendard Variable",sans-serif';
   g.fillText(`${e.chars[0].h} ${e.chars[0].m} ${e.chars[0].r}  ·  ${e.chars[1].h} ${e.chars[1].m} ${e.chars[1].r}`,W/2,620);
   g.strokeStyle='#e5d9c5';g.beginPath();g.moveTo(180,680);g.lineTo(W-180,680);g.stroke();
   g.font='500 30px "Pretendard Variable",sans-serif';g.fillStyle='#4a413b';
   const lines=[`수리 4격  ${e.gy.map(x=>`${x.k} ${x.v}${x.good?'○':'×'}`).join('   ')}`,`발음오행  ${e.pe.map(i=>EL[i]).join(' → ')}`,`자원오행  ${ELH[e.chars[0].o]} · ${ELH[e.chars[1].o]}${e.ctx.saju?`   (용신 ${ELH[e.ctx.saju.yong]})`:''}`,`영문 표기  ${romanize(e.sur.r,e.name).full}`];
   lines.forEach((l,i)=>g.fillText(l,W/2,760+i*62));
-  g.fillStyle='#b5442f';g.font='900 120px "Hahmlet",serif';g.fillText(e.total,W/2,1110);
+  g.fillStyle='#b5442f';g.font='800 120px "Pretendard Variable",sans-serif';g.fillText(e.total,W/2,1110);
   g.font='500 28px "Pretendard Variable",sans-serif';g.fillText('종합 점수',W/2,1155);
   if(S.info&&S.info.date){g.fillStyle='#857869';g.font='500 26px "Pretendard Variable",sans-serif';g.fillText(`${S.info.date.replace(/-/g,'. ')} 생`,W/2,1210)}
-  g.fillStyle='#b5442f';g.fillRect(W-200,H-200,90,90);g.fillStyle='#fff';g.font='900 54px "Hahmlet",serif';g.fillText('結',W-155,H-136);
+  g.fillStyle='#b5442f';g.fillRect(W-200,H-200,90,90);g.fillStyle='#fff';g.font='500 54px "Hahmlet",serif';g.fillText('結',W-155,H-136);
   const url=c.toDataURL('image/png'),fn=`이름풀이_${e.sur.r}${e.name}.png`;
   $('#modal').innerHTML=`<button class="xbtn" data-close aria-label="닫기">×</button>
     <h3>${esc(e.sur.r+e.name)} 이름 증서</h3>
