@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>이름결 디자인 시안</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@300;400;500;600&family=Gowun+Batang:wght@400;700&family=Song+Myung&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
+<style>
+/* 비교 페이지 자체는 중립 회색으로, 시안이 돋보이게 */
+*{box-sizing:border-box}
+body{margin:0;background:#e9e8e5;color:#222;font-family:'Pretendard Variable',Pretendard,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.page{max-width:1200px;margin:0 auto;padding:28px 16px 64px}
+.intro h1{font-size:22px;margin:0 0 6px;font-weight:700}
+.intro p{margin:0;color:#666;font-size:14px;line-height:1.65;max-width:68ch}
+.pick{display:flex;gap:8px;margin:18px 0 16px;flex-wrap:wrap}
+.pick button{border:1px solid #cdcbc6;background:#fff;border-radius:999px;padding:9px 16px;font:inherit;font-size:14px;cursor:pointer}
+.pick button.on{background:#222;color:#fff;border-color:#222}
+.pick button:focus-visible{outline:2px solid #222;outline-offset:2px}
+.about{background:#fff;border:1px solid #dcdad5;border-radius:14px;padding:16px;margin-bottom:20px;font-size:14px;line-height:1.75;color:#444}
+.about h2{font-size:17px;margin:0 0 4px;color:#111}
+.about .fonts{margin:8px 0 0;color:#555}
+.about .fonts b{color:#111}
+.sw{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.sw span{display:flex;align-items:center;gap:6px;font-size:12px;color:#555;border:1px solid #e3e1dc;border-radius:999px;padding:3px 10px 3px 4px}
+.sw i{width:18px;height:18px;border-radius:50%;border:1px solid rgba(0,0,0,.12)}
+.phones{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.phone{border-radius:30px;border:8px solid #1d1d1d;height:720px;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.14);background:var(--bg)}
+.cap{text-align:center;font-size:13px;color:#777;margin-top:8px}
+.codex{margin-top:26px;background:#fff;border:1px solid #dcdad5;border-radius:14px;padding:16px}
+.codex h3{margin:0 0 4px;font-size:16px}
+.codex p{margin:0 0 10px;font-size:13px;color:#666}
+.codex pre{margin:0;white-space:pre-wrap;background:#f5f4f1;border-radius:10px;padding:14px;font-size:12.5px;line-height:1.65;max-height:340px;overflow:auto;font-family:ui-monospace,Consolas,monospace}
+.codex button{margin-top:10px;border:0;background:#222;color:#fff;border-radius:8px;padding:9px 14px;font:inherit;font-size:13px;cursor:pointer}
+@media (max-width:1000px){.phones{grid-template-columns:1fr;max-width:380px;margin:0 auto}}
+
+/* ===== 앱 화면 공통 뼈대 (토큰은 시안마다) ===== */
+.scr{height:100%;overflow:hidden;color:var(--ink);font-family:var(--body);background:var(--bg)}
+.top{display:flex;align-items:center;justify-content:space-between;padding:14px 20px}
+.logo{display:flex;align-items:center;gap:8px;font-family:var(--disp);font-size:18px}
+.seal{width:24px;height:24px;display:grid;place-items:center;font-size:13px;background:var(--seal);color:#fff}
+.steps{display:flex;gap:14px;font-size:12px;color:var(--muted)}
+.steps .on{color:var(--ink);font-weight:700}
+.body{padding:8px 20px 20px}
+.h1{font-family:var(--disp);margin:0;word-break:keep-all}
+.lead{color:var(--ink2);word-break:keep-all}
+.btn{display:block;text-align:center;font-weight:600}
+.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
+.inp{display:flex;justify-content:space-between;align-items:center}
+.inp span{color:var(--muted);font-size:13px}
+
+/* 첫 화면 장면(정지 화면) */
+.scene{position:relative;text-align:center}
+.pillars{display:grid;grid-template-columns:repeat(4,1fr);max-width:220px;margin:0 auto}
+.pillars div{display:grid;gap:2px}
+.pillars small{font-size:10.5px;color:var(--muted)}
+.pillars b{font-family:var(--hanja);font-weight:400;font-size:24px;line-height:1.25}
+.sheet{position:relative;width:150px;height:150px;margin:12px auto 0;display:grid;place-items:center;font-family:var(--hanja);font-size:118px;line-height:1}
+.stamp{position:absolute;right:-8px;bottom:-8px;width:34px;height:34px;display:grid;place-items:center;background:var(--seal);color:#fff;font-size:18px;transform:rotate(-6deg)}
+
+/* 추천 목록 */
+.listhead{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+.item{position:relative}
+.rank{font-family:var(--disp)}
+.nk{font-family:var(--disp)}
+.nh{font-family:var(--hanja);color:var(--muted)}
+.score b{font-family:var(--disp)}
+.chips{display:flex;gap:4px;flex-wrap:wrap;margin-top:8px}
+.chip{font-size:11px;padding:2px 8px}
+
+/* 이름 상세 */
+.cells{display:flex;justify-content:center;gap:6px}
+.cell{width:88px;height:88px;display:grid;place-items:center;font-family:var(--hanja);font-size:62px;line-height:1}
+.kname{font-family:var(--disp);text-align:center}
+.verdict{font-size:13px;line-height:1.75}
+.gy{display:grid;grid-template-columns:repeat(4,1fr);text-align:center}
+.gy small{display:block;font-size:10.5px;color:var(--muted)}
+.gy b{font-family:var(--disp);font-size:20px;font-weight:500}
+.gy i{display:block;font-style:normal;font-size:10.5px;color:var(--ink2)}
+
+/* ===== 1안 여백의 서재 ===== */
+.t1{--bg:#f4f2ee;--paper:#fbfaf7;--ink:#1d1c1a;--ink2:#4c4842;--muted:#8a857c;--line:#dedad2;--seal:#a3321f;--accent:#1d1c1a;
+    --disp:'Hahmlet',serif;--hanja:'Hahmlet',serif;--body:'Pretendard Variable',Pretendard,sans-serif}
+.t1 .top{border-bottom:1px solid var(--line)}
+.t1 .logo{font-weight:500;letter-spacing:.02em}
+.t1 .seal{border-radius:2px}
+.t1 .h1{font-weight:300;font-size:33px;line-height:1.28;letter-spacing:-.02em;margin:22px 0 12px}
+.t1 .lead{font-size:14px;line-height:1.75;margin:0 0 20px}
+.t1 .scene{padding:20px 0 8px;border-bottom:1px solid var(--line)}
+.t1 .pillars b{font-weight:400}
+.t1 .sheet{border:1px solid var(--line);background:var(--paper);font-weight:400}
+.t1 .stamp{border-radius:2px}
+.t1 .field{margin-bottom:12px}
+.t1 .inp{border-bottom:1px solid var(--ink);padding:8px 0;font-size:16px}
+.t1 .btn{margin-top:18px;padding:14px;background:var(--ink);color:#fbfaf7;border-radius:2px;font-size:14px;letter-spacing:.02em}
+.t1 .listhead h3{font-family:var(--disp);font-weight:400;font-size:22px;margin:16px 0 0}
+.t1 .listhead span{font-size:12px;color:var(--muted)}
+.t1 .item{display:grid;grid-template-columns:36px 1fr auto;gap:10px;align-items:baseline;padding:16px 0;border-top:1px solid var(--line)}
+.t1 .item:last-child{border-bottom:1px solid var(--line)}
+.t1 .rank{font-size:26px;font-weight:300;color:var(--muted)}
+.t1 .item:first-of-type .rank{color:var(--seal)}
+.t1 .nk{font-size:22px;font-weight:500;letter-spacing:.04em}
+.t1 .nh{font-size:14px;letter-spacing:.18em;margin-left:6px}
+.t1 .mean{font-size:12.5px;color:var(--ink2);margin-top:4px}
+.t1 .score b{font-size:26px;font-weight:300}
+.t1 .chip{border:1px solid var(--line);color:var(--ink2);border-radius:2px}
+.t1 .detail{padding-top:20px}
+.t1 .cell{border:1px solid var(--line);background:var(--paper)}
+.t1 .kname{font-size:24px;font-weight:400;letter-spacing:.5em;margin:16px 0 4px;padding-left:.5em}
+.t1 .sub{text-align:center;font-size:12px;color:var(--muted)}
+.t1 .verdict{margin:18px 0;padding:14px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);color:var(--ink2)}
+.t1 .verdict b{font-family:var(--disp);font-weight:500;font-size:16px;color:var(--ink);display:block;margin-bottom:4px}
+.t1 .gy div{padding:8px 0;border-left:1px solid var(--line)}
+.t1 .gy div:first-child{border-left:0}
+
+/* ===== 2안 붓과 먹 ===== */
+.t2{--bg:#fbfaf6;--paper:#ffffff;--ink:#23201c;--ink2:#514b43;--muted:#958e83;--line:#e8e3d9;--seal:#b03a26;--accent:#2f4a6b;
+    --disp:'Gowun Batang',serif;--hanja:'Song Myung',serif;--body:'Pretendard Variable',Pretendard,sans-serif}
+.t2 .scr{background:radial-gradient(120% 50% at 50% 0%,#ffffff 0%,var(--bg) 60%)}
+.t2 .logo{font-family:var(--hanja);font-size:20px}
+.t2 .seal{border-radius:4px}
+.t2 .steps .on{color:var(--accent)}
+.t2 .scene{padding:14px 0 4px}
+.t2 .scene::before{content:'';position:absolute;left:50%;top:96px;width:250px;height:190px;transform:translateX(-50%);
+  background:radial-gradient(closest-side,rgba(47,74,107,.13),transparent),radial-gradient(60% 40% at 30% 70%,rgba(35,32,28,.08),transparent);filter:blur(6px)}
+.t2 .pillars b{font-size:25px}
+.t2 .sheet{font-size:130px;z-index:1}
+.t2 .stamp{border-radius:4px;z-index:2}
+.t2 .h1{font-weight:700;font-size:27px;line-height:1.45;text-align:center;margin:18px 0 8px}
+.t2 .lead{font-family:'Gowun Batang',serif;font-size:14px;line-height:1.85;text-align:center;margin:0 0 16px}
+.t2 .field{margin-bottom:10px}
+.t2 .inp{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:15px}
+.t2 .btn{margin-top:14px;padding:14px;border-radius:10px;background:var(--accent);color:#fff;font-size:15px}
+.t2 .listhead h3{font-family:var(--disp);font-weight:700;font-size:21px;margin:12px 0 0}
+.t2 .listhead span{font-size:12px;color:var(--muted)}
+.t2 .item{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:14px 16px 14px 58px;margin-top:10px}
+.t2 .rank{position:absolute;left:14px;top:14px;width:32px;height:32px;display:grid;place-items:center;border-radius:50%;border:1px solid var(--line);font-size:15px;color:var(--ink2)}
+.t2 .item:first-of-type .rank{background:var(--seal);border-color:var(--seal);color:#fff}
+.t2 .nk{font-size:21px;font-weight:700}
+.t2 .nh{font-size:17px;margin-left:6px;color:var(--accent)}
+.t2 .mean{font-family:'Gowun Batang',serif;font-size:13px;color:var(--ink2);margin-top:3px}
+.t2 .score{position:absolute;right:16px;top:14px}
+.t2 .score b{font-size:24px;color:var(--accent)}
+.t2 .chip{background:#eef2f6;color:var(--accent);border-radius:999px}
+.t2 .detail{padding-top:10px}
+.t2 .cells{gap:2px}
+.t2 .cell{width:96px;height:110px;font-size:84px}
+.t2 .kname{font-size:22px;font-weight:700;letter-spacing:.45em;margin:6px 0 2px;padding-left:.45em}
+.t2 .sub{text-align:center;font-family:'Gowun Batang',serif;font-size:13px;color:var(--ink2)}
+.t2 .verdict{margin:16px 0;padding:14px 16px;background:var(--paper);border:1px solid var(--line);border-radius:14px;color:var(--ink2);font-family:'Gowun Batang',serif}
+.t2 .verdict b{color:var(--accent);font-family:var(--disp)}
+.t2 .gy{gap:6px}
+.t2 .gy div{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:8px 0}
+.t2 .gy b{font-family:'Gowun Batang',serif;font-weight:700}
+
+/* ===== 3안 포근한 앱 ===== */
+.t3{--bg:#f3f4f2;--paper:#ffffff;--ink:#191f1c;--ink2:#4a524e;--muted:#8b938f;--line:#e6e9e6;--seal:#1f5f4f;--accent:#1f5f4f;
+    --disp:'Pretendard Variable',Pretendard,sans-serif;--hanja:'Hahmlet',serif;--body:'Pretendard Variable',Pretendard,sans-serif}
+.t3 .top{background:var(--bg)}
+.t3 .logo{font-weight:800;letter-spacing:-.02em}
+.t3 .seal{border-radius:8px}
+.t3 .steps span{width:22px;height:4px;border-radius:2px;background:#dfe3df;color:transparent;overflow:hidden}
+.t3 .steps .on{background:var(--accent)}
+.t3 .scene{background:var(--paper);border-radius:24px;padding:18px 12px 20px;box-shadow:0 2px 12px rgba(25,31,28,.05)}
+.t3 .pillars b{font-weight:500}
+.t3 .sheet{background:#eef4f1;border-radius:20px;font-weight:500;color:var(--accent)}
+.t3 .stamp{border-radius:10px;background:var(--accent)}
+.t3 .h1{font-weight:800;font-size:28px;line-height:1.32;letter-spacing:-.03em;margin:22px 0 8px}
+.t3 .lead{font-size:15px;line-height:1.6;margin:0 0 18px;color:var(--ink2)}
+.t3 .card{background:var(--paper);border-radius:22px;padding:18px;box-shadow:0 2px 12px rgba(25,31,28,.05)}
+.t3 .field{margin-bottom:12px}
+.t3 .inp{background:#f3f4f2;border-radius:14px;padding:14px 16px;font-size:16px;font-weight:600}
+.t3 .btn{margin-top:6px;padding:16px;border-radius:16px;background:var(--accent);color:#fff;font-size:16px;font-weight:700}
+.t3 .listhead h3{font-weight:800;font-size:22px;letter-spacing:-.02em;margin:10px 0 0}
+.t3 .listhead span{font-size:12.5px;color:var(--muted)}
+.t3 .item{background:var(--paper);border-radius:22px;padding:16px 18px;margin-top:10px;box-shadow:0 2px 12px rgba(25,31,28,.05);display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center}
+.t3 .rank{width:30px;height:30px;border-radius:10px;display:grid;place-items:center;background:#eef1ee;font-size:14px;font-weight:800;color:var(--ink2)}
+.t3 .item:first-of-type .rank{background:var(--accent);color:#fff}
+.t3 .nk{font-size:20px;font-weight:800;letter-spacing:-.01em}
+.t3 .nh{font-size:14px;margin-left:4px}
+.t3 .mean{font-size:12.5px;color:var(--ink2);margin-top:2px}
+.t3 .score{text-align:right}
+.t3 .score b{font-size:24px;font-weight:800;color:var(--accent);letter-spacing:-.02em}
+.t3 .score small{font-size:11px;color:var(--muted)}
+.t3 .chip{background:#eef4f1;color:var(--accent);border-radius:8px;font-weight:600}
+.t3 .detail{padding-top:6px}
+.t3 .hero2{background:var(--paper);border-radius:24px;padding:18px 10px;box-shadow:0 2px 12px rgba(25,31,28,.05)}
+.t3 .cell{background:#f3f6f4;border-radius:16px;font-weight:500}
+.t3 .kname{font-size:26px;font-weight:800;letter-spacing:.3em;margin:14px 0 2px;padding-left:.3em}
+.t3 .sub{text-align:center;font-size:13px;color:var(--muted)}
+.t3 .verdict{margin:12px 0;padding:16px;background:#eef4f1;border-radius:18px;color:var(--ink2)}
+.t3 .verdict b{color:var(--accent);font-weight:800}
+.t3 .gy{gap:6px}
+.t3 .gy div{background:var(--paper);border-radius:14px;padding:10px 0;box-shadow:0 2px 10px rgba(25,31,28,.04)}
+.t3 .gy b{font-weight:800}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="intro">
+    <h1>이름결 디자인 시안 3가지</h1>
+    <p>글꼴부터 성격이 다른 세 방향이에요. 같은 내용(첫 화면 · 추천 1~5위 · 이름 상세)을 시안마다 바꿔 보여 드려요. 마음에 드는 번호를 고르고, 아래 ‘Codex에 줄 지시문’을 복사해서 Codex에 그대로 붙여 넣으면 돼요.</p>
+  </div>
+  <div class="pick" id="pick" role="tablist" aria-label="시안 선택">
+    <button data-t="1" class="on" role="tab">1안 · 여백의 서재</button>
+    <button data-t="2" role="tab">2안 · 붓과 먹</button>
+    <button data-t="3" role="tab">3안 · 포근한 앱</button>
+  </div>
+  <div class="about" id="about"></div>
+  <div class="phones" id="phones"></div>
+  <div class="codex">
+    <h3>Codex에 줄 지시문</h3>
+    <p>선택한 시안의 색·글꼴·규칙이에요. 기능과 계산 로직은 건드리지 말라는 조건까지 들어 있어요.</p>
+    <pre id="spec"></pre>
+    <button id="copy" type="button">지시문 복사</button>
+  </div>
+</div>
+
+<template id="screens">
+  <div><div class="phone"><div class="scr">
+    <div class="top"><div class="logo"><span class="seal">結</span>이름결</div><div class="steps"><span class="on">1</span><span>2</span><span>3</span><span>4</span></div></div>
+    <div class="body">
+      <div class="scene">
+        <div class="pillars"><div><small>시</small><b>甲</b><b>申</b></div><div><small>일</small><b>乙</b><b>卯</b></div><div><small>월</small><b>戊</b><b>戌</b></div><div><small>연</small><b>丙</b><b>午</b></div></div>
+        <div class="sheet">名<span class="stamp">結</span></div>
+      </div>
+      <h2 class="h1">태어난 때를 읽고,<br>평생 부를 이름을 지어요</h2>
+      <p class="lead">생년월일시와 출생 지역으로 사주를 풀고, 대법원 인명용 한자 안에서 뜻과 획수가 좋은 이름을 골라 드려요.</p>
+      <div class="card">
+        <div class="field"><label>성씨</label><div class="inp">김 金<span>8획 · 금</span></div></div>
+        <div class="field"><label>출생 지역</label><div class="inp">서울<span>약 32분 보정</span></div></div>
+        <div class="btn">사주 분석하기</div>
+      </div>
+    </div>
+  </div></div><div class="cap">첫 화면</div></div>
+
+  <div><div class="phone"><div class="scr">
+    <div class="top"><div class="logo"><span class="seal">結</span>이름결</div><div class="steps"><span>1</span><span>2</span><span class="on">3</span><span>4</span></div></div>
+    <div class="body">
+      <div class="listhead"><h3>추천 이름</h3></div>
+      <div class="listhead"><span>후보 77개 중 가장 좋은 5개</span></div>
+      <div class="list">
+        <div class="item"><span class="rank">1</span><div><span class="nk">김경민</span><span class="nh">金敬珉</span><div class="mean">공경 경 · 옥돌 민</div><div class="chips"><span class="chip">4격 모두 길</span><span class="chip">용신 보완</span></div></div><div class="score"><b>97</b><small>점</small></div></div>
+        <div class="item"><span class="rank">2</span><div><span class="nk">김도윤</span><span class="nh">金道玧</span><div class="mean">길 도 · 귀막이옥 윤</div><div class="chips"><span class="chip">4격 모두 길</span><span class="chip">발음 상생</span></div></div><div class="score"><b>96</b><small>점</small></div></div>
+        <div class="item"><span class="rank">3</span><div><span class="nk">김도현</span><span class="nh">金道賢</span><div class="mean">길 도 · 어질 현</div></div><div class="score"><b>96</b><small>점</small></div></div>
+        <div class="item"><span class="rank">4</span><div><span class="nk">김동현</span><span class="nh">金東賢</span><div class="mean">동녘 동 · 어질 현</div></div><div class="score"><b>93</b><small>점</small></div></div>
+      </div>
+    </div>
+  </div></div><div class="cap">추천 1~5위</div></div>
+
+  <div><div class="phone"><div class="scr">
+    <div class="top"><div class="logo"><span class="seal">結</span>이름결</div><div class="steps"><span>1</span><span>2</span><span class="on">3</span><span>4</span></div></div>
+    <div class="body detail">
+      <div class="hero2">
+        <div class="cells"><div class="cell">金</div><div class="cell">敬</div><div class="cell">珉</div></div>
+        <div class="kname">김경민</div>
+        <div class="sub">공경 경 · 옥돌 민 · 97점</div>
+      </div>
+      <div class="verdict"><b>아주 좋은 이름이에요.</b> 수리 4격이 모두 길하고, 사주에 필요한 금(金) 기운을 두 글자가 모두 채워 줘요.</div>
+      <div class="gy"><div><small>원격</small><b>21</b><i>두령격</i></div><div><small>형격</small><b>21</b><i>두령격</i></div><div><small>이격</small><b>18</b><i>발전격</i></div><div><small>정격</small><b>31</b><i>융창격</i></div></div>
+    </div>
+  </div></div><div class="cap">이름 상세</div></div>
+</template>
+
+<script>
+const T={
+ 1:{name:'1안 · 여백의 서재',desc:'잘 만든 책이나 잡지처럼 차분하고 지적인 인상이에요. 카드 상자를 걷어 내고 가는 선과 넓은 여백으로 정보를 나눠요. 제목은 얇은 현대 명조(함렛)로 크게, 본문은 또렷한 고딕(프리텐다드)이에요. 붉은 낙관색은 1위와 도장에만 써요.',
+    fonts:'<b>함렛</b>(제목·한자, 300~500) + <b>프리텐다드</b>(본문)',sw:[['#f4f2ee','바탕'],['#1d1c1a','먹'],['#8a857c','돌'],['#dedad2','선'],['#a3321f','낙관']],
+    spec:`이름결(ireum-gyeol/index.html) 디자인만 바꿔 주세요. 기능·계산·문구·데이터는 바꾸지 마세요.
+
+[방향] 1안 여백의 서재: 잡지 같은 편집 디자인. 카드 상자를 줄이고 가는 선(1px)과 여백으로 구분.
+
+[글꼴]
+- 제목·이름·한자: Hahmlet (Google Fonts, 300/400/500). 큰 제목은 300.
+- 본문·버튼·입력: Pretendard Variable (cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9 dynamic-subset).
+- 붓글씨 획순(Hanzi Writer)과 이름 증서 캔버스는 그대로 두되, 증서의 글꼴만 Hahmlet으로.
+
+[색 토큰] (라이트)
+--bg #f4f2ee / --paper #fbfaf7 / --ink #1d1c1a / --ink2 #4c4842 / --muted #8a857c / --line #dedad2 / --accent(낙관) #a3321f
+다크: --bg #171614 / --paper #1f1e1b / --ink #ece8e1 / --ink2 #bdb7ad / --muted #8b857b / --line #34312c / --accent #d0614a
+오행 색(--e0~e4)은 지금 값을 유지.
+
+[모양]
+- 모서리 2px, 그림자 없음. 구분은 1px 선.
+- 추천 1~5위: 카드 대신 목록. 왼쪽에 큰 순위 숫자(Hahmlet 300, 1위만 낙관색), 가운데 이름·한자·뜻, 오른쪽 점수(Hahmlet 300).
+- 입력칸: 밑줄형(아래 1px 먹색 선), 버튼은 먹색 바탕 + 아이보리 글자.
+- 큰 제목 33px/1.28, 본문 14~15px/1.75, 한 줄 80자 이하.
+- 첫 화면 장면(사주→名→낙관)과 이름 상세 붓글씨는 유지하고 테두리만 1px 선으로.
+- 한 단어만 색칠하는 강조, 대문자 라벨, 화살표 붙은 버튼 문구는 쓰지 않기.
+- 모바일 480px 기둥 레이아웃, 다크 모드, 동작 줄이기 대응은 지금처럼 유지.`},
+ 2:{name:'2안 · 붓과 먹',desc:'수묵화처럼 먹의 농담과 쪽빛으로 전통의 깊이를 보여 줘요. 한자는 붓글씨 느낌의 송명체가 주인공이고, 제목과 풀이 문장은 손글씨 결이 있는 고운바탕으로 따뜻하게 써요. 버튼과 강조는 차분한 쪽빛, 1위와 낙관은 붉은색이에요.',
+    fonts:'<b>송명</b>(한자·로고) + <b>고운바탕</b>(제목·풀이 문장) + <b>프리텐다드</b>(입력·버튼)',sw:[['#fbfaf6','화선지'],['#23201c','먹'],['#2f4a6b','쪽빛'],['#e8e3d9','선'],['#b03a26','낙관']],
+    spec:`이름결(ireum-gyeol/index.html) 디자인만 바꿔 주세요. 기능·계산·문구·데이터는 바꾸지 마세요.
+
+[방향] 2안 붓과 먹: 수묵화 같은 먹의 농담 + 쪽빛 강조. 한자를 크게 보여 주는 게 핵심.
+
+[글꼴]
+- 한자(사주 기둥, 이름 한자, 로고 '이름결'): Song Myung (Google Fonts).
+- 제목·풀이 문장(해설, 판정 문장): Gowun Batang 400/700.
+- 입력·버튼·작은 라벨: Pretendard Variable.
+- 이름 증서 캔버스의 한자는 Song Myung, 한글은 Gowun Batang.
+
+[색 토큰] (라이트)
+--bg #fbfaf6 / --paper #ffffff / --ink #23201c / --ink2 #514b43 / --muted #958e83 / --line #e8e3d9 / --accent(쪽빛) #2f4a6b / --seal(낙관) #b03a26
+다크: --bg #121417 / --paper #1a1d22 / --ink #ebe6dc / --ink2 #c2bcb1 / --muted #8e8a82 / --line #2c3038 / --accent #8fb0d6 / --seal #d8644c
+오행 색은 지금 값 유지.
+
+[모양]
+- 모서리 10~14px, 그림자 없음, 테두리 1px.
+- 첫 화면 장면 뒤에 먹 번짐(쪽빛·먹색 radial-gradient, blur 6px)을 은은하게.
+- 추천 1~5위: 흰 카드, 왼쪽에 원형 순위 표시(1위만 낙관색 채움), 이름 옆 한자는 쪽빛 송명체, 점수는 쪽빛.
+- 이름 상세: 칸 테두리 없이 한자를 크게(84px), 판정 문장은 고운바탕.
+- 첫 화면 제목·설명은 가운데 정렬, 나머지 화면은 왼쪽 정렬.
+- 한 단어만 색칠하는 강조, 대문자 라벨, 화살표 붙은 버튼 문구는 쓰지 않기.
+- 모바일 480px 기둥 레이아웃, 다크 모드, 동작 줄이기 대응은 지금처럼 유지.`},
+ 3:{name:'3안 · 포근한 앱',desc:'요즘 금융·육아 앱처럼 또렷하고 다정한 인상이에요. 글꼴은 프리텐다드 한 가지로 굵기만 달리해 깔끔하게 정리하고, 한자만 함렛으로 품위를 남겨요. 둥근 흰 카드와 깊은 초록 하나로 신뢰감을 줘요. 젊은 부모에게 가장 친숙한 화면이에요.',
+    fonts:'<b>프리텐다드</b>(전부, 400~800) + <b>함렛</b>(한자만)',sw:[['#f3f4f2','바탕'],['#ffffff','카드'],['#191f1c','글자'],['#1f5f4f','솔잎'],['#eef4f1','연초록']],
+    spec:`이름결(ireum-gyeol/index.html) 디자인만 바꿔 주세요. 기능·계산·문구·데이터는 바꾸지 마세요.
+
+[방향] 3안 포근한 앱: 요즘 금융·육아 앱처럼 또렷하고 다정한 화면. 둥근 흰 카드 + 깊은 초록 하나.
+
+[글꼴]
+- 전체: Pretendard Variable (400 본문, 600 입력값, 700~800 제목·이름·점수). 제목 자간 -0.02~-0.03em.
+- 한자(사주 기둥, 이름 한자, 붓글씨 칸)만 Hahmlet 500.
+
+[색 토큰] (라이트)
+--bg #f3f4f2 / --paper #ffffff / --ink #191f1c / --ink2 #4a524e / --muted #8b938f / --line #e6e9e6 / --accent(솔잎) #1f5f4f / --accent-soft #eef4f1
+다크: --bg #0f1312 / --paper #181d1b / --ink #e9eeeb / --ink2 #b9c2bd / --muted #84908a / --line #26302c / --accent #5fbf9f / --accent-soft #1c2a25
+오행 색은 지금 값 유지. 낙관(結)도 솔잎 초록으로.
+
+[모양]
+- 카드 모서리 22~24px, 입력칸 14px, 버튼 16px. 그림자 0 2px 12px rgba(25,31,28,.05) 한 가지만.
+- 입력칸은 테두리 없이 연회색 채움(#f3f4f2), 버튼은 꽉 찬 초록 + 흰 글자, 높이 52px.
+- 상단 단계 표시는 숫자 동그라미 대신 짧은 진행 막대 4개(현재 단계만 초록).
+- 추천 1~5위: 흰 카드 한 줄 구성(왼쪽 둥근 사각 순위, 가운데 이름·한자·뜻, 오른쪽 큰 점수). 1위 순위만 초록 채움.
+- 이름 상세: 흰 카드 안에 한자 칸(연초록 바탕, 모서리 16px), 판정 문장은 연초록 바탕 박스.
+- 한 단어만 색칠하는 강조, 대문자 라벨, 화살표 붙은 버튼 문구는 쓰지 않기.
+- 모바일 480px 기둥 레이아웃, 다크 모드, 동작 줄이기 대응은 지금처럼 유지.`}
+};
+const tpl=document.getElementById('screens').content;
+let cur='1';
+function show(t){
+  cur=t;
+  document.querySelectorAll('#pick button').forEach(b=>{b.classList.toggle('on',b.dataset.t===t);b.setAttribute('aria-selected',b.dataset.t===t)});
+  const a=T[t];
+  document.getElementById('about').innerHTML=`<h2>${a.name}</h2>${a.desc}<p class="fonts">글꼴: ${a.fonts}</p><div class="sw">${a.sw.map(([c,n])=>`<span><i style="background:${c}"></i>${n} ${c}</span>`).join('')}</div>`;
+  const ph=document.getElementById('phones');ph.innerHTML='';
+  [...tpl.children].forEach(n=>{const c=n.cloneNode(true);c.querySelector('.phone').classList.add('t'+t);ph.appendChild(c)});
+  document.getElementById('spec').textContent=a.spec;
+}
+document.getElementById('pick').addEventListener('click',e=>{const b=e.target.closest('button');if(b)show(b.dataset.t)});
+document.getElementById('copy').addEventListener('click',async e=>{
+  const btn=e.currentTarget;
+  try{await navigator.clipboard.writeText(T[cur].spec);btn.textContent='복사했어요'}
+  catch(err){const r=document.createRange();r.selectNodeContents(document.getElementById('spec'));const s=getSelection();s.removeAllRanges();s.addRange(r);btn.textContent='선택했어요. 복사해 주세요'}
+  setTimeout(()=>btn.textContent='지시문 복사',1800);
+});
+show('1');
+</script>
+</body>
+</html>
