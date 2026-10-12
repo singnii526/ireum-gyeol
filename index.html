@@ -364,6 +364,16 @@ ul.fm-pts li.n::before{content:'·';color:var(--muted)}
 .my-why{font-size:12.5px;font-weight:700;color:var(--gold);padding-left:4px}
 .legal{font-size:12px;font-weight:700;color:var(--good)}
 .legal.no{color:var(--bad)}
+/* 양력·음력, 출산 예정 */
+.date-h{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.cal{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;flex:none}
+.cal button{border:0;background:transparent;font-size:11.5px;padding:2px 9px;color:var(--muted)}
+.cal button.on{background:var(--ink);color:var(--on-ink)}
+.cal-leap{margin-top:6px;font-size:12.5px}
+.cal-out{display:block;font-size:12px;color:var(--good);margin-top:4px;min-height:0}
+.cal-out:empty{display:none}
+.cal-out.bad{color:var(--bad)}
+.blessing{font-family:var(--hanja,serif);border-left:2px solid var(--accent);padding-left:10px;color:var(--ink)}
 /* 붓글씨: 서예 연습지(田자 칸) 위에 획순대로 쓰기 */
 .stage{position:relative;margin:26px -6px 0;padding:22px 16px 16px;border-radius:2px;background:radial-gradient(120% 90% at 50% 0%,var(--paper),var(--soft));border:1px solid var(--line);text-align:center}
 .stage .bigk{font-family:var(--serif);font-size:28px;font-weight:700;letter-spacing:.5em;margin:14px 0 4px;padding-left:.5em;color:var(--ink)}
@@ -588,7 +598,7 @@ details.rd summary,.ph b,.fm-h b,.tab b,.flow .num{font-weight:700}
           <div class="row">
             <div class="field">
               <label for="fSur">성씨 (한글)</label>
-              <input class="inp" id="fSur" maxlength="1" placeholder="예: 김" required>
+              <input class="inp" id="fSur" maxlength="2" placeholder="예: 김, 남궁" required>
             </div>
             <div class="field">
               <label for="fSurH">성씨 한자</label>
@@ -608,11 +618,23 @@ details.rd summary,.ph b,.fm-h b,.tab b,.flow .num{font-weight:700}
               <button type="button" data-v="n">아직 몰라요</button>
             </div>
           </div>
-          <div class="row">
-            <div class="field"><label for="fDate">생년월일 (양력)</label><input class="inp" id="fDate" type="date" min="1900-01-01" max="2100-12-31" required></div>
-            <div class="field"><label for="fTime">태어난 시각</label><input class="inp" id="fTime" type="time"></div>
+          <div class="field">
+            <span class="lbl">아이가 태어났나요?</span>
+            <div class="seg" id="fBorn">
+              <button type="button" data-v="born" class="on">태어났어요</button>
+              <button type="button" data-v="due">출산 예정이에요</button>
+            </div>
+            <p class="hint" id="dueHint" hidden>예정일로는 사주를 확정할 수 없어서, 사주 대신 이름 자체의 뜻·소리·수리로 추천해요. 아이가 태어나면 생일로 다시 보면 사주까지 반영돼요.</p>
           </div>
-          <label class="check"><input type="checkbox" id="fNoTime"> 태어난 시각을 몰라요 (출산 예정이라면 예정일만 넣어도 돼요)</label>
+          <div class="row">
+            <div class="field">
+              <div class="date-h"><label for="fDate" id="fDateLbl">생년월일</label><span class="cal" role="group" aria-label="양력·음력"><button type="button" data-cal="solar" data-for="fDate" class="on">양력</button><button type="button" data-cal="lunar" data-for="fDate">음력</button></span></div>
+              <input class="inp" id="fDate" type="date" min="1900-01-01" max="2100-12-31" required>
+              <label class="check cal-leap" id="fDateLeapLbl" hidden><input type="checkbox" id="fDateLeap"> 윤달</label><span class="cal-out" id="fDateOut"></span>
+            </div>
+            <div class="field" id="fTimeField"><label for="fTime">태어난 시각</label><input class="inp" id="fTime" type="time"></div>
+          </div>
+          <label class="check" id="fNoTimeLbl"><input type="checkbox" id="fNoTime"> 태어난 시각을 몰라요</label>
           <section class="region" aria-labelledby="regionLbl">
             <div class="region-h"><b id="regionLbl">출생 지역</b><span>지방시 보정</span></div>
             <button type="button" class="region-row" id="regionBtn" aria-haspopup="dialog">
@@ -631,7 +653,7 @@ details.rd summary,.ph b,.fm-h b,.tab b,.flow .num{font-weight:700}
               <div class="pcard">
                 <div class="ph"><b>아빠</b><button type="button" class="linkbtn" data-pclear="f">지우기</button></div>
                 <div class="row">
-                  <div class="field"><label for="pfDate">생년월일 (양력)</label><input class="inp" id="pfDate" type="date" min="1900-01-01" max="2100-12-31"></div>
+                  <div class="field"><div class="date-h"><label for="pfDate">생년월일</label><span class="cal" role="group" aria-label="양력·음력"><button type="button" data-cal="solar" data-for="pfDate" class="on">양력</button><button type="button" data-cal="lunar" data-for="pfDate">음력</button></span></div><input class="inp" id="pfDate" type="date" min="1900-01-01" max="2100-12-31"><label class="check cal-leap" id="pfDateLeapLbl" hidden><input type="checkbox" id="pfDateLeap"> 윤달</label><span class="cal-out" id="pfDateOut"></span></div>
                   <div class="field"><label for="pfTime">태어난 시각</label><input class="inp" id="pfTime" type="time"></div>
                 </div>
                 <div class="row">
@@ -642,7 +664,7 @@ details.rd summary,.ph b,.fm-h b,.tab b,.flow .num{font-weight:700}
               <div class="pcard">
                 <div class="ph"><b>엄마</b><button type="button" class="linkbtn" data-pclear="m">지우기</button></div>
                 <div class="row">
-                  <div class="field"><label for="pmDate">생년월일 (양력)</label><input class="inp" id="pmDate" type="date" min="1900-01-01" max="2100-12-31"></div>
+                  <div class="field"><div class="date-h"><label for="pmDate">생년월일</label><span class="cal" role="group" aria-label="양력·음력"><button type="button" data-cal="solar" data-for="pmDate" class="on">양력</button><button type="button" data-cal="lunar" data-for="pmDate">음력</button></span></div><input class="inp" id="pmDate" type="date" min="1900-01-01" max="2100-12-31"><label class="check cal-leap" id="pmDateLeapLbl" hidden><input type="checkbox" id="pmDateLeap"> 윤달</label><span class="cal-out" id="pmDateOut"></span></div>
                   <div class="field"><label for="pmTime">태어난 시각</label><input class="inp" id="pmTime" type="time"></div>
                 </div>
                 <div class="row">
@@ -652,7 +674,7 @@ details.rd summary,.ph b,.fm-h b,.tab b,.flow .num{font-weight:700}
               </div>
             </div>
           </details>
-          <p class="hint">음력 생일은 <a href="https://astro.kasi.re.kr/life/pageView/8" target="_blank" rel="noopener">한국천문연구원 음양력 변환</a>에서 양력으로 바꿔 입력해 주세요. 두 글자 성(남궁·제갈 등)은 아직 지원하지 않아요.</p>
+          <p class="hint">음력 생일은 ‘음력’을 누르고 그대로 적으면 돼요(1900~2049년, 한국천문연구원 기준). 두 글자 성(남궁·제갈·선우·황보·독고·사공·서문·동방·을지)도 넣을 수 있어요.</p>
           <button class="btn pri block" type="submit" style="margin-top:8px">사주 분석하기</button>
         </form>
         <div id="sajuBox"></div>
@@ -697,10 +719,10 @@ details.rd summary,.ph b,.fm-h b,.tab b,.flow .num{font-weight:700}
         <div class="grid" id="resGrid"></div>
         <section class="myname" aria-labelledby="myTitle">
           <h3 id="myTitle">혹시 마음에 오는 이름이 없나요?</h3>
-          <p class="hint">짓고 싶은 이름을 한글로 적어 주세요. 그 소리에 맞는 좋은 뜻의 한자를 찾아 드리고, 마땅한 한자가 없으면 소리가 비슷한 이름을 추천해 드려요.</p>
+          <p class="hint">짓고 싶은 이름을 한글로 적어 주세요(외자·세 글자 이름도 돼요). 그 소리에 맞는 좋은 뜻의 한자를 찾아 드리고, 마땅한 한자가 없으면 소리가 비슷한 이름을 추천해 드려요.</p>
           <form id="myForm" class="my-form" autocomplete="off">
             <span class="my-sur" id="mySur">김</span>
-            <input id="myName" class="inp" maxlength="2" placeholder="예: 하준" aria-label="짓고 싶은 이름 (한글 두 글자)">
+            <input id="myName" class="inp" maxlength="3" placeholder="예: 하준, 솔, 하늘빛" aria-label="짓고 싶은 이름 (한글 1~3글자)">
             <button class="btn pri">한자 찾기</button>
           </form>
           <div id="myOut"></div>
@@ -1082,7 +1104,16 @@ const SUR_RAW=`김|金|8|금
 은|殷|10|금
 편|片|4|목
 용|龍|16|토
-예|芮|10|목`;
+예|芮|10|목
+남궁|南宮|19|화
+제갈|諸葛|31|금
+선우|鮮于|20|수
+황보|皇甫|16|금
+독고|獨孤|25|토
+사공|司空|13|수
+서문|西門|14|금
+동방|東方|12|목
+을지|乙支|5|목`;
 
 // 인기 순서 대략 반영 (앞쪽일수록 흔함)
 const MALE='민준 서준 도윤 예준 시우 하준 주원 지호 지후 준우 준서 건우 도현 현우 지훈 우진 선우 서진 민재 현준 연우 유준 정우 승우 승현 시윤 준혁 은우 지환 승민 지우 유찬 윤우 민성 준영 시후 진우 지원 수현 재윤 시현 동현 태윤 민우 재원 윤호 은찬 성민 태현 민규 정민 준호 우현 성현 경민 태민 승준 재현 건호 현호 동건 성준 태준 한결 도훈 승원 우재 주안 이안 지한 하율 태호 규민 정훈 영호 세준 동원'.split(' ');
@@ -1095,7 +1126,7 @@ const NAME_STATS_RAW="지우,11770,28615;민준,37037,27;서윤,2411,32728;서�
 const NAME_STATS=(()=>{const o={};NAME_STATS_RAW.split(';').forEach((r,i)=>{const [n,m,f]=r.split(',');o[n]={m:+m,f:+f,t:+m+ +f,rank:i+1}});return o})();
 const NAME_STATS_N=Object.keys(NAME_STATS).length;
 const GOOD81=new Set([1,3,5,6,7,8,11,13,15,16,17,18,21,23,24,25,29,31,32,33,35,37,38,39,41,45,47,48,52,57,61,63,65,67,68,81]);
-const SUR_ROMA={김:'Kim',이:'Lee',박:'Park',최:'Choi',정:'Jung',강:'Kang',조:'Cho',윤:'Yoon',장:'Jang',임:'Lim',한:'Han',오:'Oh',서:'Seo',신:'Shin',권:'Kwon',황:'Hwang',안:'Ahn',송:'Song',류:'Ryu',유:'Yoo',전:'Jeon',홍:'Hong',고:'Ko',문:'Moon',양:'Yang',손:'Son',배:'Bae',백:'Baek',허:'Heo',남:'Nam',심:'Shim',노:'Noh',하:'Ha',곽:'Kwak',성:'Sung',차:'Cha',주:'Joo',우:'Woo',구:'Koo',민:'Min',진:'Jin',나:'Na',지:'Ji',엄:'Eom',원:'Won',채:'Chae',천:'Cheon',방:'Bang',공:'Kong',현:'Hyun',함:'Ham',변:'Byun',염:'Yeom',여:'Yeo',추:'Choo',도:'Do',소:'So',석:'Seok',선:'Sun',설:'Seol',마:'Ma',길:'Gil',연:'Yeon',위:'Wi',표:'Pyo',명:'Myung',기:'Ki',반:'Ban',왕:'Wang',금:'Keum',옥:'Ok',육:'Yook',인:'In',맹:'Maeng',제:'Je',모:'Mo',탁:'Tak',국:'Kook',어:'Eo',은:'Eun',편:'Pyeon',용:'Yong',예:'Ye'};
+const SUR_ROMA={김:'Kim',이:'Lee',박:'Park',최:'Choi',정:'Jung',강:'Kang',조:'Cho',윤:'Yoon',장:'Jang',임:'Lim',한:'Han',오:'Oh',서:'Seo',신:'Shin',권:'Kwon',황:'Hwang',안:'Ahn',송:'Song',류:'Ryu',유:'Yoo',전:'Jeon',홍:'Hong',고:'Ko',문:'Moon',양:'Yang',손:'Son',배:'Bae',백:'Baek',허:'Heo',남:'Nam',심:'Shim',노:'Noh',하:'Ha',곽:'Kwak',성:'Sung',차:'Cha',주:'Joo',우:'Woo',구:'Koo',민:'Min',진:'Jin',나:'Na',지:'Ji',엄:'Eom',원:'Won',채:'Chae',천:'Cheon',방:'Bang',공:'Kong',현:'Hyun',함:'Ham',변:'Byun',염:'Yeom',여:'Yeo',추:'Choo',도:'Do',소:'So',석:'Seok',선:'Sun',설:'Seol',마:'Ma',길:'Gil',연:'Yeon',위:'Wi',표:'Pyo',명:'Myung',기:'Ki',반:'Ban',왕:'Wang',금:'Keum',옥:'Ok',육:'Yook',인:'In',맹:'Maeng',제:'Je',모:'Mo',탁:'Tak',국:'Kook',어:'Eo',은:'Eun',편:'Pyeon',용:'Yong',예:'Ye',남궁:'Namgung',제갈:'Jegal',선우:'Sunwoo',황보:'Hwangbo',독고:'Dokgo',사공:'Sagong',서문:'Seomun',동방:'Dongbang',을지:'Eulji'};
 const TEASE=['바보','방구','방귀','고자','멍청','돼지','찌질','오줌','변기','똥','시체','사망','지랄','미친','병신','구라','호구','꼰대','진상','노답','주정','도둑','거지','망해','망함'];
 const EN_BAD=['dong','bum','dung','poo','pee','kill','die','dumb','fat','sin','suck','butt','gay','porn','fuk','shit','damn','hell'];
 
@@ -1121,7 +1152,12 @@ const findHJ=(r,h)=>(HJX[r]||[]).find(x=>x.h===h);
 const PER_SYL=14; // 자동 추천에서 음절당 검토할 한자 수 (검수 한자 먼저)
 // 친숙도: 작명 검수 한자 > 교육용 기초한자 > 그 밖의 인명용 한자. 드문 한자가 획수만으로 앞서지 않게 함
 const famOf=c=>c.src==='cur'?6:c.edu?4:c.src==='auto'?2:0;
-const famB=e=>famOf(e.chars[0])+famOf(e.chars[1]);
+const famB=e=>e.chars.reduce((t,c)=>t+famOf(c),0);
+// 이름 글자 수(1~3)와 무관하게 쓰는 표시 도우미
+const HSTR=e=>e.chars.map(c=>c.h).join('');
+const MSTR=(e,withH)=>e.chars.map(c=>`${withH?c.h+' ':''}${c.m} ${c.r}`).join(' · ');
+const POSN=(i,n)=>n===1?'이름':i===0?'이름 첫 글자':i===n-1?'이름 끝 글자':'이름 가운데 글자';
+const surLast=sur=>sur.r.slice(-1);
 const goodMeaning=c=>c.src==='cur'||c.t.some(t=>t!=='자');
 
 /* ================= 한글 유틸 ================= */
@@ -1189,6 +1225,29 @@ function englishCheck(rom){
 /* ================= 사주 ================= */
 function jdn(y,m,d){const a=Math.floor((14-m)/12),Y=y+4800-a,M=m+12*a-3;return d+Math.floor((153*M+2)/5)+365*Y+Math.floor(Y/4)-Math.floor(Y/100)+Math.floor(Y/400)-32045}
 const TERMS=[[1,6,1],[2,4,2],[3,6,3],[4,5,4],[5,6,5],[6,6,6],[7,7,7],[8,8,8],[9,8,9],[10,8,10],[11,7,11],[12,7,0]];
+/* ---------- 음력 → 양력 (한국천문연구원 기준, 1900~2049) ---------- */
+// 해마다 "설날의 양력 날짜(YYYYMMDD),윤달(없으면 0),달 길이(1=30일, 0=29일; 윤달은 그 달 바로 뒤)"
+// 출처: korean-lunar-calendar(MIT, KASI 자료 기반)로 생성
+const LUNAR_RAW="19000131,8,0100101101101;19010219,0,010010101110;19020208,0,101001010111;19030129,5,0101001001101;19040216,0,110100100110;19050204,0,110110010101;19060125,4,0110101010101;19070213,0,010101101010;19080202,0,100110101101;19090122,2,0100101011101;19100210,0,010010101110;19110130,6,1010010011011;19120218,0,101001001101;19130206,0,110100100101;19140126,5,1101100101001;19150214,0,101101010101;19160204,0,010101101010;19170123,2,1001011011010;19180211,0,100101011101;19190201,7,0100101011011;19200220,0,010010011011;19210208,0,101001001011;19220128,5,1011001001011;19230216,0,011010101001;19240205,0,101011010100;19250124,4,1011010110101;19260213,0,001010110110;19270202,0,100101011011;19280123,2,0100100110111;19290210,0,010010010111;19300130,6,0110010010110;19310217,0,111001001010;19320206,0,111010100101;19330126,5,0110110101001;19340214,0,010110110101;19350204,0,001010110110;19360124,3,1001010101110;19370211,0,100100101110;19380131,7,1100100101101;19390219,0,110010010101;19400208,0,110101001010;19410127,6,1101101001010;19420215,0,101101101001;19430205,0,010101101101;19440126,4,0010101011011;19450213,0,001001011101;19460202,0,100100101101;19470122,2,1100100101011;19480210,0,101010010101;19490129,7,1101010010101;19500217,0,101101001010;19510206,0,101101010101;19520127,5,0101011010101;19530214,0,010011011011;19540204,0,001001011011;19550124,3,1001001010111;19560212,0,010100101011;19570131,8,1010100101011;19580219,0,011010010101;19590208,0,011010101010;19600128,6,1010110101010;19610215,0,101010110101;19620205,0,010010110110;19630125,4,1010010101110;19640213,0,101001010111;19650202,0,010100100111;19660122,3,0110100100110;19670209,0,110110010101;19680130,7,0110101010101;19690217,0,010101101010;19700206,0,100110101101;19710127,5,0100101011101;19720215,0,010010101110;19730203,0,101001001110;19740123,4,1101001001101;19750211,0,110100100101;19760131,8,1101010101001;19770218,0,101101010100;19780207,0,110101101010;19790128,6,1001011011010;19800216,0,100101011011;19810205,0,010010011011;19820125,4,1010010011011;19830213,0,101001001011;19840202,10,1011001001011;19850220,0,011010100101;19860209,0,011011010100;19870129,6,1011010110101;19880218,0,001010110110;19890206,0,100101011011;19900127,5,0100100110111;19910215,0,010010010111;19920204,0,011001001011;19930123,3,0110101001010;19940210,0,111010100101;19950131,8,0110110101001;19960219,0,010110101101;19970208,0,001010110110;19980128,5,1001001101110;19990216,0,100100101110;20000205,0,110010010110;20010124,4,1110010010101;20020212,0,110101001010;20030201,0,110110100101;20040122,2,0101101010101;20050209,0,010101101100;20060129,7,1010101011011;20070218,0,001001011101;20080207,0,100100101101;20090126,5,1100100101011;20100214,0,101010010101;20110203,0,101101001010;20120123,3,1011101001010;20130210,0,101101010101;20140131,9,0101010110101;20150219,0,010010111010;20160208,0,101001011011;20170128,5,0101001010111;20180216,0,010100101011;20190205,0,101010010101;20200125,4,1011010010101;20210212,0,011010101010;20220201,0,101011010101;20230122,2,0101010110101;20240210,0,010010110110;20250129,6,1010010101110;20260217,0,101001010111;20270207,0,010100100111;20280127,5,0110100100110;20290213,0,110110010011;20300203,0,010110101010;20310123,3,1010101101010;20320211,0,100101101101;20330131,11,0100101011101;20340219,0,010010101110;20350208,0,101001001101;20360128,6,1101001001101;20370215,0,110100100101;20380204,0,110101010010;20390124,5,1101101010100;20400212,0,101101101010;20410201,0,100101101101;20420122,2,0100101011011;20430210,0,010010011011;20440130,7,1010010010111;20450217,0,101001001011;20460206,0,101100100101;20470126,5,1011010100101;20480214,0,011011010100;20490202,0,101011011010";
+const LUNAR={};LUNAR_RAW.split(';').forEach(r=>{const [s,l,b]=r.split(',');LUNAR[+s.slice(0,4)]={start:Date.UTC(+s.slice(0,4),+s.slice(4,6)-1,+s.slice(6,8)),leap:+l,bits:b}});
+function lunarMonths(y){const L=LUNAR[y];const out=[];let i=0;for(let m=1;m<=12;m++){out.push({m,leap:false,len:L.bits[i++]==='1'?30:29});if(L.leap===m)out.push({m,leap:true,len:L.bits[i++]==='1'?30:29})}return out}
+function lunarToSolar(y,m,d,leap){
+  const L=LUNAR[y];if(!L)return {err:'음력은 1900~2049년만 바꿀 수 있어요'};
+  if(leap&&L.leap!==m)return {err:`${y}년에는 윤${m}월이 없어요${L.leap?` (그해 윤달은 ${L.leap}월)`:''}`};
+  let off=0;
+  for(const mo of lunarMonths(y)){
+    if(mo.m===m&&mo.leap===!!leap){if(d<1||d>mo.len)return {err:`음력 ${y}년 ${leap?'윤':''}${m}월은 ${mo.len}일까지 있어요`};return {date:new Date(L.start+(off+d-1)*864e5).toISOString().slice(0,10)}}
+    off+=mo.len;
+  }
+  return {err:'날짜를 확인해 주세요'};
+}
+function solarToLunar(iso){
+  const t=Date.UTC(+iso.slice(0,4),+iso.slice(5,7)-1,+iso.slice(8,10));
+  for(let y=+iso.slice(0,4);y>=1900;y--){const L=LUNAR[y];if(!L||L.start>t)continue;let off=Math.round((t-L.start)/864e5);
+    for(const mo of lunarMonths(y)){if(off<mo.len)return {y,m:mo.m,d:off+1,leap:mo.leap};off-=mo.len}}
+  return null;
+}
+
 /* ---------- 출생 지역 · 지방시 보정 ---------- */
 // [지역 묶음, [[시·군, 경도°E], ...]] — 전국 시·군, 시청·군청 소재지 경도. 이름이 겹치면 도 이름을 붙임
 const REGIONS=[["서울·광역시",[["서울",126.978],
@@ -1446,7 +1505,7 @@ const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'
 function toast(t){const el=$('#toast');el.textContent=t;el.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove('on'),1800)}
 
 /* ================= 평가 ================= */
-function mainCtx(){return {id:'',sur:S.info.surname,saju:S.saju,gender:S.info.gender,liked:S.taste.liked,disliked:S.taste.disliked,moods:(S.filters||{moods:S.prefs.moods}).moods,sib:parseSib(S.prefs.sib),fam:S.family}}
+function mainCtx(){return {id:'',sur:S.info.surname,saju:S.info.due?null:S.saju,gender:S.info.gender,liked:S.taste.liked,disliked:S.taste.disliked,moods:(S.filters||{moods:S.prefs.moods}).moods,sib:parseSib(S.prefs.sib),fam:S.family}}
 function tastePoint(chars,ctx){
   let t=5;
   chars.forEach(c=>{t+=(ctx.liked[c.r]||0)*1.5-(ctx.disliked[c.r]||0)*1.5;if(c.t.some(x=>ctx.moods.includes(x)))t+=2});
@@ -1454,33 +1513,41 @@ function tastePoint(chars,ctx){
 }
 // 100점 = 수리 4격 35(정격12·형격10·원격7·이격6) + 자원오행 25 + 발음오행 15 + 음양 10 + 소리·부르기 15
 const GY_W={원격:7,형격:10,이격:6,정격:12};
-function callPoints(full,x,y){
+function callPoints(full,chars){
   const pron=pronounce(full)===full?5:2;                       // 적힌 그대로 소리 나는지
-  const vowel=dec(x.r).jung!==dec(y.r).jung?5:2;               // 두 글자 모음이 달라 또렷한지
+  const vw=chars.map(c=>dec(c.r).jung);
+  const vowel=new Set(vw).size===vw.length?5:2;                // 이름 글자 모음이 서로 달라 또렷한지 (외자는 5)
   const tease=teaseCheck(full).length?0:5;                     // 놀림 단어와 겹치지 않는지
   return {pron,vowel,tease,sum:pron+vowel+tease};
 }
+// 수리 4격: 두 글자 이름이 기본. 외자는 원격=이름, 형격=성+이름, 이격=성, 정격=성+이름
+// 세 글자 이름은 원격=이름 전체, 형격=성+첫 글자, 이격=성+둘째·셋째 글자, 정격=전체. 두 글자 성은 두 글자 획수를 더해 씀
+function gyeokRaw(s,ns){
+  const sum=ns.reduce((a,b)=>a+b,0);
+  const won=ns.length===1?ns[0]:sum, hy=s+ns[0], ii=ns.length===1?s:s+sum-ns[0];
+  return [['원격','초년운 · 0~20세',won],['형격','청년운 · 20~40세',hy],['이격','중년운 · 40세~',ii],['정격','총운 · 평생',s+sum]];
+}
 function evalCombo(chars,ctx=mainCtx()){
-  const [x,y]=chars,sur=ctx.sur,name=x.r+y.r,s=sur.s,a=x.s,b=y.s;
-  const gy=[['원격','초년운 · 0~20세',a+b],['형격','청년운 · 20~40세',s+a],['이격','중년운 · 40세~',s+b],['정격','총운 · 평생',s+a+b]]
-    .map(([k,sub,v])=>{v=r81(v);return {k,sub,v,good:GOOD81.has(v)}});
-  const pe=[soundEl(sur.r),soundEl(x.r),soundEl(y.r)];
-  const pr=[rel(pe[0],pe[1]),rel(pe[1],pe[2])];
-  const yy=[s,a,b].map(n=>n%2===1);
-  const yyGood=!(yy[0]===yy[1]&&yy[1]===yy[2]);
-  const call=callPoints(sur.r+name,x,y);
+  const sur=ctx.sur,name=chars.map(c=>c.r).join(''),s=sur.s,n=chars.length;
+  const gy=gyeokRaw(s,chars.map(c=>c.s)).map(([k,sub,v])=>{v=r81(v);return {k,sub,v,good:GOOD81.has(v)}});
+  const pe=[soundEl(surLast(sur)),...chars.map(c=>soundEl(c.r))];
+  const pr=pe.slice(1).map((v,i)=>rel(pe[i],v));
+  const yy=[s,...chars.map(c=>c.s)].map(v=>v%2===1);
+  const yyGood=new Set(yy).size>1;
+  const call=callPoints(sur.r+name,chars);
   const sc={
     suri:gy.reduce((t,g)=>t+(g.good?GY_W[g.k]:0),0),
-    sound:Math.round(pr.reduce((t,r)=>t+(r==='생'||r==='역생'?7.5:r==='같음'?4:0),0)),
+    sound:Math.round(15*pr.reduce((t,r)=>t+(r==='생'||r==='역생'?1:r==='같음'?8/15:0),0)/pr.length),
     yy:yyGood?10:0,
-    el:ctx.saju?Math.round((elPoint(x.o,ctx.saju)+elPoint(y.o,ctx.saju))*1.25):12,
+    el:ctx.saju?Math.round(chars.reduce((t,c)=>t+elPoint(c.o,ctx.saju),0)/n*2*1.25):0,
     call:call.sum,
     taste:tastePoint(chars,ctx)
   };
-  const total=sc.suri+sc.sound+sc.yy+sc.el+sc.call;
+  // 사주가 없으면(출산 예정·공유받은 후보) 자원오행 25점을 빼고 75점 만점을 100점으로 환산
+  const total=ctx.saju?sc.suri+sc.sound+sc.yy+sc.el+sc.call:Math.round((sc.suri+sc.sound+sc.yy+sc.call)/75*100);
   const syn=ctx.fam?synergy(chars,ctx.fam):null;
   const rank=total+sc.taste*0.6+(syn?(syn.score-50)*0.12:0); // 추천 순서용 (취향·가족 시너지), 화면 점수에는 쓰지 않음
-  const key=(ctx.id||'')+name+'|'+x.h+y.h;
+  const key=(ctx.id||'')+name+'|'+chars.map(c=>c.h).join('');
   const e={key,name,chars,sur,gy,pe,pr,yy,yyGood,sc,call,total,rank,syn,ctx};
   CACHE.set(key,e);return e;
 }
@@ -1534,7 +1601,7 @@ function verdict(e){
   gc===4?good.push('수리 4격이 모두 길해요'):gc<=2&&weak.push(`수리 4격 중 ${4-gc}개가 흉수예요`);
   e.sc.sound>=15?good.push('성부터 이름까지 소리 기운이 자연스럽게 이어져요'):e.sc.sound<8&&weak.push('발음오행에 부딪히는 구간이 있어요');
   if(!e.yyGood)weak.push('획수의 음양이 한쪽으로 쏠려 있어요');
-  if(e.ctx.saju){const ys=e.chars.filter(c=>c.o===e.ctx.saju.yong).length;ys?good.push(`사주에 필요한 ${EL[e.ctx.saju.yong]}(${ELH[e.ctx.saju.yong]}) 기운을 ${ys===2?'두 글자 모두':'한 글자가'} 채워줘요`):e.chars.some(c=>c.o===e.ctx.saju.gi)&&weak.push(`사주에 부담이 되는 ${EL[e.ctx.saju.gi]} 기운 한자가 들어 있어요`)}
+  if(e.ctx.saju){const ys=e.chars.filter(c=>c.o===e.ctx.saju.yong).length;ys?good.push(`사주에 필요한 ${EL[e.ctx.saju.yong]}(${ELH[e.ctx.saju.yong]}) 기운을 ${ys===e.chars.length&&ys>1?'모든 글자가':['','한','두','세'][ys]+' 글자가'} 채워줘요`):e.chars.some(c=>c.o===e.ctx.saju.gi)&&weak.push(`사주에 부담이 되는 ${EL[e.ctx.saju.gi]} 기운 한자가 들어 있어요`)}
   const head=t>=90?'아주 좋은 이름이에요.':t>=80?'좋은 이름이에요.':t>=70?'무난한 이름이에요.':'아쉬운 부분이 있는 이름이에요.';
   return `<b>${head}</b> ${good.join(', ')}${good.length?'.':''}${weak.length?` 다만 ${weak.join(', ')}.`:''}`;
 }
@@ -1587,6 +1654,12 @@ function relSentence(a,b,from,to,ctxTxt){
   return `‘${from}’(${EL[a]})${josa(EL[a],'과','와')} ‘${to}’(${EL[b]})${josa(EL[b],'이','가')} 서로 부딪혀요(<b>${k}</b>). ${ctxTxt[2]}`;
 }
 function nameStory(e){
+  if(e.chars.length!==2){
+    const ph=e.chars.map(c=>TAG_PHRASE[c.t[0]]||`‘${c.m}’ 뜻을 담은`);
+    const parts=e.chars.map((c,i)=>`<b>${c.h}</b>(${c.m} ${c.r})에는 ${ph[i]} 뜻이`).join(', ');
+    const uniq=[...new Set(ph)];
+    return `<p>${parts} 담겨 있어요. ${e.chars.length===1?`한 글자에 뜻을 모은 외자 이름이라 “${uniq[0]} 사람”이라는 바람이 또렷해요.`:`세 글자가 어우러져 “${uniq.join(', ')} 사람”으로 자라길 바라는 이름이에요.`}</p>`;
+  }
   const [x,y]=e.chars,tx=TAG_PHRASE[x.t[0]],ty=TAG_PHRASE[y.t[0]];
   if(!tx||!ty)return `<p><b>${x.h}</b>(${x.m} ${x.r})와 <b>${y.h}</b>(${y.m} ${y.r})의 뜻이 어우러진 이름이에요.</p>`;
   const px=tx,py=ty;
@@ -1601,7 +1674,7 @@ function nameReading(e){
   parts.push(`<p>수리 4격은 ${gc===4?'네 시기가 모두 길해 <b>평생 운의 흐름이 고르게 좋아요</b>':gc===3?`네 시기 중 세 곳이 길해요. ${e.gy.find(g=>!g.good).k}(${e.gy.find(g=>!g.good).sub.split(' · ')[0]})만 조심하면 돼요`:`길한 시기가 ${gc}곳이라 수리 면에서는 아쉬움이 있어요`}. 소리의 흐름은 ${e.pr.every(r=>r!=='극')?'성부터 이름 끝까지 막힘없이 이어지고':'중간에 부딪히는 구간이 있고'}, 획수의 음양은 ${e.yyGood?'고르게 섞여 조화로워요':'한쪽으로 쏠려 있어요'}.</p>`);
   if(sj){
     const ys=e.chars.filter(c=>c.o===sj.yong).length,hs=e.chars.filter(c=>c.o===sj.hee).length,gs=e.chars.filter(c=>c.o===sj.gi).length;
-    parts.push(`<p>사주와 맞춰 보면, ${ys?`용신 ${elB(sj.yong)} 기운을 ${ys===2?'두 글자가 모두':'한 글자가'} 직접 채워 줘서 <b>사주의 부족한 부분을 이름이 메워 주는 구조</b>예요.`:hs?`용신을 돕는 희신 ${elB(sj.hee)} 기운이 들어 있어 간접적으로 균형을 잡아 줘요.`:`용신 ${elB(sj.yong)} 기운이 직접 들어 있지는 않아요.`}${gs?` 다만 기신 ${elB(sj.gi)} 기운 글자가 있어 사주 면에서는 아쉬워요.`:''}</p>`);
+    parts.push(`<p>사주와 맞춰 보면, ${ys?`용신 ${elB(sj.yong)} 기운을 ${ys===e.chars.length&&ys>1?'모든 글자가':['','한','두','세'][ys]+' 글자가'} 직접 채워 줘서 <b>사주의 부족한 부분을 이름이 메워 주는 구조</b>예요.`:hs?`용신을 돕는 희신 ${elB(sj.hee)} 기운이 들어 있어 간접적으로 균형을 잡아 줘요.`:`용신 ${elB(sj.yong)} 기운이 직접 들어 있지는 않아요.`}${gs?` 다만 기신 ${elB(sj.gi)} 기운 글자가 있어 사주 면에서는 아쉬워요.`:''}</p>`);
   }
   const best=e.total>=90?'작명소에서 권하는 이름과 견주어도 손색없는 좋은 이름이에요.':e.total>=80?'전반적으로 균형이 잡힌 좋은 이름이에요.':e.total>=70?'무난하지만 다른 한자 조합도 함께 비교해 보길 권해요.':'아쉬운 부분이 많아 다른 후보를 함께 살펴보길 권해요.';
   parts.push(`<p><b>종합하면</b>, ${best}</p>`);
@@ -1694,16 +1767,20 @@ function familyBlock(fam,csj){
     </div></div>`;
 }
 function readParents(){
-  const o={};
-  ['f','m'].forEach(k=>{const d=$(`#p${k}Date`).value;o[k]=d?{date:d,time:$(`#p${k}NoTime`).checked?null:($(`#p${k}Time`).value||null),region:$(`#p${k}Region`).value}:null});
-  return o;
+  const o={};let err=null;
+  ['f','m'].forEach(k=>{
+    if(!$(`#p${k}Date`).value.trim()){o[k]=null;return}
+    const rd=readDate(`p${k}Date`);if(rd.err){err=`${PARENT_LBL[k]} 생일: ${rd.err}`;o[k]=null;return}
+    o[k]={date:rd.date,cal:rd.cal,lunar:rd.lunar,time:$(`#p${k}NoTime`).checked?null:($(`#p${k}Time`).value||null),region:$(`#p${k}Region`).value};
+  });
+  return err?{err}:{v:o};
 }
 function fillParentForm(par){
   ['f','m'].forEach(k=>{
     const sel=$(`#p${k}Region`);
     if(!sel.options.length)sel.innerHTML=REGIONS.map(([g,l])=>`<optgroup label="${g}">${l.map(([n])=>`<option${n==='서울'?' selected':''}>${n}</option>`).join('')}</optgroup>`).join('');
     const p=par&&par[k];if(!p)return;
-    $(`#p${k}Date`).value=p.date;sel.value=p.region||'서울';
+    setDateField(`p${k}Date`,p);sel.value=p.region||'서울';
     if(p.time)$(`#p${k}Time`).value=p.time;else{$(`#p${k}NoTime`).checked=true;$(`#p${k}Time`).disabled=true}
   });
   if(par&&(par.f||par.m))$('#parentsBox').open=true;
@@ -1722,6 +1799,7 @@ function commonness(name){
   return ['아주 드문 이름','2008~2019년 출생신고 기록에 없는 이름이에요'];
 }
 function birthStatBox(name){
+  if(name.length!==2)return `<div class="bstat"><p style="margin:0">대법원 출생신고 통계 자료는 <b>두 글자 이름</b>만 담고 있어서, ${name.length===1?'외자':'세 글자'} 이름은 출생신고 수를 보여 드릴 수 없어요.</p></div>`;
   const s=birthStat(name),cm=commonness(name),g=S.info?S.info.gender:'n';
   const max=Math.max(s.m,s.f,1);
   const bar=(lbl,v,cls)=>`<div class="bs-row"><span>${lbl}</span><div class="bs-trk"><i class="${cls}" style="width:${v?Math.max(2,v/max*100):0}%"></i></div><b>${fmtN(v)}명</b></div>`;
@@ -1776,24 +1854,64 @@ function go(n){
   window.scrollTo({top:0,behavior:'smooth'});
 }
 function renderSavedN(){const n=S.saved.length,el=$('#savedN');el.hidden=!n;el.textContent=n}
-const isSaved=e=>S.saved.some(s=>s.n===e.name&&s.h===e.chars[0].h+e.chars[1].h);
+const isSaved=e=>S.saved.some(s=>s.n===e.name&&s.h===HSTR(e));
 function toggleSave(e){
-  const h=e.chars[0].h+e.chars[1].h,i=S.saved.findIndex(s=>s.n===e.name&&s.h===h);
+  const h=HSTR(e),i=S.saved.findIndex(s=>s.n===e.name&&s.h===h);
   if(i>=0){S.saved.splice(i,1);toast('보관함에서 뺐어요')}else{S.saved.push({n:e.name,h});toast(`${e.sur.r}${e.name}을(를) 보관함에 담았어요`)}
   save();renderSavedN();
   document.querySelectorAll(`[data-save="${CSS.escape(e.key)}"]`).forEach(b=>b.innerHTML=heart(e));
   if(step===4)renderStep4();
 }
 const heart=e=>isSaved(e)?'<span class="heart">♥</span> 담김':'♡ 담기';
-function savedEval(s,ctx){const x=findHJ(s.n[0],s.h[0]),y=findHJ(s.n[1],s.h[1]);return x&&y?evalCombo([x,y],ctx):null}
+function savedEval(s,ctx){const ns=[...s.n],hs=[...s.h];if(ns.length!==hs.length)return null;const cs=ns.map((r,i)=>findHJ(r,hs[i]));return cs.every(Boolean)?evalCombo(cs,ctx):null}
 
 /* ================= STEP 1 ================= */
-let gender='m';
+let gender='m',bornMode='born';
+const calMode={};
+function setBorn(v){
+  bornMode=v;document.querySelectorAll('#fBorn button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
+  const due=v==='due';$('#dueHint').hidden=!due;$('#fDateLbl').textContent=due?'출산 예정일':'생년월일';
+  $('#fTimeField').hidden=due;$('#fNoTimeLbl').hidden=due;renderRegion();
+}
+// 양력/음력 전환: 음력은 2월 30일 같은 날짜가 있어 글자 입력칸으로 바꾼다
+function setCal(id,mode,keep){
+  const el=$('#'+id),prev=calMode[id]||'solar';calMode[id]=mode;
+  document.querySelectorAll(`[data-for="${id}"]`).forEach(b=>b.classList.toggle('on',b.dataset.cal===mode));
+  $('#'+id+'LeapLbl').hidden=mode!=='lunar';
+  if(!keep&&prev!==mode&&el.value){
+    if(mode==='lunar'){const l=solarToLunar(el.value);el.type='text';el.value=l?`${l.y}-${pad2(l.m)}-${pad2(l.d)}`:'';$('#'+id+'Leap').checked=!!(l&&l.leap)}
+    else{const r=readDate(id);el.type='date';el.value=r.date||''}
+  }
+  el.type=mode==='lunar'?'text':'date';
+  if(mode==='lunar'){el.placeholder='예: 1994-04-17';el.inputMode='numeric'}
+  calOut(id);
+}
+function readDate(id){
+  const el=$('#'+id),v=el.value.trim();
+  if(!v)return {err:'날짜를 입력해 주세요'};
+  if((calMode[id]||'solar')==='solar')return /^\d{4}-\d{2}-\d{2}$/.test(v)?{date:v,cal:'solar'}:{err:'날짜를 확인해 주세요'};
+  const m=v.match(/^(\d{4})\D*(\d{1,2})\D*(\d{1,2})$/);if(!m)return {err:'음력은 1994-04-17처럼 적어 주세요'};
+  const lunar={y:+m[1],m:+m[2],d:+m[3],leap:$('#'+id+'Leap').checked};
+  const r=lunarToSolar(lunar.y,lunar.m,lunar.d,lunar.leap);
+  return r.err?{err:r.err}:{date:r.date,cal:'lunar',lunar};
+}
+function calOut(id){
+  const out=$('#'+id+'Out');if(!out)return;
+  if((calMode[id]||'solar')!=='lunar'||!$('#'+id).value.trim()){out.textContent='';out.className='cal-out';return}
+  const r=readDate(id);
+  out.className='cal-out'+(r.err?' bad':'');
+  out.textContent=r.err?r.err:`양력 ${+r.date.slice(0,4)}년 ${+r.date.slice(5,7)}월 ${+r.date.slice(8,10)}일로 계산해요`;
+}
+function setDateField(id,o){
+  if(o.cal==='lunar'&&o.lunar){setCal(id,'lunar',true);$('#'+id).value=`${o.lunar.y}-${pad2(o.lunar.m)}-${pad2(o.lunar.d)}`;$('#'+id+'Leap').checked=!!o.lunar.leap}
+  else{setCal(id,'solar',true);$('#'+id).value=o.date||''}
+  calOut(id);
+}
 let region='서울',regionTab=0;
 const signMin=n=>`${n>0?'+':n<0?'−':''}${Math.abs(n)}분`;
 function renderRegion(){
   $('#regionName').textContent=region;
-  const date=$('#fDate').value,time=$('#fNoTime').checked?null:$('#fTime').value||null;
+  const rdd=readDate('fDate'),date=rdd.date||'',time=bornMode==='due'||$('#fNoTime').checked?null:$('#fTime').value||null;
   const c=timeCorr(date||'2000-01-01',time,region);
   let html;
   if(!c.r||c.r.lon==null){
@@ -1833,6 +1951,14 @@ function fillSurSelect(){
 }
 function renderSaju(){
   const sj=S.saju,box=$('#sajuBox');if(!sj){box.innerHTML='';return}
+  if(S.info&&S.info.due){
+    box.innerHTML=`<div class="card" style="margin-top:16px">
+      <h3>출산 예정 모드</h3>
+      <p class="lead" style="margin:8px 0 12px">예정일(${S.info.date})은 실제 출생일과 달라질 수 있어 사주를 확정하지 않았어요. 이름은 <b>뜻 · 소리 · 수리 · 음양</b>으로만 골라 드려요. 점수는 이 네 항목(75점)을 100점 만점으로 환산한 값이에요.</p>
+      <details class="rd"><summary>예정일 기준 참고 사주 (확정 아님)</summary><div class="rdb"><div class="pillars">${sj.P.map(p=>p.s==null?`<div class="pillar"><div class="pl">${p.k}</div><div class="gz unk">?</div><div class="gz unk">?</div></div>`:`<div class="pillar"><div class="pl">${p.k}</div><div class="gz e${Math.floor(p.s/2)}">${STEMS[p.s]}</div><div class="gz e${BR_EL[p.b]}">${BR[p.b]}</div></div>`).join('')}</div><p>하루만 달라도 일주가 바뀌어요. 아이가 태어나면 ‘태어났어요’로 바꿔 생일을 넣어 주세요.</p></div></details>
+      <button class="btn pri block" style="margin-top:14px" data-go="2">다음: 작명 방향 정하기 →</button></div>`;
+    return;
+  }
   const max=Math.max(...sj.cnt,1);
   const col=p=>p.s==null?`<div class="pillar"><div class="pl">${p.k}</div><div class="gz unk">?<small>모름</small></div><div class="gz unk">?<small>모름</small></div></div>`
     :`<div class="pillar"><div class="pl">${p.k}</div><div class="gz e${Math.floor(p.s/2)}">${STEMS[p.s]}<small>${STEMS_K[p.s]} · ${EL[Math.floor(p.s/2)]}</small></div><div class="gz e${BR_EL[p.b]}">${BR[p.b]}<small>${BR_K[p.b]} · ${EL[BR_EL[p.b]]}</small></div></div>`;
@@ -1921,7 +2047,7 @@ function renderResults(){
   grid.innerHTML=R.slice(0,PER).map((e,i)=>card(e,i+1)).join('');
 }
 function card(e,rank){
-  const [x,y]=e.chars,sj=e.ctx.saju,tags=[];
+  const sj=e.ctx.saju,tags=[];
   const gc=e.gy.filter(g=>g.good).length;
   tags.push(`<span class="tag ${gc===4?'g':gc<=2?'r':''}">4격 ${gc}/4 길</span>`);
   if(sj){const ys=e.chars.filter(c=>c.o===sj.yong).length;if(ys)tags.push(`<span class="tag g">용신 ${EL[sj.yong]} 보완</span>`)}
@@ -1930,8 +2056,8 @@ function card(e,rank){
   if(e.sc.taste>=8)tags.push('<span class="tag g">취향 일치</span>');
   if(e.synth)tags.push('<span class="tag">새 조합</span>');
   return `<div class="ncard" data-open="${esc(e.key)}">
-    <div class="ntop"><div>${rank?`<div class="rk rk${rank}">${rank}위</div>`:''}<div class="nk">${esc(e.sur.r)}${e.name}</div><div class="nh">${e.sur.h}${x.h}${y.h}</div></div><div class="score" style="--p:${e.total}"><span>${e.total}</span></div></div>
-    <div class="nm">${x.m} ${x.r} · ${y.m} ${y.r}</div>
+    <div class="ntop"><div>${rank?`<div class="rk rk${rank}">${rank}위</div>`:''}<div class="nk">${esc(e.sur.r)}${e.name}</div><div class="nh">${e.sur.h}${HSTR(e)}</div></div><div class="score" style="--p:${e.total}"><span>${e.total}</span></div></div>
+    <div class="nm">${MSTR(e)}</div>
     <div class="tags">${tags.join('')}</div>
     <div class="nact"><button class="btn sm" data-speak="${esc(e.key)}">🔊 듣기</button><button class="btn sm" data-save="${esc(e.key)}">${heart(e)}</button></div>
   </div>`;
@@ -1945,8 +2071,9 @@ function hjFor(syl){
   const ok=all.filter(h=>hjOk(h,false));return ok.length?ok:all;
 }
 function combosFor(name){
-  const A=hjFor(name[0]),B=hjFor(name[1]),out=[];
-  for(const x of A)for(const y of B)if(x.h!==y.h)out.push(evalCombo([x,y]));
+  const syl=[...name],cap=syl.length===3?12:40,lists=syl.map(c=>hjFor(c).slice(0,cap)),out=[];
+  const walk=(i,acc)=>{if(i===syl.length){if(new Set(acc.map(c=>c.h)).size===acc.length)out.push(evalCombo(acc));return}for(const c of lists[i])walk(i+1,[...acc,c])};
+  walk(0,[]);
   return out.sort((p,q)=>(q.total+famB(q))-(p.total+famB(p))||q.rank-p.rank);
 }
 const GOOD_ENOUGH=75;
@@ -1969,7 +2096,7 @@ function similarNames(name,limit=4,minSim=4){
 }
 function myNameSearch(raw){
   const out=$('#myOut'),name=raw.replace(/\s/g,'');
-  if(!/^[가-힣]{2}$/.test(name)){out.innerHTML='<p class="my-msg b">이름을 한글 두 글자로 적어 주세요. 예: 하준, 서윤</p>';return}
+  if(!/^[가-힣]{1,3}$/.test(name)){out.innerHTML='<p class="my-msg b">이름을 한글 1~3글자로 적어 주세요. 예: 하준, 솔, 하늘빛</p>';return}
   const sur=S.info.surname.r,missing=[...name].filter(c=>!HJX[c]);
   let html='';
   const combos=missing.length?[]:combosFor(name);
@@ -1985,12 +2112,12 @@ function myNameSearch(raw){
   if(poor){
     const why=missing.length?`‘${missing.join(`’, ‘`)}’ 음에는 ${missing.every(c=>!LEGAL_COUNT[c])?'대법원 인명용 한자가 없어요':'뜻이 좋고 획수·자원오행이 확실한 인명용 한자가 없어요'}. 그래서 한자 이름으로는 추천하기 어려워요.`
       :`‘${name}’${josa(name,'은','는')} 뜻과 소리, 획수가 모두 좋은 조합(${GOOD_ENOUGH}점 이상)이 없어요.`;
-    let sim=similarNames(name);if(!sim.length)sim=similarNames(name,4,3);
+    let sim=name.length===2?similarNames(name):[];if(!sim.length&&name.length===2)sim=similarNames(name,4,3);
     html+=`<p class="my-msg">${why} ${sim.length?'대신 소리가 비슷하고 점수가 좋은 이름을 추천해 드려요.':'소리가 비슷한 이름도 찾지 못했어요. 다른 이름을 적어 보시겠어요?'}</p>`;
     if(sim.length)html+=`<div class="grid">${sim.map(s=>`<div class="my-sim"><div class="my-why">${s.why.txt}</div>${card(s.e)}</div>`).join('')}</div>`;
     if(missing.length)html+=`<p class="my-msg n"><b>‘${esc(name)}’ 그대로 쓰고 싶다면</b> 한자 없이 한글 이름으로 출생신고할 수 있어요(가족관계등록부 한자 칸을 비워 둠). 하늘·로운·나래 같은 순우리말 이름이 이렇게 등록돼요. 다만 이 경우 수리 4격·자원오행 풀이는 할 수 없어요.</p>`;
   }else{
-    const sim=similarNames(name,2).filter(s=>s.e.total>best.total);
+    const sim=name.length===2?similarNames(name,2).filter(s=>s.e.total>best.total):[];
     if(sim.length)html+=`<p class="my-msg n">소리가 비슷하면서 점수가 더 높은 이름도 있어요.</p><div class="grid">${sim.map(s=>`<div class="my-sim"><div class="my-why">${s.why.txt}</div>${card(s.e)}</div>`).join('')}</div>`;
   }
   out.innerHTML=html;
@@ -2002,7 +2129,8 @@ function renderStep3(){
   if(!S.chat.length){
     const sj=S.saju;
     const top=S.results.slice(0,3).map(e=>`<b>${e.name}</b>`).join(', ');
-    botSay(`${esc(S.info.surname.r)}씨 아이 사주를 보니 <b class="tc${sj.yong}">${EL[sj.yong]}(${ELH[sj.yong]})</b> 기운을 이름에 담으면 좋아요. 그 기운과 취향을 반영해 골라봤어요. 지금은 ${top}이 가장 높아요.<br><br>원하는 느낌이나 조건을 편하게 말씀해 주세요.`);
+    if(S.info.due)botSay(`출산 예정 모드라 사주 대신 뜻 · 소리 · 수리 · 음양으로 골라 봤어요. 지금은 ${top}이 가장 높아요.<br><br>원하는 느낌이나 조건을 편하게 말씀해 주세요.`);
+    else botSay(`${esc(S.info.surname.r)}씨 아이 사주를 보니 <b class="tc${sj.yong}">${EL[sj.yong]}(${ELH[sj.yong]})</b> 기운을 이름에 담으면 좋아요. 그 기운과 취향을 반영해 골라봤어요. 지금은 ${top}이 가장 높아요.<br><br>원하는 느낌이나 조건을 편하게 말씀해 주세요.`);
   }
   renderChat();
   $('#sugg').innerHTML=['밝고 부드러운 느낌','받침 없는 이름','‘준’ 자 들어간 이름','물 기운 있는 이름','4격 모두 좋은 것만','쉬운 한자로','중성적인 이름','서윤 어때?','처음부터'].map(t=>`<button class="chip" data-say="${t}">${t}</button>`).join('');
@@ -2018,14 +2146,16 @@ function handleChat(text){
   let t=text.replace(/\s+/g,' ');
 
   // 특정 이름 분석
-  const nm=t.match(/([가-힣]{2})\s*(?:은|는|이|가)?\s*(?:어때|어떄|어떤|분석|풀이|봐줘)/);
+  // 'AI'가 들어간 말은 규칙보다 먼저 AI에게 묻는다 (예: "AI야 할머니가 좋아할 이름 추천해줘")
+  if(aiOn()&&/(^|\s)(AI|ai|에이아이|인공지능)/.test(t)){askAI(t.replace(/(AI|ai|에이아이|인공지능)(에게|한테|로|가|야)?/g,"").trim()||t);return}
+  const nm=t.match(/([가-힣]{1,3}?)\s*(?:은|는|이|가)?\s*(?:어때|어떄|어떤|분석|풀이|봐줘)/);
   if(nm&&!/이름|느낌|기운|받침|한자|사주|조건|글자/.test(nm[1])){
     const n=nm[1];
     if(HJX[n[0]]&&HJX[n[1]]){
       const combos=combosFor(n);
       combos.sort((a,b)=>b.total-a.total);
       const e=combos[0];
-      botSay(`<b>${esc(S.info.surname.r)}${n}</b>은(는) 한자 ${combos.length}가지 조합이 가능해요. 가장 좋은 건 <b>${e.sur.h}${e.chars[0].h}${e.chars[1].h}</b> (${e.chars[0].m} ${e.chars[0].r} · ${e.chars[1].m} ${e.chars[1].r}) <b>${e.total}점</b>이에요.<br>${verdict(e)}<br><button class="btn sm mini" data-open="${esc(e.key)}">자세히 보기</button><button class="btn sm mini" data-save="${esc(e.key)}">${heart(e)}</button>`);
+      botSay(`<b>${esc(S.info.surname.r)}${n}</b>은(는) 한자 ${combos.length}가지 조합이 가능해요. 가장 좋은 건 <b>${e.sur.h}${HSTR(e)}</b> (${MSTR(e)}) <b>${e.total}점</b>이에요.<br>${verdict(e)}<br><button class="btn sm mini" data-open="${esc(e.key)}">자세히 보기</button><button class="btn sm mini" data-save="${esc(e.key)}">${heart(e)}</button>`);
     }else{
       const miss=[...n].filter(c=>!HJX[c]);
       botSay(`아쉽지만 ‘${esc(miss.join(', '))}’ 자는 아직 한자 사전에 없어서 분석할 수 없어요.`);
@@ -2070,6 +2200,7 @@ function handleChat(text){
   }
   const more=/더 ?(보여|줘|추천)|다른|또/.test(t)&&!done.length;
 
+  if(!done.length&&!more&&aiOn()){askAI(text);return}
   if(!done.length&&!more){
     botSay('제가 알아들을 수 있게 조금만 바꿔 말씀해 주시겠어요? 이런 말을 이해해요:<br>· “밝고 씩씩한 느낌” · “‘서’ 자 들어간 이름” · “‘민’ 자는 빼줘”<br>· “받침 없는 이름” · “물 기운 있는 이름” · “쉬운 한자로”<br>· “4격 모두 좋은 것만” · “하윤 어때?” · “처음부터”');
     renderChat();return;
@@ -2092,10 +2223,61 @@ function removeFilter(k){
   CACHE.clear();refresh();
 }
 
+/* ================= AI 연동 (선택) ================= */
+// worker/ai-proxy.js 를 Cloudflare Workers에 배포한 뒤 그 주소를 아래에 넣으면 켜진다.
+// 비어 있으면 AI 기능은 화면에 나타나지 않는다. 시험용으로 주소창에 ?ai=주소 를 붙여도 된다.
+const AI_ENDPOINT=(()=>{try{const q=new URLSearchParams(location.search).get('ai');if(q)return q}catch(e){}return ''})();
+const aiOn=()=>!!AI_ENDPOINT;
+async function aiPost(path,body){
+  const ctl=new AbortController(),t=setTimeout(()=>ctl.abort(),20000);
+  try{
+    const r=await fetch(AI_ENDPOINT.replace(/\/$/,'')+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal:ctl.signal});
+    const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||('AI 서버 응답 '+r.status));return d;
+  }finally{clearTimeout(t)}
+}
+// AI가 낸 후보를 규칙으로 다시 검증: 음과 한자가 대법원 인명용 한자표에 있고, 이름결 사전(획수·자원오행 확정)에 있어야 통과
+async function aiSuggest(wish){
+  const sj=S.info.due?null:S.saju;
+  const d=await aiPost('/suggest',{surname:S.info.surname.r,gender:S.info.gender,wish,yong:sj?EL[sj.yong]:'',avoid:(S.filters&&S.filters.exclude)||[],count:12});
+  const ok=[],bad=[],seen=new Set();
+  for(const x of d.names||[]){
+    const syl=[...x.name],hz=[...(x.hanja||[]).join('')];
+    const label=x.name+(hz.length?`(${hz.join('')})`:'');
+    if(hz.length!==syl.length){bad.push(label+' 글자 수 불일치');continue}
+    if(!syl.every((r,i)=>isLegal(r,hz[i]))){bad.push(label+' 인명용 아님 또는 음 불일치');continue}
+    const chars=syl.map((r,i)=>findHJ(r,hz[i]));
+    if(!chars.every(Boolean)){bad.push(label+' 획수·자원오행 미확정');continue}
+    const e=evalCombo(chars);if(seen.has(e.key))continue;seen.add(e.key);e.aiReason=x.reason;ok.push(e);
+  }
+  ok.sort((a,b)=>b.total-a.total);
+  return {ok,bad,n:(d.names||[]).length};
+}
+async function askAI(text){
+  botSay('AI에게 물어보는 중이에요. 제안이 오면 인명용 한자·획수·점수를 규칙으로 다시 확인해서 보여 드릴게요.');renderChat();
+  try{
+    const r=await aiSuggest(text);
+    if(!r.ok.length){botSay(`AI가 ${r.n}개를 제안했지만 검증을 통과한 이름이 없었어요. 느낌을 조금 바꿔 다시 말씀해 주세요.`);renderChat();return}
+    const sur=esc(S.info.surname.r);
+    botSay(`AI 제안 ${r.n}개 중 <b>검증을 통과한 ${r.ok.length}개</b>예요. 점수는 이름결 규칙으로 계산했어요.<br>`+
+      r.ok.slice(0,5).map(e=>`<br><b>${sur}${e.name}</b> ${S.info.surname.h}${HSTR(e)} · <b>${e.total}점</b><br><span class="hint">${esc(e.aiReason||'')}</span> <button class="btn sm mini" data-open="${esc(e.key)}">보기</button><button class="btn sm mini" data-save="${esc(e.key)}">${heart(e)}</button>`).join('<br>')+
+      (r.bad.length?`<br><br><span class="hint">걸러낸 제안: ${r.bad.slice(0,6).map(esc).join(', ')}</span>`:''));
+  }catch(err){botSay('AI 서버에 연결하지 못했어요. 잠시 뒤 다시 해 주세요. 그동안은 “밝고 씩씩한 느낌”, “‘서’ 자 들어간 이름”처럼 말씀해 주시면 바로 골라 드려요.')}
+  renderChat();
+}
+async function aiStory(key,box){
+  const e=CACHE.get(key);if(!e||!box)return;
+  box.innerHTML='<p class="hint">AI가 해설과 축원문을 쓰는 중이에요…</p>';
+  try{
+    const sj=e.ctx.saju;
+    const d=await aiPost('/story',{surname:e.sur.r,name:e.name,hanja:e.chars.map(c=>({h:c.h,m:c.m,r:c.r})),yong:sj?EL[sj.yong]:'',gender:S.info&&S.info.gender});
+    box.innerHTML=`<p>${esc(d.story||'')}</p><p class="blessing">${esc(d.blessing||'')}</p><p class="hint">AI가 쓴 글이에요. 수리·오행 같은 계산은 위의 규칙 풀이를 기준으로 하세요.</p>`;
+  }catch(err){box.innerHTML='<p class="hint">AI 서버에 연결하지 못했어요. 잠시 뒤 다시 눌러 주세요.</p>'}
+}
+
 /* ================= 상세 모달 ================= */
 function openDetail(key){
   const e=CACHE.get(key);if(!e)return;
-  const [x,y]=e.chars,sj=e.ctx.saju,sur=e.sur,full=sur.r+e.name;
+  const sj=e.ctx.saju,sur=e.sur,full=sur.r+e.name,n=e.chars.length;
   const pron=pronounce(full),call=e.name+josa(e.name,'아','야'),callP=pronounce(call);
   const rom=romanize(sur.r,e.name),enc=englishCheck(rom),tz=teaseCheck(full),cm=commonness(e.name);
   const sib=e.ctx.sib&&e.ctx.sib.length?sibCheck(e.name,e.ctx.sib):[];
@@ -2103,16 +2285,16 @@ function openDetail(key){
   const elRole=o=>!sj?'':o===sj.yong?'<span class="tag g">용신</span>':o===sj.hee?'<span class="tag g">희신</span>':sj.lack.includes(o)?'<span class="tag g">부족 보완</span>':o===sj.gi?'<span class="tag r">기신</span>':'<span class="tag">보통</span>';
   $('#modal').innerHTML=`<button class="xbtn" data-close aria-label="닫기">×</button>
     <div class="stage">
-      <div class="brush" id="brush" role="img" aria-label="${sur.h}${x.h}${y.h}" title="누르면 바로 완성돼요" data-chars="${sur.h}${x.h}${y.h}"></div>
+      <div class="brush" id="brush" role="img" aria-label="${sur.h}${HSTR(e)}" title="누르면 바로 완성돼요" data-chars="${sur.h}${HSTR(e)}"></div>
       <div class="bigk">${esc(full)}</div>
       <div class="stage-foot">
-        <span class="hint">${x.h} ${x.m} ${x.r} · ${y.h} ${y.m} ${y.r}</span>
+        <span class="hint">${MSTR(e,true)}</span>
         <div class="score" style="--p:${e.total};width:64px;height:64px;font-size:22px"><span>${e.total}</span></div>
       </div>
       <span class="stamp" aria-hidden="true">結</span>
     </div>
     <div class="verdict">${verdict(e)}</div>
-    <p class="hint" style="margin:-6px 0 12px">점수는 수리 4격 35 · 자원오행 25 · 발음오행 15 · 음양 10 · 소리와 부르기 15, 합계 100점이에요. 모든 조건을 갖춰야 100점이 나와요. 같은 사주와 이름이면 언제나 같은 점수가 나와요.</p>
+    <p class="hint" style="margin:-6px 0 12px">${sj?'점수는 수리 4격 35 · 자원오행 25 · 발음오행 15 · 음양 10 · 소리와 부르기 15, 합계 100점이에요. 모든 조건을 갖춰야 100점이 나와요.':'사주 정보가 없어서 자원오행(25점)을 빼고 수리 4격 · 발음오행 · 음양 · 소리와 부르기 75점을 100점 만점으로 환산했어요.'} 같은 사주와 이름이면 언제나 같은 점수가 나와요.${n!==2?` ${n===1?'외자 이름은 원격=이름, 형격=성+이름, 이격=성, 정격=성+이름':'세 글자 이름은 원격=이름 전체, 형격=성+첫 글자, 이격=성+둘째·셋째 글자, 정격=전체'}으로 수리를 계산했어요.`:''}</p>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
       <button class="btn sm" data-speak="${esc(e.key)}">🔊 이름 듣기</button>
       <button class="btn sm" data-rewrite>✍ 다시 쓰기</button>
@@ -2127,32 +2309,33 @@ function openDetail(key){
       <ul class="fm-pts">${e.syn.pts.length?e.syn.pts.map(([t,s])=>`<li class="${t}">${s}</li>`).join(''):'<li class="n">가족 기운에 특별히 더하거나 빼는 글자는 없어요.</li>'}</ul></div>`:''}
 
     <div class="msec reading"><h3>이름 종합 해설</h3>${nameReading(e)}</div>
+    ${aiOn()?`<div class="msec"><h3>AI 해설 · 부모 축원문 <span class="pts">AI</span></h3><div class="ai-out"><button class="btn sm" data-ai-story="${esc(e.key)}">AI에게 해설과 축원문 받기</button></div></div>`:''}
 
     <div class="msec"><h3>한자 풀이</h3><p class="ex">원획법(부수를 본래 글자 획수로 세는 방식) 기준이에요.</p>
-      <div class="hj3">${hjBox({...sur,m:'성'},'성',sur.o)}${hjBox(x,'이름 첫 글자',x.o)}${hjBox(y,'이름 끝 글자',y.o)}</div>
-      <div class="rdb">${hjReading(x,sj,'이름 첫 글자')}${hjReading(y,sj,'이름 끝 글자')}</div></div>
+      <div class="hj3" style="grid-template-columns:repeat(${n+1},minmax(0,1fr))">${hjBox({...sur,m:'성'},'성',sur.o)}${e.chars.map((c,i)=>hjBox(c,POSN(i,n),c.o)).join('')}</div>
+      <div class="rdb">${e.chars.map((c,i)=>hjReading(c,sj,POSN(i,n))).join('')}</div></div>
 
     <div class="msec"><h3>수리 4격 <span class="pts">${e.sc.suri} / 35점</span></h3><p class="ex">한자 획수를 더해 인생의 네 시기 운을 봐요. 81가지 수 하나하나에 전통적으로 정해진 이름과 뜻이 있어요.</p>
       <div class="gy4">${e.gy.map(g=>`<div class="gy ${g.good?'ok':'no'}"><div class="k">${g.k}</div><div class="n">${g.v}</div><div class="k">${NUM81[g.v][0]}</div><b style="color:${g.good?'var(--good)':'var(--bad)'}">${g.good?'○ 길':'× 흉'} · ${g.good?GY_W[g.k]:0}/${GY_W[g.k]}</b></div>`).join('')}</div>
       <div class="rdb">${e.gy.map(g=>`<p><b>${g.k} ${g.v}수 · ${NUM81[g.v][0]}</b> <span class="hint">${g.sub}</span><br>${GY_DESC[g.k]} ${g.v}수는 ‘${NUM81[g.v][0]}’으로, ${NUM81[g.v][1]}</p>`).join('')}</div></div>
 
     <div class="msec"><h3>발음오행 <span class="pts">${e.sc.sound} / 15점</span></h3><p class="ex">소리의 첫 자음이 가진 기운이에요. 이름은 평생 불리기 때문에, 소리의 기운이 서로 살려 주는(상생) 흐름이면 좋다고 봐요.</p>
-      <div class="flowx">${[sur.r,x.r,y.r].map((c,i)=>`<span class="pill e${e.pe[i]}" style="font-size:15px;padding:6px 12px">${c} · ${EL[e.pe[i]]}</span>${i<2?`<span class="arr">→<br>${relTxt[e.pr[i]]}</span>`:''}`).join('')}</div>
+      <div class="flowx">${[surLast(sur),...e.chars.map(c=>c.r)].map((c,i,a)=>`<span class="pill e${e.pe[i]}" style="font-size:15px;padding:6px 12px">${c} · ${EL[e.pe[i]]}</span>${i<a.length-1?`<span class="arr">→<br>${relTxt[e.pr[i]]}</span>`:''}`).join('')}</div>
       <div class="rdb">
-        <p><b>성 → 이름 첫 글자</b><br>${relSentence(e.pe[0],e.pe[1],sur.r,x.r,['집안의 기운이 아이를 밀어 주는 흐름이라, 부모와 윗사람의 도움을 받기 좋다고 봐요.','아이의 기운이 집안을 받쳐 주는 흐름이라, 자라서 집안을 빛낸다고 봐요.','집안과 아이의 기운이 부딪혀, 이 구간은 다른 장점으로 보완하는 게 좋아요.','집안과 같은 결의 기운을 이어받는다고 봐요.'])}</p>
-        <p><b>이름 첫 글자 → 끝 글자</b><br>${relSentence(e.pe[1],e.pe[2],x.r,y.r,['이름 안에서 기운이 앞에서 뒤로 자연스럽게 흘러, 부르기 편하고 안정감 있는 소리예요.','뒤 글자가 앞 글자를 받쳐 주어, 소리의 마무리가 단단해요.','이름 안에서 소리 기운이 부딪혀, 부를 때 힘이 분산된다고 봐요.','이름 두 글자가 한 가지 기운으로 모여 성격이 뚜렷한 소리예요.'])}</p>
+        <p><b>성 → 이름 첫 글자</b><br>${relSentence(e.pe[0],e.pe[1],surLast(sur),e.chars[0].r,['집안의 기운이 아이를 밀어 주는 흐름이라, 부모와 윗사람의 도움을 받기 좋다고 봐요.','아이의 기운이 집안을 받쳐 주는 흐름이라, 자라서 집안을 빛낸다고 봐요.','집안과 아이의 기운이 부딪혀, 이 구간은 다른 장점으로 보완하는 게 좋아요.','집안과 같은 결의 기운을 이어받는다고 봐요.'])}</p>
+        ${e.chars.slice(1).map((c,i)=>`<p><b>${POSN(i,n)} → ${POSN(i+1,n)}</b><br>${relSentence(e.pe[i+1],e.pe[i+2],e.chars[i].r,c.r,['이름 안에서 기운이 앞에서 뒤로 자연스럽게 흘러, 부르기 편하고 안정감 있는 소리예요.','뒤 글자가 앞 글자를 받쳐 주어, 소리의 마무리가 단단해요.','이름 안에서 소리 기운이 부딪혀, 부를 때 힘이 분산된다고 봐요.','이름 글자가 한 가지 기운으로 모여 성격이 뚜렷한 소리예요.'])}</p>`).join('')}
       </div></div>
 
-    <div class="msec"><h3>음양 조화 <span class="pts">${e.sc.yy} / 10점</span></h3><p class="ex">획수가 홀수면 양(●), 짝수면 음(○). 세 글자가 섞여 있어야 조화로워요.</p>
+    <div class="msec"><h3>음양 조화 <span class="pts">${e.sc.yy} / 10점</span></h3><p class="ex">획수가 홀수면 양(●), 짝수면 음(○). 성과 이름 글자가 섞여 있어야 조화로워요.</p>
       <div class="yy">${e.yy.map(v=>`<i class="${v?'y':''}"></i>`).join('')}<span>${e.yyGood?'음과 양이 고루 섞여 있어요':'한쪽으로 쏠려 있어요'}</span></div>
-      <div class="rdb"><p>${[sur,x,y].map((c,i)=>`${c.h}(${c.s}획) ${e.yy[i]?'양':'음'}`).join(' · ')}<br>${e.yyGood?'음은 고요함과 안정, 양은 활동과 추진을 뜻해요. 이 이름은 두 기운이 함께 있어 <b>밖으로 나아갈 힘과 안으로 지킬 힘이 균형</b>을 이뤄요.':`세 글자가 모두 ${e.yy[0]?'양':'음'}이라 기운이 한쪽으로 쏠려요. ${e.yy[0]?'활동적이지만 쉬어 가는 힘이 약해질 수 있다고 봐요.':'차분하지만 앞으로 나아가는 힘이 약해질 수 있다고 봐요.'} 획수가 다른 한자로 바꾸면 쉽게 고칠 수 있어요.`}</p></div></div>
+      <div class="rdb"><p>${[sur,...e.chars].map((c,i)=>`${c.h}(${c.s}획) ${e.yy[i]?'양':'음'}`).join(' · ')}<br>${e.yyGood?'음은 고요함과 안정, 양은 활동과 추진을 뜻해요. 이 이름은 두 기운이 함께 있어 <b>밖으로 나아갈 힘과 안으로 지킬 힘이 균형</b>을 이뤄요.':`${n+1}글자가 모두 ${e.yy[0]?'양':'음'}이라 기운이 한쪽으로 쏠려요. ${e.yy[0]?'활동적이지만 쉬어 가는 힘이 약해질 수 있다고 봐요.':'차분하지만 앞으로 나아가는 힘이 약해질 수 있다고 봐요.'} 획수가 다른 한자로 바꾸면 쉽게 고칠 수 있어요.`}</p></div></div>
 
     <div class="msec"><h3>자원오행 · 용신 <span class="pts">${sj?e.sc.el+' / 25점':'사주 정보 없음'}</span></h3><p class="ex">한자 자체가 가진 기운이에요. 사주에 필요한 기운(용신)을 담으면 좋아요.</p>
-      ${sj?`<div class="flowx"><span>${x.h} <b class="tc${x.o}">${EL[x.o]}</b> ${elRole(x.o)}</span><span style="margin:0 10px;color:var(--line)">|</span><span>${y.h} <b class="tc${y.o}">${EL[y.o]}</b> ${elRole(y.o)}</span></div>
-      <div class="rdb"><p>이 아이의 용신은 ${elB(sj.yong)}, 희신은 ${elB(sj.hee)}, 기신은 ${elB(sj.gi)}${josa(EL[sj.gi],"이에요","예요")}${sj.lack.length?`. 사주에 없는 기운은 ${sj.lack.map(elB).join(', ')}${josa(EL[sj.lack[sj.lack.length-1]],"이에요","예요")}`:''}. 이름 한자의 기운이 용신에 가까울수록 점수가 높아요(용신 10, 희신 7, 없는 기운 6, 기신 0, 그 외 4점).</p></div>`:'<p class="hint">생년월일을 넣으면 용신 점수가 계산돼요.</p>'}</div>
+      ${sj?`<div class="flowx">${e.chars.map(c=>`<span>${c.h} <b class="tc${c.o}">${EL[c.o]}</b> ${elRole(c.o)}</span>`).join('<span style="margin:0 10px;color:var(--line)">|</span>')}</div>
+      <div class="rdb"><p>이 아이의 용신은 ${elB(sj.yong)}, 희신은 ${elB(sj.hee)}, 기신은 ${elB(sj.gi)}${josa(EL[sj.gi],"이에요","예요")}${sj.lack.length?`. 사주에 없는 기운은 ${sj.lack.map(elB).join(', ')}${josa(EL[sj.lack[sj.lack.length-1]],"이에요","예요")}`:''}. 이름 한자의 기운이 용신에 가까울수록 점수가 높아요(용신 10, 희신 7, 없는 기운 6, 기신 0, 그 외 4점).</p></div>`:`<p class="hint">${S.info&&S.info.due?'출산 예정 모드라 사주를 쓰지 않았어요. 아이가 태어난 뒤 생일을 넣으면 용신 점수가 더해져요.':'생년월일을 넣으면 용신 점수가 계산돼요.'}</p>`}</div>
 
     <div class="msec"><h3>소리 · 부르기 <span class="pts">${e.sc.call} / 15점</span></h3>
-      <p class="ex">적힌 그대로 소리 나는지(5), 두 글자 모음이 달라 또렷한지(5), 놀림 단어와 겹치지 않는지(5)를 봐요.</p>
+      <p class="ex">적힌 그대로 소리 나는지(5), 이름 글자의 모음이 서로 달라 또렷한지(5), 놀림 단어와 겹치지 않는지(5)를 봐요.</p>
       <div class="xtra">
         <div class="xb"><div class="t">실제 소리</div>${pron!==full?`<b>[${pron}]</b>${josa(pron,"으로","로")} 소리나요.`:`적힌 그대로 <b>[${full}]</b>${josa(full,"으로","로")} 소리나요.`}<br>부를 때: <b>${call}~</b>${callP!==call?` [${callP}]`:''}</div>
         <div class="xb"><div class="t">놀림 단어 체크</div>${tz.length?`<span style="color:var(--bad)">‘${tz.join(', ')}’처럼 들릴 수 있어요.</span>`:'놀림받을 만한 단어와 겹치지 않아요 ✓'}</div>
@@ -2161,7 +2344,7 @@ function openDetail(key){
         ${sib.map(s=>`<div class="xb" style="grid-column:1/-1"><div class="t">형제 ‘${esc(s.sb)}’와 어울림 · ${s.label}</div>${s.pts.length?s.pts.map(esc).join(' · '):'특별히 겹치거나 부딪히는 점이 없어요'}</div>`).join('')}
       </div></div>
 
-    ${e.alts&&e.alts.length?`<div class="msec"><h3>같은 이름, 다른 한자</h3><div class="alts">${e.alts.map(a=>`<button class="btn sm" data-open="${esc(a.key)}">${a.chars[0].h}${a.chars[1].h} · ${a.chars[0].m} ${a.chars[1].m} · ${a.total}점</button>`).join('')}</div></div>`:''}
+    ${e.alts&&e.alts.length?`<div class="msec"><h3>같은 이름, 다른 한자</h3><div class="alts">${e.alts.map(a=>`<button class="btn sm" data-open="${esc(a.key)}">${HSTR(a)} · ${a.chars.map(c=>c.m).join(' ')} · ${a.total}점</button>`).join('')}</div></div>`:''}
   `;
   // 다른 한자 클릭 시에도 대안 목록 유지
   e.alts&&e.alts.forEach(a=>{if(!a.alts)a.alts=[e,...e.alts.filter(z=>z!==a)]});
@@ -2244,7 +2427,7 @@ async function writeName(chars,instant=false){
   const run=++brushRun;
   const ink=getComputedStyle(document.documentElement).getPropertyValue('--ink').trim()||'#2a2421';
   const gap=parseFloat(getComputedStyle(box).columnGap)||12;
-  const size=Math.max(80,Math.min(210,Math.floor((box.clientWidth-gap*(chars.length-1))/chars.length)));
+  const size=Math.max(48,Math.min(210,Math.floor((box.clientWidth-gap*(chars.length-1))/chars.length)));
   box.classList.remove('done');
   box.innerHTML=chars.map(()=>`<div class="bc" style="width:${size}px;height:${size}px"></div>`).join('');
   // '동작 줄이기'가 켜져 있어도, 이름을 눌러 여는 것은 사용자가 원한 동작이라 획순을 보여 준다
@@ -2264,13 +2447,13 @@ async function makeCert(e){
   g.fillStyle='#f7f0e2';g.fillRect(0,0,W,H);
   g.strokeStyle='#b5442f';g.lineWidth=6;g.strokeRect(50,50,W-100,H-100);g.lineWidth=2;g.strokeRect(68,68,W-136,H-136);
   g.textAlign='center';g.fillStyle='#857869';g.font='600 34px "Pretendard Variable",sans-serif';g.fillText('이 름 풀 이',W/2,170);
-  g.fillStyle='#2a2421';g.font='500 190px "Hahmlet",serif';g.fillText(e.sur.h+e.chars[0].h+e.chars[1].h,W/2,420);
+  g.fillStyle='#2a2421';g.font='500 190px "Hahmlet",serif';const hz=e.sur.h+HSTR(e);g.font=`500 ${hz.length>3?Math.floor(570/hz.length):190}px "Hahmlet",serif`;g.fillText(hz,W/2,420);
   g.font='800 64px "Pretendard Variable",sans-serif';g.fillText([...(e.sur.r+e.name)].join('  '),W/2,530);
   g.fillStyle='#4a413b';g.font='500 36px "Pretendard Variable",sans-serif';
-  g.fillText(`${e.chars[0].h} ${e.chars[0].m} ${e.chars[0].r}  ·  ${e.chars[1].h} ${e.chars[1].m} ${e.chars[1].r}`,W/2,620);
+  g.fillText(MSTR(e,true),W/2,620);
   g.strokeStyle='#e5d9c5';g.beginPath();g.moveTo(180,680);g.lineTo(W-180,680);g.stroke();
   g.font='500 30px "Pretendard Variable",sans-serif';g.fillStyle='#4a413b';
-  const lines=[`수리 4격  ${e.gy.map(x=>`${x.k} ${x.v}${x.good?'○':'×'}`).join('   ')}`,`발음오행  ${e.pe.map(i=>EL[i]).join(' → ')}`,`자원오행  ${ELH[e.chars[0].o]} · ${ELH[e.chars[1].o]}${e.ctx.saju?`   (용신 ${ELH[e.ctx.saju.yong]})`:''}`,`영문 표기  ${romanize(e.sur.r,e.name).full}`];
+  const lines=[`수리 4격  ${e.gy.map(x=>`${x.k} ${x.v}${x.good?'○':'×'}`).join('   ')}`,`발음오행  ${e.pe.map(i=>EL[i]).join(' → ')}`,`자원오행  ${e.chars.map(c=>ELH[c.o]).join(' · ')}${e.ctx.saju?`   (용신 ${ELH[e.ctx.saju.yong]})`:''}`,`영문 표기  ${romanize(e.sur.r,e.name).full}`];
   lines.forEach((l,i)=>g.fillText(l,W/2,760+i*62));
   g.fillStyle='#b5442f';g.font='800 120px "Pretendard Variable",sans-serif';g.fillText(e.total,W/2,1110);
   g.font='500 28px "Pretendard Variable",sans-serif';g.fillText('종합 점수',W/2,1155);
@@ -2292,11 +2475,11 @@ function cmpTable(items,{final=true}={}){
   const sj=items[0].ctx.saju;
   const row=(lbl,fn)=>`<tr><td>${lbl}</td>${items.map(e=>`<td class="${S.final===e.key&&final?'final':''}">${fn(e)}</td>`).join('')}</tr>`;
   return `<div class="cmpwrap"><table class="cmp">
-    <thead><tr><th></th>${items.map(e=>`<th class="${S.final===e.key&&final?'final':''}">${esc(e.sur.r)}${e.name}<div class="nh" style="font-size:14px">${e.sur.h}${e.chars[0].h}${e.chars[1].h}</div></th>`).join('')}</tr></thead>
+    <thead><tr><th></th>${items.map(e=>`<th class="${S.final===e.key&&final?'final':''}">${esc(e.sur.r)}${e.name}<div class="nh" style="font-size:14px">${e.sur.h}${HSTR(e)}</div></th>`).join('')}</tr></thead>
     <tbody>
     ${row('종합 점수',e=>`<span class="${e.total===best?'best':''}" style="padding:2px 8px;border-radius:6px">${e.total}점</span>`)}
-    ${row('뜻',e=>`${e.chars[0].m} ${e.chars[0].r}<br>${e.chars[1].m} ${e.chars[1].r}`)}
-    ${row('획수',e=>`${e.sur.s} · ${e.chars[0].s} · ${e.chars[1].s}`)}
+    ${row('뜻',e=>e.chars.map(c=>`${c.m} ${c.r}`).join('<br>'))}
+    ${row('획수',e=>[e.sur.s,...e.chars.map(c=>c.s)].join(' · '))}
     ${row('수리 4격',e=>e.gy.map(g=>`<span style="color:${g.good?'var(--good)':'var(--bad)'}" title="${g.k} ${g.v}">${g.good?'○':'×'}</span>`).join(' ')+` <span class="hint">(${e.sc.suri})</span>`)}
     ${row('발음오행',e=>e.pe.map(i=>`<b class="tc${i}">${EL[i]}</b>`).join('→')+` <span class="hint">(${e.sc.sound})</span>`)}
     ${row('자원오행',e=>e.chars.map(c=>`<b class="tc${c.o}">${EL[c.o]}</b>`).join(' · ')+(sj?` <span class="hint">(${e.sc.el})</span>`:''))}
@@ -2313,7 +2496,7 @@ function renderStep4(){
   else{
     const items=S.saved.map(s=>savedEval(s)).filter(Boolean);
     const fin=items.find(e=>e.key===S.final);
-    box.innerHTML=(fin?`<div class="card" style="margin-bottom:16px;border-color:var(--accent)"><div class="sec-h" style="margin:0"><div><span class="hint">최종 선택한 이름</span><div class="nk" style="font-size:32px">${esc(fin.sur.r)}${fin.name} <span class="nh">${fin.sur.h}${fin.chars[0].h}${fin.chars[1].h}</span></div></div><button class="btn dark" data-cert="${esc(fin.key)}">이름 증서 저장</button></div></div>`:'')+cmpTable(items);
+    box.innerHTML=(fin?`<div class="card" style="margin-bottom:16px;border-color:var(--accent)"><div class="sec-h" style="margin:0"><div><span class="hint">최종 선택한 이름</span><div class="nk" style="font-size:32px">${esc(fin.sur.r)}${fin.name} <span class="nh">${fin.sur.h}${HSTR(fin)}</span></div></div><button class="btn dark" data-cert="${esc(fin.key)}">이름 증서 저장</button></div></div>`:'')+cmpTable(items);
   }
   renderShared();
 }
@@ -2366,10 +2549,13 @@ document.addEventListener('click',ev=>{
   if((el=q('[data-go]'))){ev.preventDefault();closeModal();go(+el.dataset.go);return}
   if((el=q('[data-save]'))){ev.stopPropagation();const e=CACHE.get(el.dataset.save);if(e){if(e.ctx.id){toast('공유받은 후보는 보관함에 담을 수 없어요');return}toggleSave(e)}return}
   if((el=q('[data-speak]'))){const e=CACHE.get(el.dataset.speak);e&&speakName(e);return}
+  if((el=q('[data-cal]'))){setCal(el.dataset.for,el.dataset.cal);renderRegion();return}
+  if((el=q('#fBorn button'))){setBorn(el.dataset.v);return}
   if(t.id==='regionBtn'||q('#regionBtn')){openSheet();return}
   if(q('[data-sheet-close]')||t.id==='sheetOv'){closeSheet();return}
   if((el=q('[data-rtab]'))){regionTab=+el.dataset.rtab;$('#regionQ').value='';renderRegionList();return}
   if((el=q('[data-region]'))){region=el.dataset.region;renderRegion();renderRegionList();setTimeout(closeSheet,160);return}
+  if((el=q('[data-ai-story]'))){aiStory(el.dataset.aiStory,el.closest('.ai-out'));return}
   if((el=q('[data-pclear]'))){const k=el.dataset.pclear;$(`#p${k}Date`).value='';$(`#p${k}Time`).value='';$(`#p${k}Time`).disabled=false;$(`#p${k}NoTime`).checked=false;return}
   if(q('#opening')){runOpening(true);return}
   if((el=q('[data-rewrite]'))){const b=$('#brush');b&&writeName([...b.dataset.chars]);return}
@@ -2395,7 +2581,8 @@ document.addEventListener('click',ev=>{
 ['header','main','#ov','#sheetOv'].forEach(s=>{const el=document.querySelector(s);if(el)el.addEventListener('click',()=>{})});
 document.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&document.activeElement&&document.activeElement.id==='opening'){e.preventDefault();runOpening(true);return}if(e.key!=='Escape')return;if($('#sheetOv').classList.contains('on'))closeSheet();else closeModal()});
 $('#regionQ').addEventListener('input',renderRegionList);
-['#fDate','#fTime','#fNoTime'].forEach(s=>$(s).addEventListener('change',renderRegion));
+['#fDate','#fTime','#fNoTime','#fDateLeap'].forEach(s=>$(s).addEventListener('change',renderRegion));
+['fDate','pfDate','pmDate'].forEach(id=>{$('#'+id).addEventListener('input',()=>calOut(id));$('#'+id+'Leap').addEventListener('change',()=>calOut(id))});
 $('#fSur').addEventListener('input',fillSurSelect);
 $('#fSurH').addEventListener('change',()=>{$('#manualSur').hidden=$('#fSurH').value!=='manual'});
 $('#fNoTime').addEventListener('change',e=>{$('#fTime').disabled=e.target.checked});
@@ -2403,18 +2590,20 @@ $('#fNoTime').addEventListener('change',e=>{$('#fTime').disabled=e.target.checke
 $('#infoForm').addEventListener('submit',ev=>{
   ev.preventDefault();
   const r=$('#fSur').value.trim();
-  if(!/^[가-힣]$/.test(r)){toast('성씨를 한글 한 글자로 입력해 주세요');return}
+  if(!/^[가-힣]{1,2}$/.test(r)){toast('성씨를 한글로 입력해 주세요 (두 글자 성도 돼요)');return}
   let sur;
   if($('#fSurH').value==='manual'||$('#fSurH').value===''){
     const s=+$('#fSurS').value;if(!s){$('#manualSur').hidden=false;toast('성씨 한자 획수를 입력해 주세요');return}
     sur={r,h:r,s,o:+$('#fSurO').value};
   }else sur=SURS.filter(x=>x.r===r)[+$('#fSurH').value];
-  const date=$('#fDate').value;if(!date){toast('생년월일을 입력해 주세요');return}
-  const time=$('#fNoTime').checked?null:($('#fTime').value||null);
+  const rd=readDate('fDate');if(rd.err){toast(rd.err);$('#fDate').focus();return}
+  const date=rd.date,due=bornMode==='due';
+  const time=due||$('#fNoTime').checked?null:($('#fTime').value||null);
+  const par=readParents();if(par.err){toast(par.err);return}
   const changed=!S.info||S.info.surname.h!==sur.h||S.info.gender!==gender;
-  S.info={surname:sur,gender,date,time,region,parents:readParents()};
+  S.info={surname:sur,gender,date,time,region,cal:rd.cal,lunar:rd.lunar,due,parents:par.v};
   S.saju=calcSaju(date,time,region);
-  S.family=computeFamily(S.saju,S.info.parents);
+  S.family=due?null:computeFamily(S.saju,S.info.parents);
   if(changed)S.taste={deck:[],idx:0,liked:{},disliked:{},done:false};
   S.filters=null;S.results=[];S.chat=[];CACHE.clear();
   save();renderSaju();
@@ -2436,13 +2625,13 @@ if(S.info){
   $('#fSur').value=S.info.surname.r;fillSurSelect();
   const idx=SURS.filter(x=>x.r===S.info.surname.r).findIndex(x=>x.h===S.info.surname.h);
   if(idx>=0)$('#fSurH').value=idx;else{$('#fSurH').value='manual';$('#manualSur').hidden=false;$('#fSurS').value=S.info.surname.s;$('#fSurO').value=S.info.surname.o}
-  gender=S.info.gender;$('#fDate').value=S.info.date;
+  gender=S.info.gender;setDateField('fDate',S.info);setBorn(S.info.due?'due':'born');
   if(S.info.time)$('#fTime').value=S.info.time;else{$('#fNoTime').checked=true;$('#fTime').disabled=true}
   if(!S.info.region)S.info.region=S.info.kst===false?'해외·모름':'서울';
   region=S.info.region;renderRegion();
   S.saju=calcSaju(S.info.date,S.info.time,S.info.region);
   fillParentForm(S.info.parents);
-  S.family=computeFamily(S.saju,S.info.parents);
+  S.family=S.info.due?null:computeFamily(S.saju,S.info.parents);
   renderSaju();
 }
 document.querySelectorAll('#fGender button').forEach(b=>b.classList.toggle('on',b.dataset.v===gender));

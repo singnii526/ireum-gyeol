@@ -1,0 +1,13 @@
+# 이름결 AI 중계 서버 설정 (Cloudflare Workers)
+name = "ireum-gyeol-ai"
+main = "ai-proxy.js"
+compatibility_date = "2026-10-01"
+
+[vars]
+# 이 사이트에서 온 요청만 받는다 (쉼표로 여러 개)
+ALLOWED_ORIGINS = "https://singnii526.github.io"
+# 쓰고 싶은 제미나이 모델 이름 (바꾸지 않아도 됨)
+GEMINI_MODEL = "gemini-2.5-flash"
+
+# API 키는 여기에 적지 말고 아래 명령으로 비밀값에 넣는다:
+#   npx wrangler secret put GEMINI_API_KEY
