@@ -2376,6 +2376,10 @@ document.addEventListener('click',ev=>{
   if(t.id==='shClose'){S.shared=null;history.replaceState(null,'',location.pathname+location.search);renderShared();return}
   if(t.id==='goRecommend'){readPrefs();applyPrefs();CACHE.clear();S.results=[];S.chat=[];go(3);return}
 });
+// 아이폰 사파리는 버튼이 아닌 요소(이름 카드·첫 화면 장면·붓글씨 칸)를 탭했을 때,
+// 클릭을 받는 리스너가 document에만 있으면 클릭 이벤트를 아예 만들지 않는다.
+// 화면을 감싸는 요소에 빈 리스너를 달아 두면 탭이 클릭으로 전달되고, 위의 document 처리기가 그대로 받는다.
+['header','main','#ov','#sheetOv'].forEach(s=>{const el=document.querySelector(s);if(el)el.addEventListener('click',()=>{})});
 document.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&document.activeElement&&document.activeElement.id==='opening'){e.preventDefault();runOpening();return}if(e.key!=='Escape')return;if($('#sheetOv').classList.contains('on'))closeSheet();else closeModal()});
 $('#regionQ').addEventListener('input',renderRegionList);
 ['#fDate','#fTime','#fNoTime'].forEach(s=>$(s).addEventListener('change',renderRegion));
