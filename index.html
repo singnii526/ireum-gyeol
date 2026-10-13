@@ -374,6 +374,25 @@ ul.fm-pts li.n::before{content:'·';color:var(--muted)}
 .cal-out:empty{display:none}
 .cal-out.bad{color:var(--bad)}
 .blessing{font-family:var(--hanja,serif);border-left:2px solid var(--accent);padding-left:10px;color:var(--ink)}
+/* 이름 통계 */
+.st-row{display:grid;gap:10px;margin-bottom:12px}
+.st-sum{font-size:14px;line-height:1.7;color:var(--ink2);margin:10px 0 8px}
+.st-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:6px}
+.st-tbl{border-collapse:collapse;font-size:11.5px;font-variant-numeric:tabular-nums;min-width:100%}
+.st-tbl th,.st-tbl td{padding:6px 5px;text-align:center;border-right:1px solid var(--line);white-space:nowrap;color:var(--muted)}
+.st-tbl thead th{font-weight:600;background:var(--soft)}
+.st-tbl tbody th{position:sticky;left:0;background:var(--paper);color:var(--ink)}
+.st-tbl td.on{color:var(--ink)}
+.st-tbl td.on b{display:block;font-size:12px}
+.st-tbl td.on small{display:block;font-size:10px;color:var(--muted)}
+.bs-year{margin-top:14px;border-top:1px solid var(--line);padding-top:12px;font-size:13.5px}
+.st-cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.st-cols h4{margin:0 0 6px;font-size:14px}
+.st-list{list-style:none;padding:0;margin:0}
+.st-list button{width:100%;display:grid;grid-template-columns:22px 1fr auto;gap:6px;align-items:baseline;padding:6px 2px;border:0;border-bottom:1px solid var(--line);background:none;text-align:left;font-variant-numeric:tabular-nums}
+.st-list .r{color:var(--muted);font-size:12px}
+.st-list .c{color:var(--muted);font-size:12px}
+.st-res{margin-bottom:16px}
 /* 붓글씨: 서예 연습지(田자 칸) 위에 획순대로 쓰기 */
 .stage{position:relative;margin:26px -6px 0;padding:22px 16px 16px;border-radius:2px;background:radial-gradient(120% 90% at 50% 0%,var(--paper),var(--soft));border:1px solid var(--line);text-align:center}
 .stage .bigk{font-family:var(--serif);font-size:28px;font-weight:700;letter-spacing:.5em;margin:14px 0 4px;padding-left:.5em;color:var(--ink)}
@@ -549,6 +568,7 @@ details.rd summary,.ph b,.fm-h b,.tab b,.flow .num{font-weight:700}
       <button class="tab" data-go="2"><b>2</b><span class="l">작명 방향</span></button>
       <button class="tab" data-go="3"><b>3</b><span class="l">이름 추천</span></button>
       <button class="tab" data-go="4"><b>4</b><span class="l">보관함·비교</span><span class="badge-n" id="savedN" hidden>0</span></button>
+      <button class="tab" data-go="6"><b>計</b><span class="l">이름 통계</span></button>
       <button class="tab" data-go="5"><b>★</b><span class="l">후기</span></button>
     </nav>
   </div>
@@ -624,7 +644,7 @@ details.rd summary,.ph b,.fm-h b,.tab b,.flow .num{font-weight:700}
               <button type="button" data-v="born" class="on">태어났어요</button>
               <button type="button" data-v="due">출산 예정이에요</button>
             </div>
-            <p class="hint" id="dueHint" hidden>예정일로는 사주를 확정할 수 없어서, 사주 대신 이름 자체의 뜻·소리·수리로 추천해요. 아이가 태어나면 생일로 다시 보면 사주까지 반영돼요.</p>
+            <p class="hint" id="dueHint" hidden>예정일로는 아이 사주를 확정할 수 없어서 <b>부모님 사주</b>로 이름을 지어요. 아래 ‘부모님 사주’에 아빠나 엄마(둘 다면 더 정확해요)의 생년월일을 넣어 주세요.</p>
           </div>
           <div class="row">
             <div class="field">
@@ -772,6 +792,25 @@ details.rd summary,.ph b,.fm-h b,.tab b,.flow .num{font-weight:700}
     </form>
   </section>
 
+  <!-- 이름 통계 -->
+  <section class="step" id="step6">
+    <div class="sec-h"><div><h2>이름 통계</h2><p class="lead">대법원 출생신고 기록으로 본 이름의 인기와 흐름</p></div></div>
+    <form class="card st-search" id="stForm" autocomplete="off">
+      <div class="st-row">
+        <input class="inp" id="stName" maxlength="3" placeholder="성을 뺀 이름 (예: 도윤)" aria-label="이름">
+        <div class="seg" id="stGender"><button type="button" data-v="a" class="on">전체</button><button type="button" data-v="m">남자</button><button type="button" data-v="f">여자</button></div>
+      </div>
+      <button class="btn pri block">이름 찾아보기</button>
+    </form>
+    <div id="stOut"></div>
+    <div class="card st-top">
+      <div class="sec-h" style="margin-bottom:8px"><h3 id="stTopTitle">인기 이름 Top 20</h3>
+        <select class="inp" id="stYear" aria-label="연도" style="width:auto"></select></div>
+      <div class="st-cols" id="stTop"></div>
+      <p class="hint" id="stNote"></p>
+    </div>
+  </section>
+
   <p class="disclaimer">이름결의 분석은 전통 성명학 이론(사주·오행·수리)을 단순화한 참고용 정보입니다. 추천 한자는 모두 대법원 인명용 한자표(2024.6 시행, 9,389자)에 있는 글자이며, 획수는 원획법(강희자전) 기준입니다. 출생신고 전 <a href="https://efamily.scourt.go.kr" target="_blank" rel="noopener">전자가족관계등록시스템</a>에서 한 번 더 확인하세요.</p>
 </main>
 
@@ -792,6 +831,7 @@ details.rd summary,.ph b,.fm-h b,.tab b,.flow .num{font-weight:700}
 <div class="toast" id="toast"></div>
 
 <script src="hanja-db.js"></script>
+<script src="stats-yearly.js"></script>
 <script>
 /* ================= 데이터 ================= */
 const EL = ['목','화','토','금','수'];
@@ -1490,7 +1530,7 @@ function elPoint(o,sj){if(o===sj.yong)return 10;if(o===sj.hee)return 7;if(sj.lac
 /* ================= 상태 ================= */
 const LS='ireumgyeol.v1';
 const S={
-  info:null,saju:null,family:null,
+  info:null,saju:null,family:null,pSaju:null,
   taste:{deck:[],idx:0,liked:{},disliked:{},done:false},
   prefs:{moods:[],dolPos:'',dol:'',ex:'',fin:'',sib:''},
   filters:null,results:[],page:1,
@@ -1505,7 +1545,7 @@ const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'
 function toast(t){const el=$('#toast');el.textContent=t;el.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove('on'),1800)}
 
 /* ================= 평가 ================= */
-function mainCtx(){return {id:'',sur:S.info.surname,saju:S.info.due?null:S.saju,gender:S.info.gender,liked:S.taste.liked,disliked:S.taste.disliked,moods:(S.filters||{moods:S.prefs.moods}).moods,sib:parseSib(S.prefs.sib),fam:S.family}}
+function mainCtx(){return {id:'',sur:S.info.surname,saju:S.info.due?S.pSaju:S.saju,gender:S.info.gender,liked:S.taste.liked,disliked:S.taste.disliked,moods:(S.filters||{moods:S.prefs.moods}).moods,sib:parseSib(S.prefs.sib),fam:S.family}}
 function tastePoint(chars,ctx){
   let t=5;
   chars.forEach(c=>{t+=(ctx.liked[c.r]||0)*1.5-(ctx.disliked[c.r]||0)*1.5;if(c.t.some(x=>ctx.moods.includes(x)))t+=2});
@@ -1601,7 +1641,7 @@ function verdict(e){
   gc===4?good.push('수리 4격이 모두 길해요'):gc<=2&&weak.push(`수리 4격 중 ${4-gc}개가 흉수예요`);
   e.sc.sound>=15?good.push('성부터 이름까지 소리 기운이 자연스럽게 이어져요'):e.sc.sound<8&&weak.push('발음오행에 부딪히는 구간이 있어요');
   if(!e.yyGood)weak.push('획수의 음양이 한쪽으로 쏠려 있어요');
-  if(e.ctx.saju){const ys=e.chars.filter(c=>c.o===e.ctx.saju.yong).length;ys?good.push(`사주에 필요한 ${EL[e.ctx.saju.yong]}(${ELH[e.ctx.saju.yong]}) 기운을 ${ys===e.chars.length&&ys>1?'모든 글자가':['','한','두','세'][ys]+' 글자가'} 채워줘요`):e.chars.some(c=>c.o===e.ctx.saju.gi)&&weak.push(`사주에 부담이 되는 ${EL[e.ctx.saju.gi]} 기운 한자가 들어 있어요`)}
+  if(e.ctx.saju){const ys=e.chars.filter(c=>c.o===e.ctx.saju.yong).length;ys?good.push(`${e.ctx.saju.byParents?'부모님 사주에서 부족한':'사주에 필요한'} ${EL[e.ctx.saju.yong]}(${ELH[e.ctx.saju.yong]}) 기운을 ${ys===e.chars.length&&ys>1?'모든 글자가':['','한','두','세'][ys]+' 글자가'} 채워줘요`):e.chars.some(c=>c.o===e.ctx.saju.gi)&&weak.push(`사주에 부담이 되는 ${EL[e.ctx.saju.gi]} 기운 한자가 들어 있어요`)}
   const head=t>=90?'아주 좋은 이름이에요.':t>=80?'좋은 이름이에요.':t>=70?'무난한 이름이에요.':'아쉬운 부분이 있는 이름이에요.';
   return `<b>${head}</b> ${good.join(', ')}${good.length?'.':''}${weak.length?` 다만 ${weak.join(', ')}.`:''}`;
 }
@@ -1674,7 +1714,7 @@ function nameReading(e){
   parts.push(`<p>수리 4격은 ${gc===4?'네 시기가 모두 길해 <b>평생 운의 흐름이 고르게 좋아요</b>':gc===3?`네 시기 중 세 곳이 길해요. ${e.gy.find(g=>!g.good).k}(${e.gy.find(g=>!g.good).sub.split(' · ')[0]})만 조심하면 돼요`:`길한 시기가 ${gc}곳이라 수리 면에서는 아쉬움이 있어요`}. 소리의 흐름은 ${e.pr.every(r=>r!=='극')?'성부터 이름 끝까지 막힘없이 이어지고':'중간에 부딪히는 구간이 있고'}, 획수의 음양은 ${e.yyGood?'고르게 섞여 조화로워요':'한쪽으로 쏠려 있어요'}.</p>`);
   if(sj){
     const ys=e.chars.filter(c=>c.o===sj.yong).length,hs=e.chars.filter(c=>c.o===sj.hee).length,gs=e.chars.filter(c=>c.o===sj.gi).length;
-    parts.push(`<p>사주와 맞춰 보면, ${ys?`용신 ${elB(sj.yong)} 기운을 ${ys===e.chars.length&&ys>1?'모든 글자가':['','한','두','세'][ys]+' 글자가'} 직접 채워 줘서 <b>사주의 부족한 부분을 이름이 메워 주는 구조</b>예요.`:hs?`용신을 돕는 희신 ${elB(sj.hee)} 기운이 들어 있어 간접적으로 균형을 잡아 줘요.`:`용신 ${elB(sj.yong)} 기운이 직접 들어 있지는 않아요.`}${gs?` 다만 기신 ${elB(sj.gi)} 기운 글자가 있어 사주 면에서는 아쉬워요.`:''}</p>`);
+    parts.push(`<p>${sj.byParents?'부모님 사주와 맞춰 보면':'사주와 맞춰 보면'}, ${ys?`용신 ${elB(sj.yong)} 기운을 ${ys===e.chars.length&&ys>1?'모든 글자가':['','한','두','세'][ys]+' 글자가'} 직접 채워 줘서 <b>사주의 부족한 부분을 이름이 메워 주는 구조</b>예요.`:hs?`용신을 돕는 희신 ${elB(sj.hee)} 기운이 들어 있어 간접적으로 균형을 잡아 줘요.`:`용신 ${elB(sj.yong)} 기운이 직접 들어 있지는 않아요.`}${gs?` 다만 기신 ${elB(sj.gi)} 기운 글자가 있어 사주 면에서는 아쉬워요.`:''}</p>`);
   }
   const best=e.total>=90?'작명소에서 권하는 이름과 견주어도 손색없는 좋은 이름이에요.':e.total>=80?'전반적으로 균형이 잡힌 좋은 이름이에요.':e.total>=70?'무난하지만 다른 한자 조합도 함께 비교해 보길 권해요.':'아쉬운 부분이 많아 다른 후보를 함께 살펴보길 권해요.';
   parts.push(`<p><b>종합하면</b>, ${best}</p>`);
@@ -1682,7 +1722,7 @@ function nameReading(e){
 }
 function hjReading(c,sj,pos){
   const E=EL_INFO[c.o];
-  const role=!sj?'':c.o===sj.yong?`사주의 용신과 같은 기운이라 <b>가장 필요한 기운을 직접 채워 주는 글자</b>예요.`:c.o===sj.hee?'용신을 돕는 희신 기운이라 사주의 균형에 보탬이 돼요.':sj.lack.includes(c.o)?'사주에 없는 기운을 채워 주는 글자예요.':c.o===sj.gi?'용신을 누르는 기신 기운이라 사주 면에서는 아쉬운 글자예요.':'사주에 크게 부담을 주지 않는 무난한 기운이에요.';
+  const role=!sj?'':c.o===sj.yong?(sj.byParents?`부모님 사주에서 가장 부족한 기운이라 <b>가족의 균형을 채워 주는 글자</b>예요.`:`사주의 용신과 같은 기운이라 <b>가장 필요한 기운을 직접 채워 주는 글자</b>예요.`):c.o===sj.hee?'용신을 돕는 희신 기운이라 사주의 균형에 보탬이 돼요.':sj.lack.includes(c.o)?'사주에 없는 기운을 채워 주는 글자예요.':c.o===sj.gi?'용신을 누르는 기신 기운이라 사주 면에서는 아쉬운 글자예요.':'사주에 크게 부담을 주지 않는 무난한 기운이에요.';
   return `<p><b>${c.h} ${c.m} ${c.r}</b> · ${pos} · ${c.s}획 · 자원오행 ${elB(c.o)} · <span class="legal${isLegal(c.r,c.h)?'':' no'}">${isLegal(c.r,c.h)?'대법원 인명용 한자 ✓':'인명용 한자표에서 확인 필요'}</span><br>${c.src&&c.src!=='cur'?`${HJ_SRC[c.src]}예요. 획수는 강희자전 기준 원획, 자원오행은 부수(${EL[c.o]} 계열)로 정했어요. `:''}${TAG_PHRASE[c.t[0]]?TAG_PHRASE[c.t[0]]+' 뜻을':`‘${c.m}’ 뜻을`} 지닌 글자예요. ${EL[c.o]} 기운은 ${E.kw}${josa(E.kw,'을','를')} 상징해요. ${role}</p>`;
 }
 
@@ -1728,6 +1768,18 @@ function computeFamily(csj,parents){
   members.forEach(m=>m.c=compat(m.sj,csj,m.lbl));
   const bridges=members.filter(m=>m.c.bridge!=null).map(m=>({lbl:m.lbl,el:m.c.bridge}));
   return {members,counts,weak,bridges};
+}
+// 출산 전 모드: 부모님 사주를 합쳐 가족에게 가장 부족한 오행을 이름에 담을 기운으로 삼는다.
+// 같은 개수면 부모님 각자의 용신과 겹치는 기운을 먼저, 그다음 목·화·토·금·수 순.
+function parentSaju(parents){
+  if(!parents)return null;
+  const members=[];
+  ['f','m'].forEach(k=>{const p=parents[k];if(p&&p.date)members.push({k,lbl:PARENT_LBL[k],sj:calcSaju(p.date,p.time,p.region)})});
+  if(!members.length)return null;
+  const cnt=[0,0,0,0,0];members.forEach(m=>m.sj.cnt.forEach((v,i)=>cnt[i]+=v));
+  const yongVotes=[0,0,0,0,0];members.forEach(m=>yongVotes[m.sj.yong]++);
+  const yong=[0,1,2,3,4].sort((a,b)=>cnt[a]-cnt[b]||yongVotes[b]-yongVotes[a]||a-b)[0];
+  return {byParents:true,members,cnt,yong,hee:(yong+4)%5,gi:(yong+3)%5,lack:cnt.map((c,i)=>c===0?i:-1).filter(i=>i>=0),yongVotes};
 }
 function synergy(chars,fam){
   let sc=50;const pts=[];const add=(d,t)=>{sc+=d;if(!pts.some(x=>x[1]===t))pts.push([d>0?'g':'b',t])};
@@ -1788,6 +1840,31 @@ function fillParentForm(par){
 
 /* ================= 차별화 기능 ================= */
 function teaseCheck(full){const p=pronounce(full),raw=full;return TEASE.filter(w=>p.includes(w)||raw.includes(w))}
+// 연도별 상위 20위 (stats-yearly.js)
+const NY={byYear:{},byName:{}};
+(window.NAME_YEARLY_RAW||'').split(';').forEach(l=>{if(!l)return;const [y,g,total,list]=l.split('|');
+  const top=list.split(',').map(x=>{const [n,c,r]=x.split(':');return {n,c:+c,r:+r}}).filter(t=>t.n!=='기타'&&t.r<=20); // 표의 '기타' 합계 줄은 빼기
+  (NY.byYear[y]=NY.byYear[y]||{})[g]={total:+total,top};
+  top.forEach(t=>{((NY.byName[t.n]=NY.byName[t.n]||{m:{},f:{}})[g])[y]={r:t.r,c:t.c}})});
+const NY_YEARS=Object.keys(NY.byYear).map(Number).sort((a,b)=>a-b);
+const NY_LAST=NY_YEARS[NY_YEARS.length-1];
+const nyLabel=y=>y===NY_LAST?`${y}년(${(window.NAME_YEARLY_COLLECTED||'').slice(5).replace('-','월 ')}일까지)`:y+'년';
+// 이름 하나의 연도별 기록 표. g: 'm' | 'f' | 'a'(둘 다)
+function yearlyTable(name,g){
+  const rec=NY.byName[name];const gs=g==='a'?['m','f']:[g];
+  const has=rec&&gs.some(k=>Object.keys(rec[k]).length);
+  if(!has)return `<p class="hint" style="margin:8px 0 0">2008년부터 ${nyLabel(NY_LAST)}까지 ${g==='m'?'남자아이 ':g==='f'?'여자아이 ':''}상위 20위에 든 해가 없어요. (20위 밖은 대법원이 순위를 공개하지 않아요)</p>`;
+  const best=[];gs.forEach(k=>Object.entries(rec[k]).forEach(([y,v])=>best.push({k,y:+y,...v})));
+  best.sort((a,b)=>a.r-b.r||b.y-a.y);const top=best[0];
+  const recent=gs.map(k=>{const ys=Object.keys(rec[k]).map(Number);return ys.length?{k,y:Math.max(...ys),...rec[k][Math.max(...ys)]}:null}).filter(Boolean).sort((a,b)=>b.y-a.y)[0];
+  const cell=(k,y)=>{const v=rec[k][y];return v?`<td class="on"><b>${v.r}위</b><small>${fmtN(v.c)}</small></td>`:'<td>-</td>'};
+  const bestYears=best.filter(b=>b.r===top.r&&b.k===top.k).map(b=>b.y).sort((a,b)=>a-b);
+  const inTop=new Set(best.map(b=>b.y)).size;
+  return `<p class="st-sum">가장 높았던 순위는 <b>${top.k==='m'?'남자아이':'여자아이'} ${top.r}위</b>(${bestYears.map(y=>y+'년').join('·')})이에요. 2008년부터 ${NY_YEARS.length}년 중 <b>${inTop}년</b> 동안 상위 20위 안에 들었고, 가장 최근은 ${recent.y}년 ${recent.k==='m'?'남자아이':'여자아이'} ${recent.r}위예요.</p>
+    <div class="st-scroll"><table class="st-tbl"><thead><tr><th></th>${NY_YEARS.map(y=>`<th>${String(y).slice(2)}</th>`).join('')}</tr></thead>
+    <tbody>${gs.map(k=>`<tr><th>${k==='m'?'남':'여'}</th>${NY_YEARS.map(y=>cell(k,y)).join('')}</tr>`).join('')}</tbody></table></div>
+    <p class="hint">연도 앞 두 자리를 줄여 적었어요(08 = 2008년). 숫자 아래는 그해 출생신고 건수, "-"는 20위 밖이에요.</p>`;
+}
 function birthStat(name){return NAME_STATS[name]||{m:0,f:0,t:0,rank:null}}
 const fmtN=n=>n.toLocaleString('ko-KR');
 function commonness(name){
@@ -1809,7 +1886,8 @@ function birthStatBox(name){
       <div class="bs-badge">${cm[0]}${s.rank?`<small>${fmtN(s.rank)}위</small>`:''}</div></div>
     ${s.t?bar('남자아이',s.m,'bm')+bar('여자아이',s.f,'bw'):''}
     <p>${s.t?`한 해 평균 약 <b>${fmtN(Math.round(s.t/12))}명</b>이 이 이름으로 출생신고됐어요. ${cm[1]}.${other}`:`2008~2019년 출생신고 기록에 없는 <b>아주 드문 이름</b>이에요. 같은 이름의 친구를 만나기 어려워요.`}</p>
-    <p class="hint">출처: <a href="https://efamily.scourt.go.kr" target="_blank" rel="noopener">대법원 전자가족관계등록시스템</a> 이름 통계. 순위는 이름결에서 추천할 수 있는 ${fmtN(NAME_STATS_N)}개 이름 안에서의 순위예요. 2020년 이후 최신 수치는 출처에서 확인할 수 있어요.</p>
+    <div class="bs-year"><b>연도별 순위 (2008~${NY_LAST}, 전국 상위 20위)</b>${yearlyTable(name,'a')}</div>
+    <p class="hint">출처: <a href="https://efamily.scourt.go.kr" target="_blank" rel="noopener">대법원 전자가족관계등록시스템</a> 이름 통계. 위 합산 순위는 이름결에서 추천할 수 있는 ${fmtN(NAME_STATS_N)}개 이름 안에서의 순위, 연도별 순위는 대법원 통계서비스의 전국 상위 20위(출생신고 등록일 기준)예요.</p>
   </div>`;
 }
 function parseSib(s){return (s||'').split(/[,\s]+/).map(x=>x.trim()).filter(x=>/^[가-힣]{2,4}$/.test(x)).map(x=>x.length>=3?x.slice(1):x)}
@@ -1851,6 +1929,7 @@ function go(n){
   if(n===3)renderStep3();
   if(n===4)renderStep4();
   if(n===5)renderReviews();
+  if(n===6)renderStats();
   window.scrollTo({top:0,behavior:'smooth'});
 }
 function renderSavedN(){const n=S.saved.length,el=$('#savedN');el.hidden=!n;el.textContent=n}
@@ -1871,7 +1950,7 @@ const calMode={};
 function setBorn(v){
   bornMode=v;document.querySelectorAll('#fBorn button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
   const due=v==='due';$('#dueHint').hidden=!due;$('#fDateLbl').textContent=due?'출산 예정일':'생년월일';
-  $('#fTimeField').hidden=due;$('#fNoTimeLbl').hidden=due;renderRegion();
+  $('#fTimeField').hidden=due;$('#fNoTimeLbl').hidden=due;if(due)$('#parentsBox').open=true;renderRegion();
 }
 // 양력/음력 전환: 음력은 2월 30일 같은 날짜가 있어 글자 입력칸으로 바꾼다
 function setCal(id,mode,keep){
@@ -1952,10 +2031,16 @@ function fillSurSelect(){
 function renderSaju(){
   const sj=S.saju,box=$('#sajuBox');if(!sj){box.innerHTML='';return}
   if(S.info&&S.info.due){
+    const ps=S.pSaju,mx=ps?Math.max(...ps.cnt,1):1;
     box.innerHTML=`<div class="card" style="margin-top:16px">
-      <h3>출산 예정 모드</h3>
-      <p class="lead" style="margin:8px 0 12px">예정일(${S.info.date})은 실제 출생일과 달라질 수 있어 사주를 확정하지 않았어요. 이름은 <b>뜻 · 소리 · 수리 · 음양</b>으로만 골라 드려요. 점수는 이 네 항목(75점)을 100점 만점으로 환산한 값이에요.</p>
-      <details class="rd"><summary>예정일 기준 참고 사주 (확정 아님)</summary><div class="rdb"><div class="pillars">${sj.P.map(p=>p.s==null?`<div class="pillar"><div class="pl">${p.k}</div><div class="gz unk">?</div><div class="gz unk">?</div></div>`:`<div class="pillar"><div class="pl">${p.k}</div><div class="gz e${Math.floor(p.s/2)}">${STEMS[p.s]}</div><div class="gz e${BR_EL[p.b]}">${BR[p.b]}</div></div>`).join('')}</div><p>하루만 달라도 일주가 바뀌어요. 아이가 태어나면 ‘태어났어요’로 바꿔 생일을 넣어 주세요.</p></div></details>
+      <h3>출산 예정 모드 · 부모님 사주로 짓기</h3>
+      <p class="lead" style="margin:8px 0 12px">예정일(${S.info.date})은 실제 출생일과 달라질 수 있어 <b>아이 사주는 쓰지 않았어요.</b> 대신 부모님 사주를 합쳐, 가족에게 가장 부족한 기운을 이름에 담아 드려요.</p>
+      ${ps?`${ps.members.map(m=>`<div class="fm"><div class="fm-h"><div><b>${m.lbl}</b><span class="hint">${STEMS[m.sj.dS]}${BR[m.sj.P[1].b]}일주 · ${ANIMAL[m.sj.yB]}띠 · 용신 ${EL[m.sj.yong]}</span></div></div>${miniPillars(m.sj)}</div>`).join('')}
+      <div class="fam-sum"><b>부모님 오행 합산</b>
+        <div class="bars">${ps.cnt.map((c,i)=>`<div class="bar"><span class="tc${i}"><b>${EL[i]}</b> ${ELH[i]}</span><div class="trk"><div class="fil" style="width:${c/mx*100}%;background:var(--e${i})"></div></div><b>${c}</b></div>`).join('')}</div>
+        <p>부모님 사주에서 가장 적은 기운은 ${elB(ps.yong)}${josa(EL[ps.yong],'이에요','예요')}. 이 기운을 담은 한자가 이름 점수(자원오행 25점)에서 가장 높게 평가돼요${ps.yongVotes[ps.yong]?`. 마침 ${ps.members.filter(m=>m.sj.yong===ps.yong).map(m=>m.lbl).join('와 ')}의 용신과도 같은 기운이라 부모님께도 힘이 돼요`:''}.</p>
+      </div>`:'<p class="hint">부모님 생년월일이 없어요. 위에서 넣어 주세요.</p>'}
+      <details class="rd"><summary>예정일 기준 아이 참고 사주 (확정 아님, 계산에 쓰지 않음)</summary><div class="rdb"><div class="pillars">${sj.P.map(p=>p.s==null?`<div class="pillar"><div class="pl">${p.k}</div><div class="gz unk">?</div><div class="gz unk">?</div></div>`:`<div class="pillar"><div class="pl">${p.k}</div><div class="gz e${Math.floor(p.s/2)}">${STEMS[p.s]}</div><div class="gz e${BR_EL[p.b]}">${BR[p.b]}</div></div>`).join('')}</div><p>하루만 달라도 일주가 바뀌어요. 아이가 태어나면 ‘태어났어요’로 바꿔 생일을 넣어 주세요.</p></div></details>
       <button class="btn pri block" style="margin-top:14px" data-go="2">다음: 작명 방향 정하기 →</button></div>`;
     return;
   }
@@ -2050,7 +2135,7 @@ function card(e,rank){
   const sj=e.ctx.saju,tags=[];
   const gc=e.gy.filter(g=>g.good).length;
   tags.push(`<span class="tag ${gc===4?'g':gc<=2?'r':''}">4격 ${gc}/4 길</span>`);
-  if(sj){const ys=e.chars.filter(c=>c.o===sj.yong).length;if(ys)tags.push(`<span class="tag g">용신 ${EL[sj.yong]} 보완</span>`)}
+  if(sj){const ys=e.chars.filter(c=>c.o===sj.yong).length;if(ys)tags.push(`<span class="tag g">${sj.byParents?'가족':'용신'} ${EL[sj.yong]} 보완</span>`)}
   tags.push(`<span class="tag ${e.sc.sound>=15?'g':e.sc.sound<8?'r':''}">발음 ${e.pr.every(r=>r!=='극')?'상생':'일부 상극'}</span>`);
   if(e.syn&&e.syn.score>=70)tags.push('<span class="tag fam">가족 시너지</span>');
   if(e.sc.taste>=8)tags.push('<span class="tag g">취향 일치</span>');
@@ -2129,7 +2214,7 @@ function renderStep3(){
   if(!S.chat.length){
     const sj=S.saju;
     const top=S.results.slice(0,3).map(e=>`<b>${e.name}</b>`).join(', ');
-    if(S.info.due)botSay(`출산 예정 모드라 사주 대신 뜻 · 소리 · 수리 · 음양으로 골라 봤어요. 지금은 ${top}이 가장 높아요.<br><br>원하는 느낌이나 조건을 편하게 말씀해 주세요.`);
+    if(S.info.due)botSay(`출산 예정 모드라 아이 사주 대신 <b>부모님 사주</b>를 봤어요. 가족에게 가장 부족한 <b class="tc${S.pSaju?S.pSaju.yong:0}">${S.pSaju?EL[S.pSaju.yong]+'('+ELH[S.pSaju.yong]+')':''}</b> 기운을 담은 이름 위주로 골랐어요. 지금은 ${top}이 가장 높아요.<br><br>원하는 느낌이나 조건을 편하게 말씀해 주세요.`);
     else botSay(`${esc(S.info.surname.r)}씨 아이 사주를 보니 <b class="tc${sj.yong}">${EL[sj.yong]}(${ELH[sj.yong]})</b> 기운을 이름에 담으면 좋아요. 그 기운과 취향을 반영해 골라봤어요. 지금은 ${top}이 가장 높아요.<br><br>원하는 느낌이나 조건을 편하게 말씀해 주세요.`);
   }
   renderChat();
@@ -2237,7 +2322,7 @@ async function aiPost(path,body){
 }
 // AI가 낸 후보를 규칙으로 다시 검증: 음과 한자가 대법원 인명용 한자표에 있고, 이름결 사전(획수·자원오행 확정)에 있어야 통과
 async function aiSuggest(wish){
-  const sj=S.info.due?null:S.saju;
+  const sj=S.info.due?S.pSaju:S.saju;
   const d=await aiPost('/suggest',{surname:S.info.surname.r,gender:S.info.gender,wish,yong:sj?EL[sj.yong]:'',avoid:(S.filters&&S.filters.exclude)||[],count:12});
   const ok=[],bad=[],seen=new Set();
   for(const x of d.names||[]){
@@ -2272,6 +2357,28 @@ async function aiStory(key,box){
     const d=await aiPost('/story',{surname:e.sur.r,name:e.name,hanja:e.chars.map(c=>({h:c.h,m:c.m,r:c.r})),yong:sj?EL[sj.yong]:'',gender:S.info&&S.info.gender});
     box.innerHTML=`<p>${esc(d.story||'')}</p><p class="blessing">${esc(d.blessing||'')}</p><p class="hint">AI가 쓴 글이에요. 수리·오행 같은 계산은 위의 규칙 풀이를 기준으로 하세요.</p>`;
   }catch(err){box.innerHTML='<p class="hint">AI 서버에 연결하지 못했어요. 잠시 뒤 다시 눌러 주세요.</p>'}
+}
+
+/* ================= 이름 통계 탭 ================= */
+let stGender='a';
+function renderStats(){
+  const sel=$('#stYear');
+  if(!sel.options.length)sel.innerHTML=NY_YEARS.slice().reverse().map(y=>`<option value="${y}">${nyLabel(y)}</option>`).join('');
+  const y=+sel.value||NY_LAST,d=NY.byYear[y];
+  $('#stTopTitle').textContent=`${nyLabel(y)} 인기 이름 Top 20`;
+  const col=(g,lbl)=>{const v=d[g];return `<div><h4>${lbl} <span class="hint">그해 출생신고 ${fmtN(v.total)}명</span></h4><ol class="st-list">${v.top.map(t=>`<li><button type="button" data-st-name="${t.n}" data-st-g="${g}"><span class="r">${t.r}</span><b>${t.n}</b><span class="c">${fmtN(t.c)}명</span></button></li>`).join('')}</ol></div>`};
+  $('#stTop').innerHTML=col('m','남자아이')+col('f','여자아이');
+  $('#stNote').innerHTML=`출처: 대법원 전자가족관계등록시스템 통계서비스 ‘상위 출생신고 이름 현황’(전국). 출생일이 아니라 <b>출생신고 등록일</b> 기준이에요. ${y===NY_LAST?'올해 수치는 조회일까지의 잠정치예요. ':''}20위 밖 이름은 공개되지 않아요.`;
+}
+function stSearch(name){
+  const out=$('#stOut');name=(name||'').replace(/\s/g,'');
+  if(!/^[가-힣]{1,3}$/.test(name)){out.innerHTML='<p class="my-msg b">성을 뺀 이름을 한글로 적어 주세요. 예: 도윤, 서아</p>';return}
+  $('#stName').value=name;
+  const s=birthStat(name),cm=commonness(name);
+  out.innerHTML=`<div class="card st-res"><div class="sec-h" style="margin:0 0 6px"><h3>‘${esc(name)}’ 출생신고 통계</h3></div>
+    ${name.length===2?`<div class="bs-top"><div><div class="bs-n">${fmtN(s.t)}<small>명</small></div><div class="hint">2008~2019년 12년 합산 · 남 ${fmtN(s.m)} · 여 ${fmtN(s.f)}</div></div><div class="bs-badge">${cm[0]}</div></div>`:'<p class="hint">12년 합산 자료는 두 글자 이름만 있어요.</p>'}
+    ${yearlyTable(name,stGender)}</div>`;
+  out.scrollIntoView({behavior:'smooth',block:'start'});
 }
 
 /* ================= 상세 모달 ================= */
@@ -2332,7 +2439,7 @@ function openDetail(key){
 
     <div class="msec"><h3>자원오행 · 용신 <span class="pts">${sj?e.sc.el+' / 25점':'사주 정보 없음'}</span></h3><p class="ex">한자 자체가 가진 기운이에요. 사주에 필요한 기운(용신)을 담으면 좋아요.</p>
       ${sj?`<div class="flowx">${e.chars.map(c=>`<span>${c.h} <b class="tc${c.o}">${EL[c.o]}</b> ${elRole(c.o)}</span>`).join('<span style="margin:0 10px;color:var(--line)">|</span>')}</div>
-      <div class="rdb"><p>이 아이의 용신은 ${elB(sj.yong)}, 희신은 ${elB(sj.hee)}, 기신은 ${elB(sj.gi)}${josa(EL[sj.gi],"이에요","예요")}${sj.lack.length?`. 사주에 없는 기운은 ${sj.lack.map(elB).join(', ')}${josa(EL[sj.lack[sj.lack.length-1]],"이에요","예요")}`:''}. 이름 한자의 기운이 용신에 가까울수록 점수가 높아요(용신 10, 희신 7, 없는 기운 6, 기신 0, 그 외 4점).</p></div>`:`<p class="hint">${S.info&&S.info.due?'출산 예정 모드라 사주를 쓰지 않았어요. 아이가 태어난 뒤 생일을 넣으면 용신 점수가 더해져요.':'생년월일을 넣으면 용신 점수가 계산돼요.'}</p>`}</div>
+      <div class="rdb"><p>${sj.byParents?'부모님 사주로 정한 보완 기운은':'이 아이의 용신은'} ${elB(sj.yong)}, 희신은 ${elB(sj.hee)}, 기신은 ${elB(sj.gi)}${josa(EL[sj.gi],"이에요","예요")}${sj.lack.length?`. 사주에 없는 기운은 ${sj.lack.map(elB).join(', ')}${josa(EL[sj.lack[sj.lack.length-1]],"이에요","예요")}`:''}. 이름 한자의 기운이 용신에 가까울수록 점수가 높아요(용신 10, 희신 7, 없는 기운 6, 기신 0, 그 외 4점).</p></div>`:`<p class="hint">${S.info&&S.info.due?'출산 예정 모드라 사주를 쓰지 않았어요. 아이가 태어난 뒤 생일을 넣으면 용신 점수가 더해져요.':'생년월일을 넣으면 용신 점수가 계산돼요.'}</p>`}</div>
 
     <div class="msec"><h3>소리 · 부르기 <span class="pts">${e.sc.call} / 15점</span></h3>
       <p class="ex">적힌 그대로 소리 나는지(5), 이름 글자의 모음이 서로 달라 또렷한지(5), 놀림 단어와 겹치지 않는지(5)를 봐요.</p>
@@ -2555,6 +2662,8 @@ document.addEventListener('click',ev=>{
   if(q('[data-sheet-close]')||t.id==='sheetOv'){closeSheet();return}
   if((el=q('[data-rtab]'))){regionTab=+el.dataset.rtab;$('#regionQ').value='';renderRegionList();return}
   if((el=q('[data-region]'))){region=el.dataset.region;renderRegion();renderRegionList();setTimeout(closeSheet,160);return}
+  if((el=q('[data-st-name]'))){stGender=el.dataset.stG;document.querySelectorAll('#stGender button').forEach(b=>b.classList.toggle('on',b.dataset.v===stGender));stSearch(el.dataset.stName);return}
+  if((el=q('#stGender button'))){stGender=el.dataset.v;document.querySelectorAll('#stGender button').forEach(b=>b.classList.toggle('on',b===el));if($('#stName').value.trim())stSearch($('#stName').value);return}
   if((el=q('[data-ai-story]'))){aiStory(el.dataset.aiStory,el.closest('.ai-out'));return}
   if((el=q('[data-pclear]'))){const k=el.dataset.pclear;$(`#p${k}Date`).value='';$(`#p${k}Time`).value='';$(`#p${k}Time`).disabled=false;$(`#p${k}NoTime`).checked=false;return}
   if(q('#opening')){runOpening(true);return}
@@ -2600,15 +2709,19 @@ $('#infoForm').addEventListener('submit',ev=>{
   const date=rd.date,due=bornMode==='due';
   const time=due||$('#fNoTime').checked?null:($('#fTime').value||null);
   const par=readParents();if(par.err){toast(par.err);return}
+  if(due&&!(par.v.f||par.v.m)){$('#parentsBox').open=true;toast('출산 예정 모드는 부모님 사주로 이름을 지어요. 아빠나 엄마 생년월일을 넣어 주세요');return}
   const changed=!S.info||S.info.surname.h!==sur.h||S.info.gender!==gender;
   S.info={surname:sur,gender,date,time,region,cal:rd.cal,lunar:rd.lunar,due,parents:par.v};
   S.saju=calcSaju(date,time,region);
   S.family=due?null:computeFamily(S.saju,S.info.parents);
+  S.pSaju=due?parentSaju(S.info.parents):null;
   if(changed)S.taste={deck:[],idx:0,liked:{},disliked:{},done:false};
   S.filters=null;S.results=[];S.chat=[];CACHE.clear();
   save();renderSaju();
   $('#sajuBox').scrollIntoView({behavior:'smooth',block:'start'});
 });
+$('#stForm').addEventListener('submit',ev=>{ev.preventDefault();stSearch($('#stName').value)});
+$('#stYear').addEventListener('change',renderStats);
 $('#myForm').addEventListener('submit',ev=>{ev.preventDefault();myNameSearch($('#myName').value)});
 $('#chatForm').addEventListener('submit',ev=>{ev.preventDefault();const v=$('#chatIn').value.trim();if(!v)return;$('#chatIn').value='';handleChat(v)});
 $('#rvForm').addEventListener('submit',ev=>{
@@ -2632,6 +2745,7 @@ if(S.info){
   S.saju=calcSaju(S.info.date,S.info.time,S.info.region);
   fillParentForm(S.info.parents);
   S.family=S.info.due?null:computeFamily(S.saju,S.info.parents);
+  S.pSaju=S.info.due?parentSaju(S.info.parents):null;
   renderSaju();
 }
 document.querySelectorAll('#fGender button').forEach(b=>b.classList.toggle('on',b.dataset.v===gender));
