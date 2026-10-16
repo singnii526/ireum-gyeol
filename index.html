@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>명당 名堂 · 우리 아이 이름의 명당</title>
-<meta name="description" content="성씨와 생년월일시로 사주·오행을 분석하고, 대화하며 이름을 추천받는 작명 도우미">
+<meta name="description" content="아이가 태어난 순간의 하늘(사주)을 읽어, 꼭 맞는 이름을 지어 드려요">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@500&display=swap" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Serif+KR:wght@500&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#121a33">
 <style>
 /* 한지 바탕 위 인장(낙관) 붉은색 하나로 포인트, 명조 제목 + 고딕 본문 */
 :root{
@@ -616,12 +616,136 @@ body:not(.paid) .tab.lk{opacity:.5}
 .bless-from .inp{max-width:200px;padding:8px 10px}
 .bless-txt{width:100%;min-height:340px;resize:vertical;font-family:var(--sans);font-weight:400;font-size:15px;line-height:1.85;padding:14px;white-space:pre-wrap}
 .bless-act{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+/* ===== C안: 태어난 시각의 하늘 — 밤하늘이 정체성이라 밝은·어두운 모드 모두 밤 ===== */
+:root,:root:not([data-theme="light"]),:root[data-theme="dark"],:root[data-theme="light"]{
+  --outer:#0b1022;--bg:#121a33;--paper:#19213f;--field:#1b2446;--sunk:#232c55;--soft:#172040;--track:#2a3460;--bubble:#222b52;--tagbg:#232c55;--info-bg:#1c2548;
+  --ink:#ebe8f3;--ink2:#c2c0d6;--muted:#8d8ca8;--line:#2e3760;--on-ink:#121a33;
+  --accent:#e8c877;--accent-ink:#141b34;--accent-soft:rgba(232,200,119,.14);--gold:#e8c877;
+  --good:#86d4a4;--good-soft:rgba(134,212,164,.12);--good-line:rgba(134,212,164,.35);--bad:#f39480;--bad-soft:rgba(243,148,128,.12);--bad-line:rgba(243,148,128,.35);--final:rgba(232,200,119,.12);
+  --star:#e8c877;--star-off:#3a4370;--overlay:rgba(6,9,22,.74);--shadow-c:rgba(0,0,0,.45);
+  --e0:#7fc59a;--e1:#f0866b;--e2:#e6bf6a;--e3:#c6cad4;--e4:#7fa8ea;
+  --e0s:rgba(127,197,154,.14);--e1s:rgba(240,134,107,.14);--e2s:rgba(230,191,106,.14);--e3s:rgba(198,202,212,.12);--e4s:rgba(127,168,234,.14);
+  --dawn:#3a2f58;
+  --serif:'Gowun Batang',serif;--sans:'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif;--hanja:'Noto Serif KR','Gowun Batang',serif;
+  color-scheme:dark;
+}
+html{background:var(--outer)}
+body{background:var(--bg);font-weight:300;position:relative}
+/* 화면 전체에 옅은 별 */
+body::before{content:'';position:fixed;inset:0;max-width:480px;margin:0 auto;pointer-events:none;z-index:0;opacity:.55;
+  background-image:radial-gradient(1px 1px at 12% 18%,#f3e6c4 50%,transparent 51%),radial-gradient(1px 1px at 78% 9%,#f3e6c4 50%,transparent 51%),radial-gradient(1.4px 1.4px at 41% 33%,#f3e6c4 50%,transparent 51%),radial-gradient(1px 1px at 88% 46%,#f3e6c4 50%,transparent 51%),radial-gradient(1px 1px at 22% 62%,#f3e6c4 50%,transparent 51%),radial-gradient(1.3px 1.3px at 64% 71%,#f3e6c4 50%,transparent 51%),radial-gradient(1px 1px at 8% 88%,#f3e6c4 50%,transparent 51%),radial-gradient(1px 1px at 53% 92%,#f3e6c4 50%,transparent 51%),radial-gradient(1px 1px at 93% 80%,#f3e6c4 50%,transparent 51%);
+  background-size:100% 900px}
+main{position:relative;z-index:1}
+header{position:sticky;z-index:20}
+.toast{z-index:60}
+body::after{content:'';position:fixed;left:0;right:0;bottom:0;height:40vh;max-width:480px;margin:0 auto;pointer-events:none;z-index:0;background:linear-gradient(transparent,rgba(58,47,88,.55))}
+h1,h2,h3,.hero-copy h1{font-family:var(--serif);font-weight:700;letter-spacing:-.01em}
+.hero-copy h1{font-size:31px;line-height:1.42}
+.hero-copy p{color:var(--ink2)}
+.logo{font-family:var(--serif);font-weight:700}
+.seal{background:transparent;color:var(--gold);font-family:var(--sans);font-size:22px;width:28px}
+.chat-h .seal{font-size:18px}
+.brand-eyebrow{color:var(--gold)}
+.tab.on{box-shadow:inset 0 -1px 0 var(--gold)}
+.tab.on b{color:var(--gold)}
+/* 첫 화면 하늘 */
+.sky{margin:-12px -22px 6px;cursor:pointer;position:relative}
+.sky:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
+.sky svg{display:block;width:100%;height:auto}
+.sky .bg-star{fill:#f3e6c4;opacity:var(--o)}
+.sky .c-star{fill:var(--gold)}
+.sky .c-line{stroke:var(--gold);stroke-width:1.3;fill:none;opacity:.85}
+.sky-cap{text-align:center;font-size:12.5px;color:var(--muted);margin:-8px 22px 0}
+.sky-cap b{font-family:var(--hanja);font-weight:500;color:var(--ink2);margin-left:4px;letter-spacing:.06em}
+@media (prefers-reduced-motion:no-preference){
+  .sky.play .bg-star{animation:twinkle 1.6s ease-out both;animation-delay:calc(var(--d)*1ms)}
+  .sky.play .c-star{animation:sfade .6s ease-out both;animation-delay:calc(800ms + var(--k)*110ms)}
+  .sky.play .c-line{stroke-dasharray:var(--len);stroke-dashoffset:var(--len);animation:draw .7s ease-in-out forwards;animation-delay:calc(1800ms + var(--k)*240ms)}
+  .sky.play .sky-cap{animation:sfade .8s ease-out 3.6s both}
+}
+@keyframes twinkle{from{opacity:0}to{opacity:var(--o)}}
+@keyframes sfade{from{opacity:0}to{opacity:1}}
+@keyframes draw{to{stroke-dashoffset:0}}
+/* 흐름 번호: 실제 순서라 번호 유지, 별빛 테두리 */
+.flow .num{border-color:rgba(232,200,119,.45);color:var(--gold)}
+/* 입력 */
+.inp,select.inp,textarea.inp{border-bottom-color:var(--line);color:var(--ink)}
+.inp:focus{border-bottom-color:var(--gold)}
+select.inp option{background:var(--paper)}
+.seg{border-color:var(--line)}
+.seg button.on{background:var(--sunk);color:var(--gold)}
+.btn{border-color:var(--line);color:var(--ink)}
+.btn.pri{background:var(--gold);border-color:var(--gold);color:#141b34;font-weight:500}
+.btn.dark{background:var(--ink);border-color:var(--ink);color:var(--on-ink)}
+.btn.pri.block{border-radius:14px;padding:14px 16px;font-size:16px}
+.region,.corr-note,details.parents{background:rgba(255,255,255,.03)}
+.region-row{background:var(--field)}
+.cal button.on{background:var(--gold);color:#141b34}
+/* 사주 기둥: 별빛 카드 */
+.gz{border-radius:12px;background:rgba(255,255,255,.04);border:1px solid var(--line);font-weight:500}
+.gz.e0,.gz.e1,.gz.e2,.gz.e3,.gz.e4{background:rgba(255,255,255,.04)}
+.pillar:nth-child(2) .gz{border-color:rgba(232,200,119,.55);box-shadow:0 0 22px rgba(232,200,119,.12)}
+.mini-p .gz{border-radius:8px}
+/* 행성 */
+.planets{display:block;width:100%;height:auto;margin:10px 0 0}
+.planets .pn{font-family:var(--hanja);font-size:17px}
+.planets .pl{font-family:var(--sans);font-size:12px;fill:var(--muted)}
+.planet-note{margin:6px 0 4px;font-size:14px;color:var(--ink2)}
+.kf .v{font-family:var(--serif)}
+/* 이름 카드·점수 */
+.score{background:conic-gradient(var(--gold) calc(var(--p)*1%),var(--track) 0)}
+.score::before,.modal .score::before{background:var(--bg)}
+.modal .score::before{background:var(--paper)}
+.rk1{color:var(--gold)}
+.nk{font-family:var(--serif);font-weight:700}
+.nh,.hj .c,.big,.mhead .big,.cmp .nh,.gz,.mini-p .gz,.bf{font-family:var(--hanja)}
+.tag{border-color:var(--line);color:var(--ink2)}
+.tag.g{color:var(--good);border-color:var(--good-line)}
+.tag.fam{color:var(--gold);border-color:rgba(232,200,119,.4)}
+.chip.on{background:var(--gold);border-color:var(--gold);color:#141b34}
+.msg.bot{background:var(--bubble);border-radius:14px 14px 14px 4px}
+.msg.me{background:var(--gold);color:#141b34;border-radius:14px 14px 4px 14px}
+/* 모달·시트 */
+.modal{border-radius:20px;border:1px solid var(--line);background:var(--paper)}
+.xbtn{background:var(--sunk);color:var(--ink)}
+.stage{border-radius:16px;background:radial-gradient(120% 90% at 50% 0%,#222b55,var(--paper))}
+.bc{background:linear-gradient(var(--line),var(--line)) center/100% 1px no-repeat,linear-gradient(var(--line),var(--line)) center/1px 100% no-repeat,rgba(255,255,255,.03)}
+.stamp{background:var(--gold);color:#141b34;border-radius:50%}
+.verdict{border-color:var(--line)}
+.gy.ok{background:var(--good-soft)}
+.gy.no{background:var(--bad-soft)}
+.yy i{border-color:var(--ink)}
+.certimg{border-radius:14px}
+.sheet{border-radius:20px 20px 0 0;border-top:1px solid var(--line)}
+.city.on{border-color:var(--gold)}
+/* 결제 상자: 금빛·새벽빛 */
+.pay{border-radius:20px;border:1px solid rgba(232,200,119,.35);background:linear-gradient(160deg,rgba(232,200,119,.13),rgba(231,169,157,.09) 70%,rgba(255,255,255,.02))}
+.pay-h .seal{width:auto}
+.pay-h b{font-family:var(--serif);font-weight:700;font-size:19px}
+.pv-list{border-top-color:rgba(232,200,119,.25)}
+.pv-list li{border-bottom-color:rgba(232,200,119,.18)}
+.pv-list .rk::before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:7px;vertical-align:2px;background:var(--gold);box-shadow:0 0 10px var(--gold)}
+.pv-n{font-family:var(--serif);font-weight:700}
+.pv-s{color:var(--gold);font-family:var(--serif)}
+.pv-t em{background:rgba(255,255,255,.06)}
+.pay-list li::before{border-radius:50%;background:var(--gold);box-shadow:0 0 8px rgba(232,200,119,.7);width:6px;height:6px}
+.price b{font-family:var(--serif)}
+.paybtn{border-radius:12px}
+.acct{background:transparent;border-color:var(--line);color:var(--ink2);border-radius:999px}
+.acct.on{border-color:var(--gold);color:var(--gold)}
+.paid-note{border-radius:12px}
+.bless-txt{font-family:var(--serif);font-size:15.5px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.03)}
+.toast{background:var(--ink);color:var(--on-ink);border-radius:999px}
+.notice{background:rgba(255,255,255,.04)}
+.rv{border-color:var(--line)}
+.st-tbl tbody th{background:var(--bg)}
+.biz a{color:var(--muted)}
 </style>
 </head>
 <body>
 <header>
   <div class="wrap hbar">
-    <div class="logo" data-go="1"><div class="seal">名</div><span class="t">명당</span></div>
+    <div class="logo" data-go="1"><div class="seal" aria-hidden="true">✦</div><span class="t">명당</span></div>
     <nav class="tabs" id="tabs">
       <button class="tab" data-go="1"><b>1</b><span class="l">기본 정보</span></button>
       <button class="tab lk" data-go="2"><b>2</b><span class="l">작명 방향</span></button>
@@ -639,24 +763,13 @@ body:not(.paid) .tab.lk{opacity:.5}
   <section class="step" id="step1">
     <div class="hero">
       <div class="hero-copy">
-        <figure class="opening" id="opening" role="img" tabindex="0" title="누르면 다시 재생돼요" aria-label="지금 이 순간의 사주팔자와, 붓으로 이름 명(名) 자를 쓰고 낙관을 찍는 장면">
-          <div class="op-pillars" id="opPillars"></div>
-          <figcaption class="op-cap" id="opCap">지금 이 순간의 사주팔자</figcaption>
-          <div class="op-sheet">
-            <div class="op-drops" aria-hidden="true">
-              <i style="--c:var(--e0);--k:0;left:50%;top:6%"></i>
-              <i style="--c:var(--e1);--k:1;left:90%;top:38%"></i>
-              <i style="--c:var(--e2);--k:2;left:75%;top:88%"></i>
-              <i style="--c:var(--e3);--k:3;left:25%;top:88%"></i>
-              <i style="--c:var(--e4);--k:4;left:10%;top:38%"></i>
-            </div>
-            <div class="op-char" id="opChar"></div>
-            <span class="op-seal" aria-hidden="true">堂</span>
-          </div>
+        <figure class="sky" id="opening" role="img" tabindex="0" title="누르면 다시 재생돼요" aria-label="밤하늘의 별들이 이어져 이름 명(名) 자 모양의 별자리가 돼요">
+          <svg viewBox="0 0 480 400" id="skySvg" aria-hidden="true"></svg>
+          <figcaption class="sky-cap" id="opCap">지금 이 순간의 하늘</figcaption>
         </figure>
         <p class="brand-eyebrow"><b>名堂</b> 우리 아이 이름의 명당</p>
-        <h1>태어난 때를 읽고,<br>평생 부를 이름을 지어요</h1>
-        <p>성씨와 태어난 날짜만 넣으면 사주팔자와 오행을 풀어드리고, 대화하듯 조건을 말하면 이름 후보를 바로 추려드려요.</p>
+        <h1>태어난 순간의 하늘이<br>이름을 알려 줘요</h1>
+        <p>사주는 아이가 태어난 그 시각, 하늘의 기운을 적어 둔 기록이에요. 그 기록을 읽어 아이에게 꼭 맞는 이름을 찾아 드려요.</p>
         <ol class="flow">
           <li><span class="num">1</span><div>기본 정보 입력<small>사주팔자·오행·용신을 자동 분석해요</small></div></li>
           <li><span class="num">2</span><div>작명 방향 설정<small>이름 몇 개에 좋아요/별로예요를 눌러 취향을 알려주세요</small></div></li>
@@ -789,7 +902,7 @@ body:not(.paid) .tab.lk{opacity:.5}
   <section class="step" id="step3">
     <div class="s3">
       <div class="card chat">
-        <div class="chat-h"><div class="seal">名</div><div><b>작명 도우미</b><div class="hint">조건을 말하면 바로 다시 골라드려요</div></div></div>
+        <div class="chat-h"><div class="seal" aria-hidden="true">✦</div><div><b>작명 도우미</b><div class="hint">조건을 말하면 바로 다시 골라드려요</div></div></div>
         <div class="msgs" id="msgs"></div>
         <div class="sugg" id="sugg"></div>
         <form id="chatForm"><input class="inp" id="chatIn" placeholder="예: 밝고 부드러운 느낌으로" autocomplete="off"><button class="btn dark">보내기</button></form>
@@ -1609,7 +1722,7 @@ function renderSaju(){
       <p class="lead" style="margin:8px 0 12px">예정일(${S.info.date})은 실제 출생일과 달라질 수 있어 <b>아이 사주는 쓰지 않았어요.</b> 대신 부모님 사주를 합쳐, 가족에게 가장 부족한 기운을 이름에 담아 드려요.</p>
       ${ps?`${ps.members.map(m=>`<div class="fm"><div class="fm-h"><div><b>${m.lbl}</b><span class="hint">${STEMS[m.sj.dS]}${BR[m.sj.P[1].b]}일주 · ${ANIMAL[m.sj.yB]}띠 · 용신 ${EL[m.sj.yong]}</span></div></div>${miniPillars(m.sj)}</div>`).join('')}
       <div class="fam-sum"><b>부모님 오행 합산</b>
-        <div class="bars">${ps.cnt.map((c,i)=>`<div class="bar"><span class="tc${i}"><b>${EL[i]}</b> ${ELH[i]}</span><div class="trk"><div class="fil" style="width:${c/mx*100}%;background:var(--e${i})"></div></div><b>${c}</b></div>`).join('')}</div>
+        ${planetsSVG(ps.cnt,ps.yong)}
         <p>부모님 사주에서 가장 적은 기운은 ${elB(ps.yong)}${josa(EL[ps.yong],'이에요','예요')}. 이 기운을 담은 한자가 이름 점수(자원오행 25점)에서 가장 높게 평가돼요${ps.yongVotes[ps.yong]?`. 마침 ${ps.members.filter(m=>m.sj.yong===ps.yong).map(m=>m.lbl).join('와 ')}의 용신과도 같은 기운이라 부모님께도 힘이 돼요`:''}.</p>
       </div>`:'<p class="hint">부모님 생년월일이 없어요. 위에서 넣어 주세요.</p>'}
       <details class="rd"><summary>예정일 기준 아이 참고 사주 (확정 아님, 계산에 쓰지 않음)</summary><div class="rdb"><div class="pillars">${sj.P.map(p=>p.s==null?`<div class="pillar"><div class="pl">${p.k}</div><div class="gz unk">?</div><div class="gz unk">?</div></div>`:`<div class="pillar"><div class="pl">${p.k}</div><div class="gz e${Math.floor(p.s/2)}">${STEMS[p.s]}</div><div class="gz e${BR_EL[p.b]}">${BR[p.b]}</div></div>`).join('')}</div><p>하루만 달라도 일주가 바뀌어요. 아이가 태어나면 ‘태어났어요’로 바꿔 생일을 넣어 주세요.</p></div></details>
@@ -1623,7 +1736,8 @@ function renderSaju(){
   box.innerHTML=`<div class="card" style="margin-top:16px">
     <div class="sec-h" style="margin:0"><h3>${esc(S.info.surname.r)}씨 아이의 사주팔자</h3><span class="pill e${BR_EL[sj.yB]}">${ANIMAL[sj.yB]}띠</span></div>
     <div class="pillars">${sj.P.map(col).join('')}</div>
-    <div class="bars">${sj.cnt.map((c,i)=>`<div class="bar"><span class="tc${i}"><b>${EL[i]}</b> ${ELH[i]}</span><div class="trk"><div class="fil" style="width:${c/max*100}%;background:var(--e${i})"></div></div><b>${c}</b></div>`).join('')}</div>
+    ${planetsSVG(sj.cnt,sj.yong)}
+    <p class="planet-note">${sj.lack.length?`${sj.lack.map(i=>PLANET_NM[i]).join('과 ')} 자리가 비어 있어요. `:''}금빛 고리를 두른 <b class="tc${sj.yong}">${PLANET_NM[sj.yong]}(${ELH[sj.yong]})</b>의 기운을 이름에 담으면 하늘이 고르게 채워져요.</p>
     <div class="keyfacts">
       <div class="kf"><div class="k">나를 뜻하는 글자 (일간)</div><div class="v tc${sj.dEl}">${STEMS[sj.dS]} ${EL[sj.dEl]}</div><p>${DAY_DESC[sj.dS]} 같은 성품이에요. ${st}.</p></div>
       <div class="kf"><div class="k">이름에 담으면 좋은 기운 (용신)</div><div class="v tc${sj.yong}">${EL[sj.yong]} ${ELH[sj.yong]}</div><p>${ELN[sj.yong]}의 기운이 균형을 잡아줘요. 함께 좋은 기운: <b class="tc${sj.hee}">${EL[sj.hee]}</b></p></div>
@@ -1666,34 +1780,47 @@ function stSearch(name){
 function closeModal(){$('#ov').classList.remove('on');brushRun++}
 
 /* ================= 첫 화면 장면 ================= */
-// 화면을 연 지금 이 순간(서울 기준)의 사주를 실제로 계산해 보여 주고, 붓으로 名을 쓴 뒤 낙관을 찍는다
+// 밤하늘에 별이 떠오르고, 별들이 이어져 이름 명(名) 자 별자리가 된다. 아래에는 지금 이 순간의 사주.
 let openingRun=0;
-async function runOpening(byUser=false){
-  const box=$('#opening');if(!box)return;
-  const run=++openingRun;
-  const still=!byUser&&matchMedia('(prefers-reduced-motion: reduce)').matches;
-  // 애니메이션을 처음부터 다시 걸기
-  box.classList.remove('sealed');box.classList.toggle('still',still);
-  const now=new Date(),d=`${now.getFullYear()}-${pad2(now.getMonth()+1)}-${pad2(now.getDate())}`,t=`${pad2(now.getHours())}:${pad2(now.getMinutes())}`;
-  const sj=calcSaju(d,t,'서울');
-  // 전통 배열(오른쪽 年 → 왼쪽 時)대로, 오른쪽 기둥부터 먹이 번진다
-  $('#opPillars').innerHTML=sj.P.map((p,i)=>`<div class="op-col"><small>${'시일월연'[i]}</small>`+
-    `<b style="--i:${3-i};--j:0;--dot:var(--e${Math.floor(p.s/2)})">${STEMS[p.s]}</b>`+
-    `<b style="--i:${3-i};--j:1;--dot:var(--e${BR_EL[p.b]})">${BR[p.b]}</b></div>`).join('');
-  const h=now.getHours();
-  $('#opCap').textContent=`${now.getMonth()+1}월 ${now.getDate()}일 ${h<12?'오전':'오후'} ${h%12||12}시 ${now.getMinutes()}분, 지금 이 순간의 사주팔자`;
-  const drops=box.querySelector('.op-drops');drops.replaceWith(drops.cloneNode(true)); // 오행 번짐 재생
-  const cap=$('#opCap');cap.style.animation='none';void cap.offsetWidth;cap.style.animation='';
-  const cell=$('#opChar');cell.innerHTML='';
-  if(!still)await new Promise(r=>setTimeout(r,1150));
-  if(run!==openingRun)return;
-  let HW=null;try{HW=await loadHW()}catch(e){}
-  if(run!==openingRun)return;
-  const ink=getComputedStyle(document.documentElement).getPropertyValue('--ink').trim()||'#2a2421';
-  await writeOne(HW,cell,'名',168,ink,still);
-  if(run===openingRun)box.classList.add('sealed');
+const SKY_P={a:[262,66],b:[214,124],c:[236,98],d:[312,98],e:[176,224],f:[240,150],g:[266,176],h:[214,236],i:[322,236],j:[322,322],k:[214,322]};
+const SKY_L=[['a','b'],['c','d'],['d','e'],['f','g'],['h','i'],['i','j'],['j','k'],['k','h']];
+function buildSky(){
+  const svg=$('#skySvg');if(!svg||svg.childNodes.length)return;
+  let s=7;const rnd=()=>(s=(s*16807)%2147483647)/2147483647;   // 늘 같은 하늘
+  let h='';
+  for(let i=0;i<110;i++){const r=rnd()<.9?rnd()*1.1+.3:rnd()*1.5+1;h+=`<circle class="bg-star" cx="${(rnd()*480).toFixed(1)}" cy="${(rnd()*400).toFixed(1)}" r="${r.toFixed(2)}" style="--d:${Math.round(rnd()*900)};--o:${(.35+rnd()*.6).toFixed(2)}"/>`}
+  SKY_L.forEach(([u,v],k)=>{const [x1,y1]=SKY_P[u],[x2,y2]=SKY_P[v];h+=`<line class="c-line" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" style="--len:${Math.hypot(x2-x1,y2-y1).toFixed(1)};--k:${k}"/>`});
+  Object.values(SKY_P).forEach(([x,y],k)=>{h+=`<circle class="c-star" cx="${x}" cy="${y}" r="${k%3?3:4.2}" style="--k:${k}"/>`});
+  svg.innerHTML=h;
 }
-
+function runOpening(byUser=false){
+  const box=$('#opening');if(!box)return;
+  ++openingRun;buildSky();
+  const now=new Date(),d=`${now.getFullYear()}-${pad2(now.getMonth()+1)}-${pad2(now.getDate())}`,t=`${pad2(now.getHours())}:${pad2(now.getMinutes())}`;
+  const sj=calcSaju(d,t,'서울'),h=now.getHours();
+  $('#opCap').innerHTML=`${now.getMonth()+1}월 ${now.getDate()}일 ${h<12?'오전':'오후'} ${h%12||12}시 ${now.getMinutes()}분, 지금 이 순간의 하늘 <b>${sj.P.slice().reverse().map(p=>STEMS[p.s]+BR[p.b]).join(' ')}</b>`;
+  if(byUser){box.classList.remove('play');void box.offsetWidth}
+  box.classList.add('play');
+}
+// 오행을 다섯 행성으로: 목성·화성·토성·금성·수성. 기운이 없으면 점선 궤도만 남는다
+const PLANET_NM=['목성','화성','토성','금성','수성'];
+function planetsSVG(cnt,yong){
+  const pos=[[64,66],[176,48],[300,74],[140,178],[300,182]];
+  const fills=['#7fc59a','#f0866b','#e6bf6a','#c6cad4','#7fa8ea'];
+  const out=['<svg class="planets" viewBox="0 0 400 240" role="img" aria-label="오행을 다섯 행성으로 나타냈어요. '+cnt.map((c,i)=>PLANET_NM[i]+' '+c).join(', ')+'">',
+    '<g fill="none" stroke="var(--line)"><ellipse cx="200" cy="120" rx="188" ry="92"/><ellipse cx="200" cy="120" rx="118" ry="56"/></g>'];
+  cnt.forEach((c,i)=>{
+    const [x,y]=pos[i],r=c?Math.min(34,16+c*6):19,el=EL[i],hz=ELH[i];
+    if(c){
+      if(i===2)out.push(`<ellipse cx="${x}" cy="${y}" rx="${r+17}" ry="8" fill="none" stroke="${fills[i]}" stroke-width="1.6"/>`);
+      out.push(`<circle cx="${x}" cy="${y}" r="${r}" fill="${fills[i]}"/><text x="${x}" y="${y+6}" text-anchor="middle" class="pn" fill="#141b34">${hz}</text>`);
+    }else out.push(`<circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="${fills[i]}" stroke-width="1.6" stroke-dasharray="4 5"/><text x="${x}" y="${y+6}" text-anchor="middle" class="pn" fill="${fills[i]}">${hz}</text>`);
+    if(i===yong)out.push(`<circle cx="${x}" cy="${y}" r="${r+7}" fill="none" stroke="var(--gold)" stroke-width="1.2"/>`);
+    out.push(`<text x="${x}" y="${y+r+20}" text-anchor="middle" class="pl">${PLANET_NM[i]} ${c}</text>`);
+  });
+  out.push('</svg>');
+  return out.join('');
+}
 /* ================= 붓글씨 획순 애니메이션 ================= */
 // Hanzi Writer(획순 엔진)와 획순 데이터는 우리 사이트(vendor/)에 함께 올려 두고 먼저 쓴다.
 // 광고 차단·네트워크 설정으로 외부 CDN이 막혀도 동작하게 하려는 것. 우리 쪽에 없을 때만 CDN을 쓰고,
